@@ -195,9 +195,71 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801081319301_InitialCreate.cs" />
+    <Compile Include="Migrations\201801081319301_InitialCreate.Designer.cs">
+      <DependentUpon>201801081319301_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801081500541_UpdatedDefaultUserFields.cs" />
+    <Compile Include="Migrations\201801081500541_UpdatedDefaultUserFields.Designer.cs">
+      <DependentUpon>201801081500541_UpdatedDefaultUserFields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801081538244_AddedFieldsToUserTable.cs" />
+    <Compile Include="Migrations\201801081538244_AddedFieldsToUserTable.Designer.cs">
+      <DependentUpon>201801081538244_AddedFieldsToUserTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801081547528_CreatedGroupTable.cs" />
+    <Compile Include="Migrations\201801081547528_CreatedGroupTable.Designer.cs">
+      <DependentUpon>201801081547528_CreatedGroupTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801081551477_CreatedSLAPolicyTable.cs" />
+    <Compile Include="Migrations\201801081551477_CreatedSLAPolicyTable.Designer.cs">
+      <DependentUpon>201801081551477_CreatedSLAPolicyTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801081638018_CreatedLogTable.cs" />
+    <Compile Include="Migrations\201801081638018_CreatedLogTable.Designer.cs">
+      <DependentUpon>201801081638018_CreatedLogTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801081647078_CreatedGroupMemberTable.cs" />
+    <Compile Include="Migrations\201801081647078_CreatedGroupMemberTable.Designer.cs">
+      <DependentUpon>201801081647078_CreatedGroupMemberTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801081656052_CreatedKnowledgeTable.cs" />
+    <Compile Include="Migrations\201801081656052_CreatedKnowledgeTable.Designer.cs">
+      <DependentUpon>201801081656052_CreatedKnowledgeTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801081714433_CreatedCallTable.cs" />
+    <Compile Include="Migrations\201801081714433_CreatedCallTable.Designer.cs">
+      <DependentUpon>201801081714433_CreatedCallTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801081723400_CreatedActionTable.cs" />
+    <Compile Include="Migrations\201801081723400_CreatedActionTable.Designer.cs">
+      <DependentUpon>201801081723400_CreatedActionTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801081734405_CreatedAlertTable.cs" />
+    <Compile Include="Migrations\201801081734405_CreatedAlertTable.Designer.cs">
+      <DependentUpon>201801081734405_CreatedAlertTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801081933443_CreatedManagerEmployeeTable.cs" />
+    <Compile Include="Migrations\201801081933443_CreatedManagerEmployeeTable.Designer.cs">
+      <DependentUpon>201801081933443_CreatedManagerEmployeeTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801141523219_MakeEmailUnique.cs" />
+    <Compile Include="Migrations\201801141523219_MakeEmailUnique.Designer.cs">
+      <DependentUpon>201801141523219_MakeEmailUnique.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Action.cs" />
+    <Compile Include="Models\Alert.cs" />
+    <Compile Include="Models\Call.cs" />
+    <Compile Include="Models\Group.cs" />
+    <Compile Include="Models\GroupMember.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\Knowledge.cs" />
+    <Compile Include="Models\Log.cs" />
+    <Compile Include="Models\ManagerEmployee.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\SLAPolicy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -274,6 +336,47 @@
   <ItemGroup>
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201801081319301_InitialCreate.resx">
+      <DependentUpon>201801081319301_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801081500541_UpdatedDefaultUserFields.resx">
+      <DependentUpon>201801081500541_UpdatedDefaultUserFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801081538244_AddedFieldsToUserTable.resx">
+      <DependentUpon>201801081538244_AddedFieldsToUserTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801081547528_CreatedGroupTable.resx">
+      <DependentUpon>201801081547528_CreatedGroupTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801081551477_CreatedSLAPolicyTable.resx">
+      <DependentUpon>201801081551477_CreatedSLAPolicyTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801081638018_CreatedLogTable.resx">
+      <DependentUpon>201801081638018_CreatedLogTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801081647078_CreatedGroupMemberTable.resx">
+      <DependentUpon>201801081647078_CreatedGroupMemberTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801081656052_CreatedKnowledgeTable.resx">
+      <DependentUpon>201801081656052_CreatedKnowledgeTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801081714433_CreatedCallTable.resx">
+      <DependentUpon>201801081714433_CreatedCallTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801081723400_CreatedActionTable.resx">
+      <DependentUpon>201801081723400_CreatedActionTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801081734405_CreatedAlertTable.resx">
+      <DependentUpon>201801081734405_CreatedAlertTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801081933443_CreatedManagerEmployeeTable.resx">
+      <DependentUpon>201801081933443_CreatedManagerEmployeeTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801141523219_MakeEmailUnique.resx">
+      <DependentUpon>201801141523219_MakeEmailUnique.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
