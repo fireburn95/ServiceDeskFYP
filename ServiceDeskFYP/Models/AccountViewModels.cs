@@ -49,9 +49,9 @@ namespace ServiceDeskFYP.Models
     public class LoginViewModel
     {
         [Required]
-        [Display(Name = "Email")]
-        [EmailAddress]
-        public string Email { get; set; }
+        [StringLength(20, ErrorMessage = "Username length is incorrect")]
+        [Display(Name = "Username")]
+        public string UserName { set; get; }
 
         [Required]
         [DataType(DataType.Password)]
@@ -65,9 +65,24 @@ namespace ServiceDeskFYP.Models
     public class RegisterViewModel
     {
         [Required]
+        [Display(Name = "Username")]
+        [StringLength(20, ErrorMessage = "The {0} must be at least {2} characters long.")]
+        public string UserName { get; set; }
+
+        [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
+
+        [Required]
+        [StringLength(20, ErrorMessage = "The {0} must be at least {2} characters long.")]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [StringLength(20, ErrorMessage = "The {0} must be at least {2} characters long.")]
+        [Display(Name = "Surname")]
+        public string LastName { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]

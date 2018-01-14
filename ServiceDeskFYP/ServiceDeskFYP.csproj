@@ -247,6 +247,10 @@
     <Compile Include="Migrations\201801141523219_MakeEmailUnique.Designer.cs">
       <DependentUpon>201801141523219_MakeEmailUnique.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801141639047_AddedClientEmployeeAndAdminRoles.cs" />
+    <Compile Include="Migrations\201801141639047_AddedClientEmployeeAndAdminRoles.Designer.cs">
+      <DependentUpon>201801141639047_AddedClientEmployeeAndAdminRoles.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Action.cs" />
@@ -376,6 +380,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801141523219_MakeEmailUnique.resx">
       <DependentUpon>201801141523219_MakeEmailUnique.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801141639047_AddedClientEmployeeAndAdminRoles.resx">
+      <DependentUpon>201801141639047_AddedClientEmployeeAndAdminRoles.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
