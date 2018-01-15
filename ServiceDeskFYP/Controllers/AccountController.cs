@@ -152,7 +152,14 @@ namespace ServiceDeskFYP.Controllers
         {
             if (ModelState.IsValid)
             {
+                //Capitalising names correctly
+                model.FirstName = ValidationHelpers.FirstLetterTOUpper(model.FirstName.ToLower());
+                model.LastName = ValidationHelpers.FirstLetterTOUpper(model.LastName.ToLower());
+
+                //Create User model
                 var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, CreatedTimestamp = DateTime.Now };
+
+                //Create User in Database
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

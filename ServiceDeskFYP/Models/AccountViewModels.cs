@@ -65,8 +65,9 @@ namespace ServiceDeskFYP.Models
     public class RegisterViewModel
     {
         [Required]
+        [RegularExpression(@"^[a-zA-Z0-9_]*$", ErrorMessage = "Only alphanumeric characters allowed in username")]
         [Display(Name = "Username")]
-        [StringLength(20, ErrorMessage = "The {0} must be at least {2} characters long.")]
+        [StringLength(20, ErrorMessage = "{0} must be between {2} and {1} characters")]
         public string UserName { get; set; }
 
         [Required]
@@ -75,17 +76,19 @@ namespace ServiceDeskFYP.Models
         public string Email { get; set; }
 
         [Required]
-        [StringLength(20, ErrorMessage = "The {0} must be at least {2} characters long.")]
+        [RegularExpression(@"^[A-z]+$", ErrorMessage = "Only alphabetical characters allowed in first name")]
+        [StringLength(20, ErrorMessage = "{0} must be between {2} and {1} characters")]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
-
+        
         [Required]
-        [StringLength(20, ErrorMessage = "The {0} must be at least {2} characters long.")]
+        [RegularExpression(@"^[A-z]+$", ErrorMessage = "Only alphabetical characters allowed in surname")]
+        [StringLength(20, ErrorMessage = "{0} must be between {2} and {1} characters")]
         [Display(Name = "Surname")]
         public string LastName { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "{0} must be between {2} and {1} characters")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
