@@ -18,9 +18,11 @@ namespace ServiceDeskFYP.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private ApplicationDbContext _context;
 
         public AccountController()
         {
+            _context = new ApplicationDbContext();
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
@@ -71,6 +73,14 @@ namespace ServiceDeskFYP.Controllers
         {
             if (!ModelState.IsValid)
             {
+                return View(model);
+            }
+
+            //Check if user is disabled
+            var UserModel = _context.Users.SingleOrDefault(n => n.UserName.Equals(model.UserName));
+            if (UserModel.Disabled)
+            {
+                ViewBag.DisabledMessage = "Sorry, your access to this website has been disabled";
                 return View(model);
             }
 
