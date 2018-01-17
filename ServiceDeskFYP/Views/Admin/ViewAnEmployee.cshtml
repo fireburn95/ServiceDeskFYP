@@ -1,0 +1,107 @@
+﻿@model ServiceDeskFYP.Models.ViewAnEmployeeViewModel
+
+@{
+    ViewBag.Title = "ViewAnEmployee";
+}
+
+<h2>@Model.FirstName @Model.LastName</h2>
+
+<div>
+    <h4>@Model.Email</h4>
+    <hr />
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <h5 style="color: red">@ViewBag.ErrorMessage</h5>
+    }
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PhoneNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PhoneNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Extension)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Extension)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Department)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Department)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @if (!Model.Admin)
+    {
+        @Html.ActionLink("Set as Admin", "SetUnsetAdmin", new { PassedId = Model.Id })
+    }
+    else
+    {
+        @Html.ActionLink("Unset as Admin", "SetUnsetAdmin", new { PassedId = Model.Id })
+    }
+
+    |
+
+    @if (!Model.Disabled)
+    {
+        @Html.ActionLink("Disable", "DisableEnable", new { PassedId = Model.Id })
+    }
+    else
+    {
+        @Html.ActionLink("Re-enable", "DisableEnable", new { PassedId = Model.Id })
+    }
+
+    |
+
+    @if ((ViewBag.Referrer != null) && (ViewBag.Referrer != Request.Url.AbsoluteUri))
+    {
+        <a href="@ViewBag.Referrer">Back to List</a>
+    }
+    else
+    {
+        @Html.ActionLink("Back to List", "Employees")
+    }
+
+</p>

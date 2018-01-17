@@ -67,7 +67,7 @@ namespace ServiceDeskFYP.Models
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9_]*$", ErrorMessage = "Only alphanumeric characters allowed in username")]
         [Display(Name = "Username")]
-        [StringLength(20, ErrorMessage = "{0} must be between {2} and {1} characters")]
+        [StringLength(20, MinimumLength = 5, ErrorMessage = "{0} must be between {2} and {1} characters")]
         public string UserName { get; set; }
 
         [Required]
@@ -77,13 +77,13 @@ namespace ServiceDeskFYP.Models
 
         [Required]
         [RegularExpression(@"^[A-z]+$", ErrorMessage = "Only alphabetical characters allowed in first name")]
-        [StringLength(20, ErrorMessage = "{0} must be between {2} and {1} characters")]
+        [StringLength(20, MinimumLength = 2, ErrorMessage = "{0} must be between {2} and {1} characters")]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
         
         [Required]
         [RegularExpression(@"^[A-z]+$", ErrorMessage = "Only alphabetical characters allowed in surname")]
-        [StringLength(20, ErrorMessage = "{0} must be between {2} and {1} characters")]
+        [StringLength(20, MinimumLength = 2, ErrorMessage = "{0} must be between {2} and {1} characters")]
         [Display(Name = "Surname")]
         public string LastName { get; set; }
 

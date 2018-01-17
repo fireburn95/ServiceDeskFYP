@@ -13,6 +13,13 @@ namespace ServiceDeskFYP
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            //Allow shortcut routes through MVC Attributes
+            routes.MapMvcAttributeRoutes();
+
+            //Force lower case URLs
+            routes.LowercaseUrls = true;
+
+            //Default route, applies to all
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
