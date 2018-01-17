@@ -7,7 +7,7 @@
 <h2>Employees</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    <a href="/admin/employees/create">Create Employee</a>
 </p>
 
 <form action="" method="get">
@@ -70,3 +70,7 @@
         }
     </tbody>
 </table>
+
+<div>
+    @Html.ActionLink("Back to Tools", "Index")
+</div>

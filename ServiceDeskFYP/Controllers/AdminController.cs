@@ -41,7 +41,7 @@ namespace ServiceDeskFYP.Controllers
         public ActionResult Employees()
         {
             //Check for an error message from another action
-            if (TempData["ErrorMessage"]!=null)
+            if (TempData["ErrorMessage"] != null)
             {
                 ViewBag.ErrorMessage = TempData["ErrorMessage"];
             }
@@ -59,7 +59,7 @@ namespace ServiceDeskFYP.Controllers
 
                 //Find employees that match search pattern
                 var search = Request.QueryString["search"];
-                var SearchResults = Employees.Where(n => 
+                var SearchResults = Employees.Where(n =>
                                 n.UserName.ToLower().Contains(search.ToLower()) ||
                                 n.FirstName.ToLower().Contains(search.ToLower()) ||
                                 n.LastName.ToLower().Contains(search.ToLower()) ||
@@ -102,25 +102,83 @@ namespace ServiceDeskFYP.Controllers
                 //Redirect to Employees list
                 return RedirectToAction("Employees");
             }
-                
+
 
             //Check if admin
             var isAdmin = false;
-            if(userManager.IsInRole(UserId, "Admin"))
+            if (userManager.IsInRole(UserId, "Admin"))
                 isAdmin = true;
 
             //Create ViewModel
             var ViewEmployee = new ViewAnEmployeeViewModel()
             {
-                Id = Employee.Id, UserName = Employee.UserName,
-                FirstName = Employee.FirstName, LastName = Employee.LastName,
-                Department = Employee.Department, Email = Employee.Email,
-                Extension = Employee.Extension, PhoneNumber = Employee.PhoneNumber,
-                Admin = isAdmin, Disabled = Employee.Disabled
+                Id = Employee.Id,
+                UserName = Employee.UserName,
+                FirstName = Employee.FirstName,
+                LastName = Employee.LastName,
+                Department = Employee.Department,
+                Email = Employee.Email,
+                Extension = Employee.Extension,
+                PhoneNumber = Employee.PhoneNumber,
+                Admin = isAdmin,
+                Disabled = Employee.Disabled
             };
 
             //Pass Employee View Model to View
             return View(ViewEmployee);
+        }
+
+        //GET Create Employee
+        [HttpGet]
+        [Route("admin/employees/create")]
+        public ActionResult CreateEmployeeGET()
+        {
+            return View("CreateEmployee");
+        }
+
+        //POST Create Employee
+        [HttpPost]
+        [Route("admin/employees/create")]
+        public ActionResult CreateEmployeePOST(CreateEmployeeViewModel model)
+        {
+            //If model validation passes
+            if (ModelState.IsValid)
+            {
+                //Capitalising names correctly
+                model.FirstName = ValidationHelpers.FirstLetterTOUpper(model.FirstName.ToLower());
+                model.LastName = ValidationHelpers.FirstLetterTOUpper(model.LastName.ToLower());
+
+                //Create User model
+                var UserModel = new ApplicationUser
+                {
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    PhoneNumber = model.PhoneNumber,
+                    Extension = model.Extension,
+                    Department = model.Department,
+                    CreatedTimestamp = DateTime.Now
+                };
+
+                //Create User in DB
+                var result = userManager.Create(UserModel, model.Password);
+
+
+                if (result.Succeeded)
+                {
+                    //Add as an employee
+                    userManager.AddToRole(UserModel.Id, "Employee");
+                    return RedirectToAction("Employees");
+                }
+                else
+                {
+                    //Temp data
+                    ViewBag.ErrorMessage = "Error - Cannot create.. Duplicate username/email";
+                }
+            }
+            // If we got this far, something failed, redisplay form
+            return View("CreateEmployee", model);
         }
 
 
@@ -140,7 +198,7 @@ namespace ServiceDeskFYP.Controllers
                 //Redirect to Employees list
                 return RedirectToAction("Employees");
             }
-            
+
             //Check if trying to change own account
             if (User.Identity.GetUserId() == PassedId)
             {
