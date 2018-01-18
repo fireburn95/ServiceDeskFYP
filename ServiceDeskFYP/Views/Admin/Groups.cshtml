@@ -1,0 +1,59 @@
+﻿@model IEnumerable<ServiceDeskFYP.Models.Group>
+
+@{
+    ViewBag.Title = "Groups";
+}
+
+<h2>Groups</h2>
+
+<p>
+    @Html.ActionLink("Create New", "CreateGroupGet")
+</p>
+@if (ViewBag.ErrorMessage != null)
+{
+    <h5>@ViewBag.ErrorMessage</h5>
+}
+@if (ViewBag.SuccessMessage != null)
+{
+    <h5>@ViewBag.SuccessMessage</h5>
+}
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @if (item.Description.Length >= 50)
+                {
+                    @item.Description.Substring(0, 50)
+                    <text>...</text>
+                }
+                else
+                {
+                    @item.Description
+                }
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "groups/edit", new { id = item.Id }) |
+                @Html.ActionLink("Add/Remove Members", "Members", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+    }
+
+</table>
+<div>
+    @Html.ActionLink("Back to Tools", "Index")
+</div>

@@ -25,15 +25,15 @@ namespace ServiceDeskFYP.Controllers
             roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(_context));
         }
 
-        /*
-         * Pages
-         */
-
         // GET Admin Homepage
         public ActionResult Index()
         {
             return View();
         }
+
+        /**************************
+         *     Manage Employees   *
+         * ***********************/
 
         //GET Employee Management Homepage
         //Shows the list of employees
@@ -181,11 +181,6 @@ namespace ServiceDeskFYP.Controllers
             return View("CreateEmployee", model);
         }
 
-
-        /*
-         * Action links
-         */
-
         // Set/Unset a given user as admin
         public ActionResult SetUnsetAdmin(string PassedId)
         {
@@ -295,5 +290,131 @@ namespace ServiceDeskFYP.Controllers
             //Return to page
             return RedirectToAction("ViewAnEmployee", new { UserId = PassedId });
         }
+
+        /**************************
+         *     Manage Groups   *
+         * ***********************/
+
+        //View Groups
+        public ActionResult Groups()
+        {
+            //Handle errors from other action methods
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+            }
+
+            //Handle success message from other action methods
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            }
+
+            //Get all groups
+            var Groups = _context.Group;
+
+            //Pass groups to model
+            return View(Groups);
+        }
+
+        //Create group page
+        [HttpGet]
+        [Route("admin/groups/create")]
+        public ActionResult CreateGroupGET()
+        {
+            return View("CreateGroup");
+        }
+
+        //Create group POST page
+        [HttpPost]
+        [Route("admin/groups/create")]
+        public ActionResult CreateGroupPOST(Group model)
+        {
+            if (ModelState.IsValid)
+            {
+                //Check if duplicate name
+                var GroupFound = _context.Group.SingleOrDefault(n => n.Name == model.Name);
+                if (GroupFound != null)
+                {
+                    //It's a duplicate, so error
+                    ViewBag.ErrorMessage = "Sorry, the group name already exists";
+
+                    //Return the View
+                    return View("CreateGroup", model);
+                }
+
+                //Add to DB Group
+                _context.Group.Add(model);
+                _context.SaveChanges();
+
+                return RedirectToAction("Groups");
+            }
+            else
+            {
+                //Failed validation
+                return View("CreateGroup", model);
+            }
+
+        }
+
+        //Edit Group GET page
+        [HttpGet]
+        [Route("admin/groups/edit/{GroupId}")]
+        public ActionResult EditGroupGET(int GroupId)
+        {
+            //Get the group
+            var Group = _context.Group.SingleOrDefault(n => n.Id == GroupId);
+
+            //Check if doesnt exist
+            if (Group == null)
+            {
+                //Create temp data session
+                TempData["ErrorMessage"] = "Sorry, the group you attempted to access doesn't exist";
+
+                //Return to and pass it to the action
+                return RedirectToAction("Groups");
+            }
+
+            //Return view
+            return View("EditGroup", Group);
+        }
+
+        //Edit Group POST page
+        [HttpPost]
+        [Route("admin/groups/edit/{GroupId}")]
+        public ActionResult EditGroupPOST(Group model)
+        {
+            if (ModelState.IsValid)
+            {
+                //Check if duplicate name
+                var GroupFound = _context.Group.SingleOrDefault(n => n.Name == model.Name);
+                if (GroupFound != null)
+                {
+                    if(GroupFound.Id != model.Id)
+                    {
+                        //It's a duplicate, so error
+                        ViewBag.ErrorMessage = "Sorry, the group name already exists";
+
+                        //Return the View
+                        return View("EditGroup", model);
+                    }
+
+                }
+
+                //Update row in DB
+                GroupFound.Name = model.Name;
+                GroupFound.Description = model.Description;
+                _context.SaveChanges();
+
+                //Return to Groups page
+                TempData["SuccessMessage"] = "Thank you, " + model.Name + " has been updated";
+                return RedirectToAction("Groups");
+
+            }
+
+            //Validation failed so return
+            return View("EditGroup", model);
+        }
+
     }
 }

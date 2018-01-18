@@ -16,7 +16,8 @@ namespace ServiceDeskFYP.Models
         public string Name { get; set; }
 
         [Required]
-        [StringLength(255)]
+        [StringLength(255, MinimumLength = 10)]
+        [DataType(DataType.MultilineText)]
         public string Description { get; set; }
 
         public virtual ICollection<Alert> Alert { set; get; }
