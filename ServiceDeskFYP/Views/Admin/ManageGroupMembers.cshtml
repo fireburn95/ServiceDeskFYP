@@ -54,11 +54,11 @@
                     @Html.ActionLink("Remove", "RemoveMemberFromGroup", new { UserId = item.User_Id, GroupId = item.Group_Id }) |
                     @if (item.Owner)
                     {
-                        @Html.ActionLink("Unset as Owner", "RemoveMemberFromGroup", new { UserId = item.User_Id, GroupId = item.Group_Id })
+                        @Html.ActionLink("Unset as Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, GroupId = item.Group_Id })
                     }
                     else
                     {
-                        @Html.ActionLink("Set Owner", "RemoveMemberFromGroup", new { UserId = item.User_Id, GroupId = item.Group_Id })
+                        @Html.ActionLink("Set Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, GroupId = item.Group_Id })
                     }
                 </td>
             </tr>

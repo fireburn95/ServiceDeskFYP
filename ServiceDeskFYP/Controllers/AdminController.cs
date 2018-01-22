@@ -507,7 +507,7 @@ namespace ServiceDeskFYP.Controllers
             }
 
             //Check if not an employee
-            if (userManager.IsInRole(User.Id, "Employee"))
+            if (!userManager.IsInRole(User.Id, "Employee"))
             {
                 TempData["ErrorMessage"] = "This user is not an employee, so cannot be added here";
                 return RedirectToAction("ManageGroupMembers", new { GroupId });
@@ -555,6 +555,40 @@ namespace ServiceDeskFYP.Controllers
             TempData["SuccessMessage"] = "User successfully removed from group";
 
             //Return to and pass it to the action
+            return RedirectToAction("ManageGroupMembers", new { GroupId });
+        }
+
+        public ActionResult SetUnsetGroupOwner(string UserId, int GroupId)
+        {
+            //Get the Group Member
+            var GroupMember = _context.GroupMember.SingleOrDefault(n => (n.User_Id == UserId) && (n.Group_Id == GroupId));
+
+            //Check combo actually exists
+            if (GroupMember == null)
+            {
+                //Create temp data session
+                TempData["ErrorMessage"] = "Sorry, the Group member you attempted to remove does not exist for the given group";
+
+                //Return to and pass it to the action
+                return RedirectToAction("Groups");
+            }
+
+            //If Owner
+            if (GroupMember.Owner == true)
+            {
+                GroupMember.Owner = false;
+            }
+            //Else if not an owner
+            else
+            {
+                GroupMember.Owner = true;
+            }
+
+            //Save to DB
+            _context.SaveChanges();
+
+            //Return to Action
+            TempData["SuccessMessage"] = "User set to owner";
             return RedirectToAction("ManageGroupMembers", new { GroupId });
         }
     }
