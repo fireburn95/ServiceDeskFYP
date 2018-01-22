@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Identity.EntityFramework;
 using ServiceDeskFYP.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -409,12 +410,152 @@ namespace ServiceDeskFYP.Controllers
                 //Return to Groups page
                 TempData["SuccessMessage"] = "Thank you, " + model.Name + " has been updated";
                 return RedirectToAction("Groups");
-
             }
 
             //Validation failed so return
             return View("EditGroup", model);
         }
 
+        //Manage members GET page
+        [HttpGet]
+        [Route("admin/groups/members/{GroupId}")]
+        public ActionResult ManageGroupMembers(int GroupId)
+        {
+            //Get the group
+            var Group = _context.Group.SingleOrDefault(n => n.Id == GroupId);
+
+            //Handle Message from another action
+            if (TempData["SuccessMessage"] != null)
+            {
+                //Pass the message to ViewBag
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            }
+
+            //Handle Error Message from another action
+            if (TempData["ErrorMessage"] != null)
+            {
+                //Pass the message to ViewBag
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+            }
+
+            //Check if doesnt exist
+            if (Group == null)
+            {
+                //Create temp data session
+                TempData["ErrorMessage"] = "Sorry, the group you attempted to access doesn't exist";
+
+                //Return to and pass it to the action
+                return RedirectToAction("Groups");
+            }
+
+            //Get all group members
+            var GroupMembers = _context.GroupMember.Where(n => n.Group_Id == GroupId);
+
+            //If empty
+            if (GroupMembers.Any()==false)
+            {
+                //Return the empty list view
+                return View();
+            }
+
+            //Assign to View Model TODO if possible, make Username retrieved by using foreign key (wasnt working
+            ApplicationDbContext _context2 = new ApplicationDbContext();
+            List<ManageGroupMembersViewModel> GroupMembersVMList = new List<ManageGroupMembersViewModel>();
+            ManageGroupMembersViewModel MGMVM;
+            foreach (GroupMember row in GroupMembers)
+            {
+                MGMVM = 
+                    new ManageGroupMembersViewModel
+                    {
+                        Group_Id = row.Group_Id,
+                        User_Id = row.User_Id,
+                        Owner = row.Owner,
+                        UserName = _context2.Users.SingleOrDefault(n => n.Id == row.User_Id).UserName,
+                        GroupName = row.Group.Name
+                    };
+
+                GroupMembersVMList.Add(MGMVM);
+            }
+
+            //Return the view
+            return View(GroupMembersVMList);
+        }
+
+        [HttpPost]
+        [Route("admin/groups/members/{GroupId}")]
+        public ActionResult AddMemberToGroup(int GroupId)
+        {
+            //Check if username is empty
+            string UserName = null;
+            if (Request["username"] == null)
+            {
+                TempData["ErrorMessage"] = "No username entered";
+                return RedirectToAction("ManageGroupMembers", new { GroupId });
+            }
+            //Else not empty so save into var
+            else
+            {
+                UserName = Request["username"].ToLower();
+            }
+
+            //Check username exists
+            var User = _context.Users.SingleOrDefault(n => n.UserName.ToLower().Equals(UserName));
+            if (User == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, the user entered doesn't exist";
+                return RedirectToAction("ManageGroupMembers", new { GroupId });
+            }
+
+            //Check if not an employee
+            if (userManager.IsInRole(User.Id, "Employee"))
+            {
+                TempData["ErrorMessage"] = "This user is not an employee, so cannot be added here";
+                return RedirectToAction("ManageGroupMembers", new { GroupId });
+            }
+
+            //Check if already in Group
+            var GroupMember = _context.GroupMember.SingleOrDefault(n => (n.User_Id==User.Id) && (n.Group_Id==GroupId));
+            if (GroupMember != null)
+            {
+                TempData["ErrorMessage"] = "User is already a member of the group";
+                return RedirectToAction("ManageGroupMembers", new { GroupId });
+            }
+
+            //Add to group
+            _context.GroupMember.Add(new GroupMember { Group_Id = GroupId, User_Id = User.Id, Owner = false });
+            _context.SaveChanges();
+
+            //Return Redirect
+            TempData["SuccessMessage"] = "User added to group";
+            return RedirectToAction("ManageGroupMembers", new { GroupId });
+
+        }
+
+        public ActionResult RemoveMemberFromGroup(string UserId, int GroupId)
+        {
+            //Get the Group Member
+            var GroupMember = _context.GroupMember.SingleOrDefault(n => (n.User_Id == UserId) && (n.Group_Id == GroupId));
+
+            //Check combo actually exists
+            if (GroupMember == null)
+            {
+                //Create temp data session
+                TempData["ErrorMessage"] = "Sorry, the Group member you attempted to remove does not exist for the given group";
+
+                //Return to and pass it to the action
+                return RedirectToAction("Groups");
+            }
+
+            //Remove
+            _context.GroupMember.Remove(GroupMember);
+            _context.SaveChanges();
+
+            //Return to same page TODO message
+            //Create temp data session
+            TempData["SuccessMessage"] = "User successfully removed from group";
+
+            //Return to and pass it to the action
+            return RedirectToAction("ManageGroupMembers", new { GroupId });
+        }
     }
 }

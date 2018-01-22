@@ -1,0 +1,73 @@
+﻿@model IEnumerable<ServiceDeskFYP.Models.ManageGroupMembersViewModel>
+
+@{
+    ViewBag.Title = "ManageGroupMembers";
+}
+
+<h2>ManageGroupMembers</h2>
+
+<p>
+    <form method="post" action="">
+        <input type="text" name="username" placeholder="Username..." />
+        <input type="submit" value="Add" />
+    </form>
+</p>
+@if (ViewBag.SuccessMessage != null)
+{
+    <h5 style="color: blue">@ViewBag.SuccessMessage</h5>
+}
+@if (ViewBag.ErrorMessage != null)
+{
+    <h5 style="color: red">@ViewBag.ErrorMessage</h5>
+}
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.UserName)
+        </th>
+        <th>
+            Type
+        </th>
+        <th></th>
+    </tr>
+    @if (Model != null)
+    {
+
+
+        foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @if (item.Owner == true)
+                    {
+                        <text>Owner</text>
+                    }
+                    else
+                    {
+                        <text>Member</text>
+                    }
+                </td>
+                <td>
+                    @Html.ActionLink("Remove", "RemoveMemberFromGroup", new { UserId = item.User_Id, GroupId = item.Group_Id }) |
+                    @if (item.Owner)
+                    {
+                        @Html.ActionLink("Unset as Owner", "RemoveMemberFromGroup", new { UserId = item.User_Id, GroupId = item.Group_Id })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Set Owner", "RemoveMemberFromGroup", new { UserId = item.User_Id, GroupId = item.Group_Id })
+                    }
+                </td>
+            </tr>
+        }
+
+    }
+
+</table>
+
+<div>
+    @Html.ActionLink("Back to List", "Groups")
+</div>

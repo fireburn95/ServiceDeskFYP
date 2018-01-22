@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServiceDeskFYP.Models
 {
@@ -19,7 +20,7 @@ namespace ServiceDeskFYP.Models
 
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
-        
+
         [Display(Name = "Surname")]
         public string LastName { get; set; }
 
@@ -30,7 +31,7 @@ namespace ServiceDeskFYP.Models
         public string Extension { get; set; }
 
         public string Department { get; set; }
-        
+
         public bool Admin { get; set; }
 
         public bool Disabled { get; set; }
@@ -86,6 +87,27 @@ namespace ServiceDeskFYP.Models
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime CreatedTimestamp { get; set; }
-
     }
+
+    public class ManageGroupMembersViewModel
+    {
+        [Key]
+        [Column(Order = 1)]
+        public int Group_Id { get; set; }
+
+        [Key]
+        [StringLength(128)]
+        [Column(Order = 2)]
+        public string User_Id { get; set; }
+
+        public bool Owner { get; set; }
+
+        public string GroupName { get; set; }
+
+        public string UserName { get; set; }
+    }
+
+
 }
+
+
