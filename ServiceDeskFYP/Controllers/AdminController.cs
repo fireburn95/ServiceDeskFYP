@@ -770,12 +770,18 @@ namespace ServiceDeskFYP.Controllers
 
             //Convert to View Model
             var ClientVM = new EditAClientViewModel
-                    { Id = Client.Id, UserName = Client.UserName,
-                      Email = Client.Email, FirstName = Client.FirstName,
-                      LastName = Client.LastName, Extension = Client.Extension,
-                      Department = Client.Department, Organisation = Client.Organisation,
-                      OrganisationAlias = Client.OrganisationAlias, PhoneNumber = Client.PhoneNumber
-                    };
+            {
+                Id = Client.Id,
+                UserName = Client.UserName,
+                Email = Client.Email,
+                FirstName = Client.FirstName,
+                LastName = Client.LastName,
+                Extension = Client.Extension,
+                Department = Client.Department,
+                Organisation = Client.Organisation,
+                OrganisationAlias = Client.OrganisationAlias,
+                PhoneNumber = Client.PhoneNumber
+            };
 
             //Pass view to model
             return View("EditClient", ClientVM);
@@ -805,7 +811,7 @@ namespace ServiceDeskFYP.Controllers
                 var checkUsername = _context2.Users.SingleOrDefault(n => n.UserName == model.UserName);
                 if (checkUsername != null)
                 {
-                    if(checkUsername.Id != model.Id)
+                    if (checkUsername.Id != model.Id)
                     {
                         //Duplicate so error
                         ViewBag.ErrorMessage = "Sorry, that username already exists";
@@ -852,6 +858,177 @@ namespace ServiceDeskFYP.Controllers
             //An error has occured/failed validation, return to view
             return View("EditClient", model);
 
+        }
+
+        /**************************
+         *     Manage SLA's       *
+         * ***********************/
+
+        //SLA homepage
+        public ActionResult Sla()
+        {
+            //Check for a Success message from another action
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            }
+
+            //Check for an error message from another action
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+            }
+
+            //Get the SLA's
+            var SLAs = _context.SLAPolicy;
+
+            //Pass to the view
+            return View(SLAs);
+        }
+
+        //Create SLA GET
+        [HttpGet]
+        [Route("admin/sla/create")]
+        public ActionResult CreateSLAGET()
+        {
+            //Check for a Success message from another action
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            }
+
+            //Check for an error message from another action
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+            }
+
+            return View("CreateSLA");
+        }
+
+        //Create SLA POST
+        [HttpPost]
+        [Route("admin/sla/create")]
+        public ActionResult CreateSLAPOST(SLAPolicy model)
+        {
+            //If model passes validation
+            if (ModelState.IsValid)
+            {
+                //Check name isn't duplicate
+                var SLA = _context.SLAPolicy.SingleOrDefault(n => n.Name.ToLower() == model.Name.ToLower());
+                if (SLA != null)
+                {
+                    ViewBag.ErrorMessage = "Sorry, that name is already taken";
+                    return View("CreateSLA");
+                }
+
+                //Check if not low>med>high
+                if (!(model.LowMins > model.MedMins) ||
+                    !(model.MedMins > model.HighMins) ||
+                    !(model.LowMins > model.HighMins))
+                {
+                    ViewBag.ErrorMessage = "Error: your ordering of minutes is incorrect";
+                    return View("CreateSLA");
+                }
+
+                //Check if any values are negatives
+                if(model.LowMins <= 0 || model.MedMins <= 0 || model.HighMins <= 0)
+                {
+                    ViewBag.ErrorMessage = "Error: Non-positive integers are not allowed";
+                    return View("CreateSLA");
+                }
+
+                //Create and save
+                ApplicationDbContext _context2 = new ApplicationDbContext();
+                _context2.SLAPolicy.Add(model);
+                _context2.SaveChanges();
+
+                //Return to view SLA's
+                return RedirectToAction("Sla");
+            }
+
+            //Not valid, return
+            return View("CreateSLA");
+        }
+
+        //Edit SLA GET
+        [HttpGet]
+        [Route("admin/sla/edit/{SlaId}")]
+        public ActionResult EditSLAGET(int SlaId)
+        {
+            //Check for a Success message from another action
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            }
+
+            //Check for an error message from another action
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+            }
+
+            //Check if SLA exists
+            var SLA = _context.SLAPolicy.SingleOrDefault(n => n.Id == SlaId);
+            if(SLA == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, the SLA Policy you tried to access doesn't exist";
+                return RedirectToAction("SLA");
+            }
+
+            //Pass to view
+            return View("EditSLA", SLA);
+        }
+
+        //Edit SLA POST
+        [HttpPost]
+        [Route("admin/sla/edit/{SlaId}")]
+        public ActionResult EditSLAPOST(SLAPolicy model)
+        {
+            //If model passes validation
+            if (ModelState.IsValid)
+            {
+                //Check name isn't duplicate
+                var SLA = _context.SLAPolicy.SingleOrDefault(n => n.Name.ToLower() == model.Name.ToLower());
+                if (SLA != null)
+                {
+                    if(model.Id != SLA.Id)
+                    {
+                        ViewBag.ErrorMessage = "Sorry, that name is already taken";
+                        return View("EditSLA", model);
+                    }
+
+                }
+
+                //Check if not low>med>high
+                if (!(model.LowMins > model.MedMins) ||
+                    !(model.MedMins > model.HighMins) ||
+                    !(model.LowMins > model.HighMins))
+                {
+                    ViewBag.ErrorMessage = "Error: your ordering of minutes is incorrect";
+                    return View("EditSLA", model);
+                }
+
+                //Check if any values are negatives
+                if (model.LowMins <= 0 || model.MedMins <= 0 || model.HighMins <= 0)
+                {
+                    ViewBag.ErrorMessage = "Error: Non-positive integers are not allowed";
+                    return View("EditSLA", model);
+                }
+
+                //Update and save
+                SLA.Name = model.Name;
+                SLA.LowMins = model.LowMins;
+                SLA.MedMins = model.MedMins;
+                SLA.HighMins = model.HighMins;
+                _context.SaveChanges();
+
+                //Return to view SLA's
+                return RedirectToAction("Sla");
+            }
+
+            //Not valid, return
+            return View("EditSLA", model);
         }
     }
 }

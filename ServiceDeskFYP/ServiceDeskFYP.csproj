@@ -342,6 +342,9 @@
     <Content Include="Views\Admin\Clients.cshtml" />
     <Content Include="Views\Admin\ViewAClient.cshtml" />
     <Content Include="Views\Admin\EditClient.cshtml" />
+    <Content Include="Views\Admin\Sla.cshtml" />
+    <Content Include="Views\Admin\CreateSLA.cshtml" />
+    <Content Include="Views\Admin\EditSLA.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

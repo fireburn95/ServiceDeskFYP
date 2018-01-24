@@ -13,16 +13,16 @@ namespace ServiceDeskFYP.Models
         public string Name { get; set; }
 
         [Required]
-        [Display(Name = "Low")]
-        public int? LowMins { get; set; }
+        [Display(Name = "Low Priority mins")]
+        public int LowMins { get; set; }
 
         [Required]
-        [Display(Name = "Medium")]
-        public int? MedMins { get; set; }
+        [Display(Name = "Medium Priority mins")]
+        public int MedMins { get; set; }
 
         [Required]
-        [Display(Name = "High")]
-        public int? HighMins { get; set; }
+        [Display(Name = "High Priority mins")]
+        public int HighMins { get; set; }
 
         public virtual ICollection<Call> Call { get; set; }
     }
