@@ -1,0 +1,109 @@
+﻿@model ServiceDeskFYP.Models.ViewAClientViewModel
+
+@{
+    ViewBag.Title = "ViewAClient";
+}
+
+<h2>ViewAClient</h2>
+
+<div>
+    <h4>ViewAClientViewModel</h4>
+    <hr />
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <h5 style="color: red">@ViewBag.ErrorMessage</h5>
+    }
+    @if (ViewBag.SuccessMessage != null)
+    {
+        <h5 style="color: blue">@ViewBag.SuccessMessage</h5>
+    }
+
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PhoneNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PhoneNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Extension)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Extension)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Department)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Department)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OrganisationAlias)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OrganisationAlias)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Organisation)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Organisation)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Clients/Edit", new { id = Model.Id }) |
+    @if (Model.Disabled == true)
+    {
+        @Html.ActionLink("Re-enable", "DisableEnableClient", new { PassedId = Model.Id })
+    }
+    else
+    {
+        @Html.ActionLink("Disable", "DisableEnableClient", new { PassedId = Model.Id })
+    }
+    |
+    @Html.ActionLink("Back to List", "Clients")
+</p>
