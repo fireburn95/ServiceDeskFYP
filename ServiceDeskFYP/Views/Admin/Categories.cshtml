@@ -1,0 +1,20 @@
+﻿@model string[]
+
+@{
+    ViewBag.Title = "Categories";
+}
+
+<h2>Categories</h2>
+<h5>Add a new category on each line</h5>
+
+<form method="post" action="">
+    <textarea name="categories">
+@if (Model != null)
+{
+foreach(var item in Model)
+{
+<text>@item</text>
+}}</textarea>
+    <br />
+    <input type="submit" value="Submit" name="submit" />
+</form>

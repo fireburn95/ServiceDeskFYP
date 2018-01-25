@@ -271,6 +271,7 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\CallCategories.txt" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="favicon.ico" />
@@ -345,6 +346,7 @@
     <Content Include="Views\Admin\Sla.cshtml" />
     <Content Include="Views\Admin\CreateSLA.cshtml" />
     <Content Include="Views\Admin\EditSLA.cshtml" />
+    <Content Include="Views\Admin\Categories.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

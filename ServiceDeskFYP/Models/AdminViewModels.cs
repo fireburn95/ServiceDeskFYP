@@ -144,7 +144,7 @@ namespace ServiceDeskFYP.Models
         public bool Disabled { get; set; }
     }
 
-    //Used in admin/clients/{UserId}
+    //Used in admin/clients/edit/{UserId}
     public class EditAClientViewModel
     {
         [Key]

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Xml.Linq;
 
 namespace ServiceDeskFYP.Controllers
 {
@@ -1030,5 +1031,50 @@ namespace ServiceDeskFYP.Controllers
             //Not valid, return
             return View("EditSLA", model);
         }
+
+        /**************************
+         *     Manage Categories  *
+         * ***********************/
+
+        [HttpGet]
+        [Route("admin/categories")]
+        public ActionResult CategoriesGET()
+        {
+            //Read from text file
+            string[] lines = System.IO.File.ReadAllLines(Server.MapPath(@"~/Content/CallCategories.txt"));
+
+            //Remove empties
+            lines = lines.Where(n => !string.IsNullOrEmpty(n)).ToArray();
+
+            //Pass text to view
+            return View("Categories", lines);
+        }
+
+        [HttpPost]
+        [Route("admin/categories")]
+        public ActionResult CategoriesPOST(string categories)
+        {
+            //Check if POST data exists
+            if (string.IsNullOrEmpty(categories))
+            {
+                ViewBag.ErrorMessage = "Error: No categories have been set";
+                return View("Categories");
+            }
+
+            //Split into array
+            string[] CategoryArray = categories.Split( new[] { Environment.NewLine }, StringSplitOptions.None );
+
+            //Remove empties
+            CategoryArray = CategoryArray.Where(n => !string.IsNullOrEmpty(n)).ToArray();
+
+            //Write to text file
+            System.IO.File.WriteAllLines(Server.MapPath(@"~/Content/CallCategories.txt"), CategoryArray);
+
+            //Return
+            ViewBag.SuccessMessage = "Changes made";
+            return View("Categories", CategoryArray);
+        }
+
+
     }
 }
