@@ -41,6 +41,9 @@ namespace ServiceDeskFYP.Controllers
         [Route("desk/create")]
         public ActionResult CreateCallGET()
         {
+            //Handle messages
+            HandleMessages();
+
             //Set up select boxes
             SetUpCreateCall();
 
@@ -55,6 +58,7 @@ namespace ServiceDeskFYP.Controllers
         {
             //Set up View incase of error
             SetUpCreateCall();
+            ViewBag.Reference = model.Reference;
 
             //If model is valid
             if (ModelState.IsValid)
@@ -68,6 +72,11 @@ namespace ServiceDeskFYP.Controllers
                 }
 
                 //Check Required By is not in the past TODO
+                if(model.Required_By < DateTime.Now)
+                {
+                    ViewBag.ErrorMessage = "Sorry, 'Required By' cannot be set in the past";
+                    return View("CreateCall", model);
+                }
 
                 //Find SLA ID
                 ApplicationDbContext _context2 = new ApplicationDbContext();
@@ -97,11 +106,20 @@ namespace ServiceDeskFYP.Controllers
                     Regarding_Ref = model.Regarding_Ref
                 };
 
-                //TODO add an initial action
+                //Create an action for the call
+                var Action = new Models.Action
+                {
+                    CallReference = model.Reference,
+                    ActionedByUserId = User.Identity.GetUserId(),
+                    Created = DateTime.Now,
+                    Type = "Opened Call"
+                };
 
                 //Add to DB
                 ApplicationDbContext _context3 = new ApplicationDbContext();
                 _context3.Call.Add(NewCall);
+                _context3.SaveChanges();
+                _context3.Action.Add(Action);
                 _context3.SaveChanges();
 
                 //Return to Own Calls page or the actual Call TODO
@@ -129,6 +147,64 @@ namespace ServiceDeskFYP.Controllers
             categories = categories.Where(n => !string.IsNullOrEmpty(n)).ToArray();
             List<string> Categories = new List<string>(categories);
             ViewBag.Categories = Categories.AsEnumerable();
+
+            //Populate Reference code
+            ViewBag.Reference = DistinctCallReference();
+        }
+
+        public string DistinctCallReference()
+        {
+            //Random Class
+            Random random = new Random();
+
+            //Database
+            ApplicationDbContext _dbcontext = new ApplicationDbContext();
+
+            //Alpha Numeric characters
+            const string alphanums = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+            //Declaring vars
+            string reference = null;
+            bool duplicate = true;
+            Call call = null;
+
+            while (duplicate)
+            {
+                //Generate a random string
+                reference = new string(Enumerable.Repeat(alphanums, 12)
+                  .Select(s => s[random.Next(s.Length)]).ToArray());
+
+                //Check if Duplicate
+                call = _dbcontext.Call.SingleOrDefault(n => n.Reference == reference);
+                if (call == null)
+                    duplicate = false;
+            }
+
+            //Return the distinct reference code
+            return reference;
+        }
+
+
+
+
+
+        /*******************
+         *     HELPERS
+         ******************/
+
+        public void HandleMessages()
+        {
+            //Check for an error message from another action
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+            }
+
+            //Check for a message from another action
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            }
         }
     }
 }
