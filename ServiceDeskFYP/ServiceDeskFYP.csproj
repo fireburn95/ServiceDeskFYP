@@ -191,6 +191,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\DeskController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Global.asax.cs">
@@ -252,7 +253,12 @@
     <Compile Include="Migrations\201801141639047_AddedClientEmployeeAndAdminRoles.Designer.cs">
       <DependentUpon>201801141639047_AddedClientEmployeeAndAdminRoles.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801262004337_UpdatedCallTable_AllowNullDates.cs" />
+    <Compile Include="Migrations\201801262004337_UpdatedCallTable_AllowNullDates.Designer.cs">
+      <DependentUpon>201801262004337_UpdatedCallTable_AllowNullDates.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\DeskViewModels.cs" />
     <Compile Include="Models\AdminViewModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Action.cs" />
@@ -347,6 +353,7 @@
     <Content Include="Views\Admin\CreateSLA.cshtml" />
     <Content Include="Views\Admin\EditSLA.cshtml" />
     <Content Include="Views\Admin\Categories.cshtml" />
+    <Content Include="Views\Desk\CreateCall.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -406,6 +413,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801141639047_AddedClientEmployeeAndAdminRoles.resx">
       <DependentUpon>201801141639047_AddedClientEmployeeAndAdminRoles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801262004337_UpdatedCallTable_AllowNullDates.resx">
+      <DependentUpon>201801262004337_UpdatedCallTable_AllowNullDates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

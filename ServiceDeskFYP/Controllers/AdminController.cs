@@ -1036,6 +1036,7 @@ namespace ServiceDeskFYP.Controllers
          *     Manage Categories  *
          * ***********************/
 
+        //View Categories GET
         [HttpGet]
         [Route("admin/categories")]
         public ActionResult CategoriesGET()
@@ -1050,6 +1051,7 @@ namespace ServiceDeskFYP.Controllers
             return View("Categories", lines);
         }
 
+        //View Categories POST
         [HttpPost]
         [Route("admin/categories")]
         public ActionResult CategoriesPOST(string categories)
@@ -1066,6 +1068,9 @@ namespace ServiceDeskFYP.Controllers
 
             //Remove empties
             CategoryArray = CategoryArray.Where(n => !string.IsNullOrEmpty(n)).ToArray();
+
+            //Remove Duplicates
+            CategoryArray = CategoryArray.Distinct().ToArray();
 
             //Write to text file
             System.IO.File.WriteAllLines(Server.MapPath(@"~/Content/CallCategories.txt"), CategoryArray);

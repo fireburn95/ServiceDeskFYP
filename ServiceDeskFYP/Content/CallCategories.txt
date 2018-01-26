@@ -1,8 +1,5 @@
 Service
 Issue
 Repair
-Disease
-Pain
-Suffering
-HAHAAH
-Alright
+Fault
+Other
