@@ -72,6 +72,43 @@ namespace ServiceDeskFYP.Models
         public string Regarding_Ref { get; set; }
     }
 
+    public class ViewCallsViewModel
+    {
+        [Key]
+        [StringLength(12)]
+        public string Reference { get; set; }
+
+        [Required]
+        [StringLength(10)]
+        public string SlaLevel { get; set; }
+
+        [Required]
+        [StringLength(30)]
+        public string Category { get; set; }
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime Created { get; set; }
+
+        [DataType(DataType.DateTime)]
+        public DateTime? Required_By { get; set; }
+
+        [Required]
+        [StringLength(75)]
+        public string Summary { get; set; }
+
+        [Required]
+        public bool Closed { get; set; }
+
+        [StringLength(20)]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [StringLength(20)]
+        [Display(Name = "Surname")]
+        public string Lastname { get; set; }
+    }
+
 }
 
 

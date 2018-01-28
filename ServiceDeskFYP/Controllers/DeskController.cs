@@ -26,10 +26,39 @@ namespace ServiceDeskFYP.Controllers
             roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(_context));
         }
 
+        /*****************
+         * View Calls
+         * ***************/
+
         // GET: Desk
         public ActionResult Index()
         {
-            return View();
+            //Get User ID of logged in user
+            var UserId = User.Identity.GetUserId();
+
+            //If GET isnt set, get the calls
+            var Calls = _context.Call.Where(n => n.ResourceUserId == UserId);
+
+            //Set Calls to View Models
+            List<ViewCallsViewModel> VCVM = new List<ViewCallsViewModel>();
+            foreach (var item in Calls)
+            {
+                VCVM.Add(new ViewCallsViewModel
+                {
+                    Reference = item.Reference,
+                    SlaLevel = item.SlaLevel,
+                    Category = item.Category,
+                    Created = item.Created,
+                    Required_By = item.Required_By,
+                    Summary = item.Summary,
+                    Closed = item.Closed,
+                    FirstName = item.FirstName,
+                    Lastname = item.Lastname
+                });
+            }
+            var IEVCVM = VCVM.AsEnumerable();
+
+            return View("ViewCalls", IEVCVM);
         }
 
         /*****************
@@ -72,7 +101,7 @@ namespace ServiceDeskFYP.Controllers
                 }
 
                 //Check Required By is not in the past TODO
-                if(model.Required_By < DateTime.Now)
+                if (model.Required_By < DateTime.Now)
                 {
                     ViewBag.ErrorMessage = "Sorry, 'Required By' cannot be set in the past";
                     return View("CreateCall", model);
@@ -125,12 +154,13 @@ namespace ServiceDeskFYP.Controllers
                 //Return to Own Calls page or the actual Call TODO
                 return RedirectToAction("index");
 
-                
+
             }
             //Failed validation
             return View("CreateCall", model);
         }
 
+        //Sets ViewBags for pre-populated form data
         public void SetUpCreateCall()
         {
             //Get SLA's
@@ -152,6 +182,7 @@ namespace ServiceDeskFYP.Controllers
             ViewBag.Reference = DistinctCallReference();
         }
 
+        //Returns a distinct call reference by checking the DB
         public string DistinctCallReference()
         {
             //Random Class

@@ -354,6 +354,7 @@
     <Content Include="Views\Admin\EditSLA.cshtml" />
     <Content Include="Views\Admin\Categories.cshtml" />
     <Content Include="Views\Desk\CreateCall.cshtml" />
+    <Content Include="Views\Desk\ViewCalls.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

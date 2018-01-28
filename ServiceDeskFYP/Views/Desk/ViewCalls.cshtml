@@ -1,0 +1,83 @@
+﻿@model IEnumerable<ServiceDeskFYP.Models.ViewCallsViewModel>
+
+@{
+    ViewBag.Title = "ViewCalls";
+}
+
+<h2>ViewCalls</h2>
+
+<div>
+    @Html.ActionLink("New", "Create") |
+    @Html.ActionLink("Search", "Create") |
+    @Html.ActionLink("PDF", "Create") |
+    @Html.ActionLink("Sort", "Create") |
+    @Html.ActionLink("Filter", "Create") |
+    @Html.ActionLink("Refresh", "Create")
+    <form method="get" action="">
+        <!--Html.DropDownList("", new SelectList(ViewBag.SLAPolicies), "Select Policy", new { class = "form-control" })-->
+        <input type="submit" value="Go" name="Go" />
+    </form>
+</div>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Reference)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SlaLevel)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Category)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Created)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Required_By)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Summary)
+        </th>
+        <th>
+            Name
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Reference)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SlaLevel)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Created)
+            </td>
+            <td>
+                @if (item.Required_By != null)
+                {
+                    @Convert.ToDateTime(item.Required_By).ToShortDateString()
+                }
+
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Summary)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.Lastname)
+            </td>
+        </tr>
+    }
+
+</table>
+
+@if (!Model.Any())
+{
+    <h4>No Calls assigned</h4>
+}
