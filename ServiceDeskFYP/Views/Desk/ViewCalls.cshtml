@@ -1,50 +1,77 @@
-﻿@model IEnumerable<ServiceDeskFYP.Models.ViewCallsViewModel>
+﻿@model ServiceDeskFYP.Models.DeskPageViewModel
 
 @{
     ViewBag.Title = "ViewCalls";
 }
 
+
+
 <h2>ViewCalls</h2>
 
+@if (ViewBag.ErrorMessage != null)
+{
+    <h5 style="color:red">@ViewBag.ErrorMessage</h5>
+}
+@if (ViewBag.SuccessMessage != null)
+{
+    <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
+}
+
 <div>
-    @Html.ActionLink("New", "Create") |
-    @Html.ActionLink("Search", "Create") |
-    @Html.ActionLink("PDF", "Create") |
-    @Html.ActionLink("Sort", "Create") |
-    @Html.ActionLink("Filter", "Create") |
-    @Html.ActionLink("Refresh", "Create")
     <form method="get" action="">
-        <!--Html.DropDownList("", new SelectList(ViewBag.SLAPolicies), "Select Policy", new { class = "form-control" })-->
-        <input type="submit" value="Go" name="Go" />
+        @Html.ActionLink("New", "Create") |
+        <a onclick="toggleSearch()" style="cursor: pointer">Search</a> |
+        @Html.ActionLink("PDF", "") |
+        @Html.ActionLink("Sort", "Create") |
+        @Html.ActionLink("Filter", "Create") |
+        @Html.ActionLink("Closed Calls", "Create") |
+        @Html.ActionLink("Refresh", "Create")
+        <select name="resource">
+            <option value="">My Calls</option>
+            @foreach (var item in Model.GSVM)
+            {
+                <option value="@item.Id">@item.Name</option>
+            }
+        </select>
+
+
+        <input type="submit" value="Go" />
+    </form>
+</div>
+
+<div id="searchDIV" style="display:none">
+    <form method="get" action="">
+        <input type="text" name="search" id="searchfield" placeholder="Search..." />
+        <input type="submit" value="Search" />
     </form>
 </div>
 
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Reference)
+            @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Reference)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.SlaLevel)
+            @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).SlaLevel)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Category)
+            @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Category)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Created)
+            @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Created)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Required_By)
+            @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Required_By)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Summary)
+            @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Summary)
         </th>
         <th>
             Name
         </th>
     </tr>
 
-    @foreach (var item in Model)
+    @foreach (var item in Model.VCVMList)
     {
         <tr>
             <td>
@@ -77,7 +104,20 @@
 
 </table>
 
-@if (!Model.Any())
+@if (!Model.VCVMList.Any())
 {
     <h4>No Calls assigned</h4>
 }
+
+
+<script>
+    function toggleSearch() {
+        var searchDiv = document.getElementById("searchDIV");
+        if (searchDiv.style.display === "none") {
+            searchDiv.style.display = "block";
+        }
+        else {
+            searchDiv.style.display = "none";
+        }
+    }
+</script>

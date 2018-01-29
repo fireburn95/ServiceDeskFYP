@@ -14,7 +14,7 @@ namespace ServiceDeskFYP.Models
         public string Reference { get; set; }
 
         [Required]
-        [Display(Name ="SLA Policy")]
+        [Display(Name = "SLA Policy")]
         public string SlaName { get; set; }
 
         [Required]
@@ -72,6 +72,11 @@ namespace ServiceDeskFYP.Models
         public string Regarding_Ref { get; set; }
     }
 
+    /*
+     * The following are used for displaying Calls in desk and desk/group,
+     * as well as other details like group names.
+     */
+
     public class ViewCallsViewModel
     {
         [Key]
@@ -107,6 +112,18 @@ namespace ServiceDeskFYP.Models
         [StringLength(20)]
         [Display(Name = "Surname")]
         public string Lastname { get; set; }
+    }
+
+    public class GroupsSelectViewModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class DeskPageViewModel
+    {
+        public IEnumerable<ViewCallsViewModel> VCVMList { get; set; }
+        public IEnumerable<GroupsSelectViewModel> GSVM { get; set; }
     }
 
 }

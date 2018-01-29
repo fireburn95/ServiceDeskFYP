@@ -31,13 +31,65 @@ namespace ServiceDeskFYP.Controllers
          * ***************/
 
         // GET: Desk
-        public ActionResult Index()
+        public ActionResult Index(string resource = null)
         {
+            //Handle Messages
+            HandleMessages();
+
             //Get User ID of logged in user
             var UserId = User.Identity.GetUserId();
 
-            //If GET isnt set, get the calls
-            var Calls = _context.Call.Where(n => n.ResourceUserId == UserId);
+            //Create the View Model
+            DeskPageViewModel model = new DeskPageViewModel { GSVM = null, VCVMList = null };
+
+            //Get Groups of User
+            var GroupsOfUser = _context.GroupMember
+                .Where(n => n.User_Id == UserId)
+                .Select(n => new { n.Group_Id, n.Group.Name})
+                .AsEnumerable();
+            List<GroupsSelectViewModel> GSVMList = new List<GroupsSelectViewModel>();
+            foreach(var item in GroupsOfUser)
+            {
+                GSVMList.Add(new GroupsSelectViewModel { Id = item.Group_Id, Name = item.Name });
+            }
+            model.GSVM = GSVMList.AsEnumerable();
+
+            //Validate resource string
+            var IsResourceInt = Int32.TryParse(resource, out int ResourceGroupId);
+
+            //If resource not set or is any other string
+            IEnumerable<Call> Calls = null;
+            if (!IsResourceInt)
+            {
+                //Get the calls of the user
+                Calls = _context.Call.Where(n => n.ResourceUserId == UserId).AsEnumerable();
+            }
+            //Else Resource is a group
+            else
+            {
+                //Check group exists
+                var groupexists = _context.Group.Where(n => n.Id == ResourceGroupId).Any();
+                if (!groupexists)
+                {
+                    TempData["ErrorMessage"] = "Sorry, an error has occured, group doesn't exist";
+                    return RedirectToAction("Index");
+                }
+
+                //Check permissions to access group
+                var authorised = _context.GroupMember.Where(n => n.User_Id == UserId && n.Group_Id == ResourceGroupId).Any();
+                if (!authorised)
+                {
+                    TempData["ErrorMessage"] = "Sorry, You are not authorised to access this group, please contact an administrator for access";
+                    return RedirectToAction("Index");
+                }
+
+                //Get the calls of the group
+                Calls = _context.Call.Where(n => n.ResourceGroupId == ResourceGroupId).AsEnumerable();
+            }
+
+            //TODO respond to sort and filter
+
+
 
             //Set Calls to View Models
             List<ViewCallsViewModel> VCVM = new List<ViewCallsViewModel>();
@@ -56,9 +108,11 @@ namespace ServiceDeskFYP.Controllers
                     Lastname = item.Lastname
                 });
             }
-            var IEVCVM = VCVM.AsEnumerable();
+            model.VCVMList = VCVM.AsEnumerable();
 
-            return View("ViewCalls", IEVCVM);
+            
+
+            return View("ViewCalls", model);
         }
 
         /*****************
