@@ -31,7 +31,7 @@ namespace ServiceDeskFYP.Controllers
          * ***************/
 
         // GET: Desk
-        public ActionResult Index(string resource = null)
+        public ActionResult Index(string resource = null, string search = null)
         {
             //Handle Messages
             HandleMessages();
@@ -45,10 +45,10 @@ namespace ServiceDeskFYP.Controllers
             //Get Groups of User
             var GroupsOfUser = _context.GroupMember
                 .Where(n => n.User_Id == UserId)
-                .Select(n => new { n.Group_Id, n.Group.Name})
+                .Select(n => new { n.Group_Id, n.Group.Name })
                 .AsEnumerable();
             List<GroupsSelectViewModel> GSVMList = new List<GroupsSelectViewModel>();
-            foreach(var item in GroupsOfUser)
+            foreach (var item in GroupsOfUser)
             {
                 GSVMList.Add(new GroupsSelectViewModel { Id = item.Group_Id, Name = item.Name });
             }
@@ -88,7 +88,24 @@ namespace ServiceDeskFYP.Controllers
             }
 
             //TODO respond to sort and filter
-
+            if (!String.IsNullOrEmpty(search))
+            {
+                Calls = Calls.Where(n =>
+                (!(String.IsNullOrEmpty(n.Reference)) && (n.Reference.ToLower().Contains(search.ToLower()))) ||
+                (!(String.IsNullOrEmpty(n.Category)) && (n.Category.ToLower().Contains(search.ToLower()))) ||
+                (!(String.IsNullOrEmpty(n.Summary)) && (n.Summary.ToLower().Contains(search.ToLower()))) ||
+                (!(String.IsNullOrEmpty(n.Description)) && (n.Description.ToLower().Contains(search.ToLower()))) ||
+                (!(String.IsNullOrEmpty(n.Email)) && (n.Email.ToLower().Contains(search.ToLower()))) ||
+                (!(String.IsNullOrEmpty(n.FirstName)) && (n.FirstName.ToLower().Contains(search.ToLower()))) ||
+                (!(String.IsNullOrEmpty(n.Lastname)) && (n.Lastname.ToLower().Contains(search.ToLower()))) ||
+                (!(String.IsNullOrEmpty(n.PhoneNumber)) && (n.PhoneNumber.ToLower().Contains(search.ToLower()))) ||
+                (!(String.IsNullOrEmpty(n.Extension)) && (n.Extension.ToLower().Contains(search.ToLower()))) ||
+                (!(String.IsNullOrEmpty(n.OrganisationAlias)) && (n.OrganisationAlias.ToLower().Contains(search.ToLower()))) ||
+                (!(String.IsNullOrEmpty(n.Organisation)) && (n.Organisation.ToLower().Contains(search.ToLower()))) ||
+                (!(String.IsNullOrEmpty(n.Department)) && (n.Department.ToLower().Contains(search.ToLower()))) ||
+                (!(String.IsNullOrEmpty(n.Regarding_Ref)) && (n.Regarding_Ref.ToLower().Contains(search.ToLower())))
+                );
+            }
 
 
             //Set Calls to View Models
@@ -110,7 +127,7 @@ namespace ServiceDeskFYP.Controllers
             }
             model.VCVMList = VCVM.AsEnumerable();
 
-            
+
 
             return View("ViewCalls", model);
         }

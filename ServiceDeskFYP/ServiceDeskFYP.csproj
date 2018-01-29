@@ -257,6 +257,10 @@
     <Compile Include="Migrations\201801262004337_UpdatedCallTable_AllowNullDates.Designer.cs">
       <DependentUpon>201801262004337_UpdatedCallTable_AllowNullDates.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801291940055_UpdatedCallTable_LimitEmailSize.cs" />
+    <Compile Include="Migrations\201801291940055_UpdatedCallTable_LimitEmailSize.Designer.cs">
+      <DependentUpon>201801291940055_UpdatedCallTable_LimitEmailSize.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DeskViewModels.cs" />
     <Compile Include="Models\AdminViewModels.cs" />
@@ -417,6 +421,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801262004337_UpdatedCallTable_AllowNullDates.resx">
       <DependentUpon>201801262004337_UpdatedCallTable_AllowNullDates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801291940055_UpdatedCallTable_LimitEmailSize.resx">
+      <DependentUpon>201801291940055_UpdatedCallTable_LimitEmailSize.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

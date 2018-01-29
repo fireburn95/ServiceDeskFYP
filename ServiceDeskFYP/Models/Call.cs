@@ -58,6 +58,7 @@ namespace ServiceDeskFYP.Models
         public string LockedToUserId { get; set; }
 
         [EmailAddress]
+        [StringLength(256)]
         public string Email { get; set; }
 
         [StringLength(20)]
