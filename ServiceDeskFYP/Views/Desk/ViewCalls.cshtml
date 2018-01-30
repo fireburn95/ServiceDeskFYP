@@ -3,6 +3,9 @@
 @{
     ViewBag.Title = "ViewCalls";
     var resource = Request.Params["resource"];
+    var search = Request.Params["search"];
+    var sortcategory = Request.Params["sortcategory"];
+    var sortdirection = Request.Params["sortdirection"];
 }
 
 
@@ -23,8 +26,9 @@
         @Html.ActionLink("New", "Create") |
         <a onclick="toggleSearch()" style="cursor: pointer">Search</a> |
         @Html.ActionLink("PDF", "") |
-        @Html.ActionLink("Sort", "Create") |
+        <a onclick="toggleSort()" style="cursor: pointer">Sort</a> |
         @Html.ActionLink("Filter", "Create") |
+        @Html.ActionLink("Clear", "Create") |
         @Html.ActionLink("Closed Calls", "Create") |
         <a href="@HttpContext.Current.Request.Url.AbsoluteUri">Refresh</a>
         <select name="resource">
@@ -34,17 +38,47 @@
                 <option value="@item.Id">@item.Name</option>
             }
         </select>
-
-
-        <input type="submit" value="Go"/>
+        <input type="submit" value="Go" />
     </form>
 </div>
 
-<div id="searchDIV" style="display:none" class="form-inline">
+<!--Search field-->
+<div id="searchDIV" style="display:none">
     <form method="get" action="">
-        <input type="text" name="search" id="searchfield" placeholder="Search..." />
-        @if (!String.IsNullOrEmpty(resource)){ <input type = "hidden" name = "resource" value = @resource /> }
+        <input type="text" name="search" placeholder="Search..." />
+        @if (!String.IsNullOrEmpty(resource))
+        {<input type="hidden" name="resource" value=@resource />}
+        @if (!String.IsNullOrEmpty(sortcategory))
+        {<input type="hidden" name="sortcategory" value=@sortcategory />}
+        @if (!String.IsNullOrEmpty(sortdirection))
+        {<input type="hidden" name="sortdirection" value=@sortdirection />}
         <input type="submit" value="Search" />
+    </form>
+</div>
+
+<!--Sort fields-->
+<div id="sortDIV" style="display:none">
+    <form method="get" action="">
+        Sort by:
+        <select name="sortcategory">
+            <option value="reference">Reference</option>
+            <option value="slalevel">SLA Level</option>
+            <option value="category">Category</option>
+            <option value="created">Created</option>
+            <option value="requiredby">Required By</option>
+            <option value="summary">Summary</option>
+            <option value="firstname">First Name</option>
+            <option value="lastname">Last name</option>
+        </select>
+        <select name="sortdirection">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+        </select>
+        @if (!String.IsNullOrEmpty(resource))
+        {<input type="hidden" name="resource" value=@resource />}
+        @if (!String.IsNullOrEmpty(search))
+        {<input type="hidden" name="search" value=@search />}
+        <input type="submit" value="Sort" />
     </form>
 </div>
 
@@ -115,11 +149,27 @@
 <script>
     function toggleSearch() {
         var searchDiv = document.getElementById("searchDIV");
+        var sortDiv = document.getElementById("sortDIV");
+
         if (searchDiv.style.display === "none") {
+            sortDiv.style.display = "none";
             searchDiv.style.display = "block";
         }
         else {
             searchDiv.style.display = "none";
+        }
+    }
+
+    function toggleSort() {
+        var sortDiv = document.getElementById("sortDIV");
+        var searchDiv = document.getElementById("searchDIV");
+
+        if (sortDiv.style.display === "none") {
+            searchDiv.style.display = "none";
+            sortDiv.style.display = "block";
+        }
+        else {
+            sortDiv.style.display = "none";
         }
     }
 </script>

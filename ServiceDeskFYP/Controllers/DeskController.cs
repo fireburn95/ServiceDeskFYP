@@ -31,7 +31,7 @@ namespace ServiceDeskFYP.Controllers
          * ***************/
 
         // GET: Desk
-        public ActionResult Index(string resource = null, string search = null)
+        public ActionResult Index(string resource = null, string search = null, string sortcategory = null, string sortdirection = null)
         {
             //Handle Messages
             HandleMessages();
@@ -88,6 +88,8 @@ namespace ServiceDeskFYP.Controllers
             }
 
             //TODO respond to sort and filter
+
+            //SEARCH through results for matching term
             if (!String.IsNullOrEmpty(search))
             {
                 Calls = Calls.Where(n =>
@@ -105,6 +107,55 @@ namespace ServiceDeskFYP.Controllers
                 (!(String.IsNullOrEmpty(n.Department)) && (n.Department.ToLower().Contains(search.ToLower()))) ||
                 (!(String.IsNullOrEmpty(n.Regarding_Ref)) && (n.Regarding_Ref.ToLower().Contains(search.ToLower())))
                 );
+            }
+
+            //SORT results
+            if (!string.IsNullOrEmpty(sortcategory))
+            {
+                //If direction is null, set to asc
+                if (string.IsNullOrEmpty(sortdirection))
+                    sortdirection = "asc";
+
+                //If descending
+                if (sortdirection.Equals("desc"))
+                {
+                    if (sortcategory.Equals("reference"))
+                        Calls = Calls.OrderByDescending(n => n.Reference);
+                    else if (sortcategory.Equals("slalevel"))
+                        Calls = Calls.OrderByDescending(n => n.SlaLevel);
+                    else if (sortcategory.Equals("category"))
+                        Calls = Calls.OrderByDescending(n => n.Category);
+                    else if (sortcategory.Equals("created"))
+                        Calls = Calls.OrderByDescending(n => n.Created);
+                    else if (sortcategory.Equals("requiredby"))
+                        Calls = Calls.OrderByDescending(n => n.Required_By);
+                    else if (sortcategory.Equals("summary"))
+                        Calls = Calls.OrderByDescending(n => n.Summary);
+                    else if (sortcategory.Equals("firstname"))
+                        Calls = Calls.OrderByDescending(n => n.FirstName);
+                    else if (sortcategory.Equals("lastname"))
+                        Calls = Calls.OrderByDescending(n => n.Lastname);
+                }
+                //Else ascending
+                else
+                {
+                    if (sortcategory.Equals("reference"))
+                        Calls = Calls.OrderBy(n => n.Reference);
+                    else if (sortcategory.Equals("slalevel"))
+                        Calls = Calls.OrderBy(n => n.SlaLevel);
+                    else if (sortcategory.Equals("category"))
+                        Calls = Calls.OrderBy(n => n.Category);
+                    else if (sortcategory.Equals("created"))
+                        Calls = Calls.OrderBy(n => n.Created);
+                    else if (sortcategory.Equals("requiredby"))
+                        Calls = Calls.OrderBy(n => n.Required_By==null).ThenBy(n => n.Required_By);
+                    else if (sortcategory.Equals("summary"))
+                        Calls = Calls.OrderBy(n => n.Summary);
+                    else if (sortcategory.Equals("firstname"))
+                        Calls = Calls.OrderBy(n => string.IsNullOrEmpty(n.FirstName)).ThenBy(n => n.FirstName);
+                    else if (sortcategory.Equals("lastname"))
+                        Calls = Calls.OrderBy(n => string.IsNullOrEmpty(n.Lastname)).ThenBy(n => n.Lastname);
+                }
             }
 
 
