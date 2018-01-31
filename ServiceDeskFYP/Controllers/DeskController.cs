@@ -3,6 +3,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using ServiceDeskFYP.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -31,7 +32,7 @@ namespace ServiceDeskFYP.Controllers
          * ***************/
 
         // GET: Desk
-        public ActionResult Index(string resource = null, string search = null, string sortcategory = null, string sortdirection = null)
+        public ActionResult Index(string resource = null, string search = null, string sortcategory = null, string sortdirection = null, string closed = null)
         {
             //Handle Messages
             HandleMessages();
@@ -41,6 +42,7 @@ namespace ServiceDeskFYP.Controllers
 
             //Create the View Model
             DeskPageViewModel model = new DeskPageViewModel { GSVM = null, VCVMList = null };
+
 
             //Get Groups of User
             var GroupsOfUser = _context.GroupMember
@@ -53,6 +55,7 @@ namespace ServiceDeskFYP.Controllers
                 GSVMList.Add(new GroupsSelectViewModel { Id = item.Group_Id, Name = item.Name });
             }
             model.GSVM = GSVMList.AsEnumerable();
+
 
             //Validate resource string
             var IsResourceInt = Int32.TryParse(resource, out int ResourceGroupId);
@@ -87,13 +90,23 @@ namespace ServiceDeskFYP.Controllers
                 Calls = _context.Call.Where(n => n.ResourceGroupId == ResourceGroupId).AsEnumerable();
             }
 
-            //TODO respond to sort and filter
+            //Check whether CLOSED calls
+            if (!string.IsNullOrEmpty(closed) && closed.Equals("true"))
+            {
+                Calls = Calls.Where(n => n.Closed == true);
+            }
+            else
+            {
+                Calls = Calls.Where(n => n.Closed == false);
+            }
+
 
             //SEARCH through results for matching term
             if (!String.IsNullOrEmpty(search))
             {
                 Calls = Calls.Where(n =>
                 (!(String.IsNullOrEmpty(n.Reference)) && (n.Reference.ToLower().Contains(search.ToLower()))) ||
+                (!(String.IsNullOrEmpty(n.SlaLevel)) && (n.SlaLevel.ToLower().Contains(search.ToLower()))) ||
                 (!(String.IsNullOrEmpty(n.Category)) && (n.Category.ToLower().Contains(search.ToLower()))) ||
                 (!(String.IsNullOrEmpty(n.Summary)) && (n.Summary.ToLower().Contains(search.ToLower()))) ||
                 (!(String.IsNullOrEmpty(n.Description)) && (n.Description.ToLower().Contains(search.ToLower()))) ||
@@ -148,7 +161,7 @@ namespace ServiceDeskFYP.Controllers
                     else if (sortcategory.Equals("created"))
                         Calls = Calls.OrderBy(n => n.Created);
                     else if (sortcategory.Equals("requiredby"))
-                        Calls = Calls.OrderBy(n => n.Required_By==null).ThenBy(n => n.Required_By);
+                        Calls = Calls.OrderBy(n => n.Required_By == null).ThenBy(n => n.Required_By);
                     else if (sortcategory.Equals("summary"))
                         Calls = Calls.OrderBy(n => n.Summary);
                     else if (sortcategory.Equals("firstname"))
@@ -157,7 +170,6 @@ namespace ServiceDeskFYP.Controllers
                         Calls = Calls.OrderBy(n => string.IsNullOrEmpty(n.Lastname)).ThenBy(n => n.Lastname);
                 }
             }
-
 
             //Set Calls to View Models
             List<ViewCallsViewModel> VCVM = new List<ViewCallsViewModel>();

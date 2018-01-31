@@ -6,6 +6,7 @@
     var search = Request.Params["search"];
     var sortcategory = Request.Params["sortcategory"];
     var sortdirection = Request.Params["sortdirection"];
+    var closed = Request.Params["closed"];
 }
 
 
@@ -22,20 +23,37 @@
 }
 
 <div>
+
+    <!--Calls Menu Bar-->
     <form method="get" action="">
         @Html.ActionLink("New", "Create") |
         <a onclick="toggleSearch()" style="cursor: pointer">Search</a> |
-        @Html.ActionLink("PDF", "") |
+        <text>PDF</text> |
         <a onclick="toggleSort()" style="cursor: pointer">Sort</a> |
-        @Html.ActionLink("Filter", "Create") |
-        @Html.ActionLink("Clear", "Create") |
-        @Html.ActionLink("Closed Calls", "Create") |
+        @*@Html.ActionLink("Filter", "Create") |*@
+        <a href="/desk?resource=@resource&closed=@closed" style="cursor: pointer">Clear</a> |
+        @if (closed == "true")
+        {
+            <a href="/desk?resource=@resource&closed=false" style="cursor: pointer">Open Calls</a>
+        }
+        else
+        {
+            <a href="/desk?resource=@resource&closed=true" style="cursor: pointer">Closed Calls</a>
+        } |
         <a href="@HttpContext.Current.Request.Url.AbsoluteUri">Refresh</a>
         <select name="resource">
             <option value="">My Calls</option>
             @foreach (var item in Model.GSVM)
             {
-                <option value="@item.Id">@item.Name</option>
+                if (!String.IsNullOrEmpty(resource) && resource.Equals(item.Id + ""))
+                {
+                    <option value="@item.Id" selected="selected">@item.Name</option>
+                }
+                else
+                {
+                    <option value="@item.Id">@item.Name</option>
+                }
+
             }
         </select>
         <input type="submit" value="Go" />
@@ -52,6 +70,8 @@
         {<input type="hidden" name="sortcategory" value=@sortcategory />}
         @if (!String.IsNullOrEmpty(sortdirection))
         {<input type="hidden" name="sortdirection" value=@sortdirection />}
+        @if (!String.IsNullOrEmpty(closed))
+        {<input type="hidden" name="closed" value=@closed />}
         <input type="submit" value="Search" />
     </form>
 </div>
@@ -78,6 +98,8 @@
         {<input type="hidden" name="resource" value=@resource />}
         @if (!String.IsNullOrEmpty(search))
         {<input type="hidden" name="search" value=@search />}
+        @if (!String.IsNullOrEmpty(closed))
+        {<input type="hidden" name="closed" value=@closed />}
         <input type="submit" value="Sort" />
     </form>
 </div>
