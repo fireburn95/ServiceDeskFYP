@@ -1,0 +1,207 @@
+﻿@model ServiceDeskFYP.Models.CallDetailsForACallViewModel
+
+@{
+    ViewBag.Title = "abcCallDetails";
+}
+
+<h2>abcCallDetails</h2>
+
+<div>
+    <h4>CallDetailsForACallViewModel</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        @if (!String.IsNullOrEmpty(Model.ResourceUserId))
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.ResourceUserId)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ResourceUserId)
+            </dd>
+        }
+        else
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.ResourceGroupId)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ResourceGroupId)
+            </dd>
+        }
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SlaPolicy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SlaPolicy)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SlaLevel)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SlaLevel)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SlaExpiry)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SlaExpiry)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Category)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Category)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Created)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Created)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Required_By)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Required_By)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Summary)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Summary)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ForUserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ForUserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Closed)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Closed)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Hidden)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Hidden)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LockedToUserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LockedToUserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Lastname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Lastname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PhoneNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PhoneNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Extension)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Extension)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OrganisationAlias)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OrganisationAlias)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Organisation)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Organisation)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Department)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Department)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Regarding_Ref)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Regarding_Ref)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Reference }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

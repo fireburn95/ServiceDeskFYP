@@ -1,0 +1,255 @@
+﻿@model ServiceDeskFYP.Models.ViewCallPageViewModel
+
+@{
+    ViewBag.Title = "ViewCallAndActions";
+}
+
+<h2>ViewCallAndActions</h2>
+
+<div>
+    <h4>CallDetailsForACallViewModel</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        @if (!String.IsNullOrEmpty(Model.CallDetails.ResourceUserId))
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.CallDetails.ResourceUserId)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.CallDetails.ResourceUserId)
+            </dd>
+        }
+        else
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.CallDetails.ResourceGroupId)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.CallDetails.ResourceGroupId)
+            </dd>
+        }
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.SlaPolicy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.SlaPolicy)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.SlaLevel)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.SlaLevel)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.SlaExpiry)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.SlaExpiry)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.Category)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.Category)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.Created)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.Created)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.Required_By)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.Required_By)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.Summary)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.Summary)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.ForUserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.ForUserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.Closed)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.Closed)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.Hidden)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.Hidden)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.LockedToUserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.LockedToUserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.FirstName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.FirstName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.Lastname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.Lastname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.PhoneNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.PhoneNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.Extension)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.Extension)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.OrganisationAlias)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.OrganisationAlias)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.Organisation)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.Organisation)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.Department)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.Department)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.Regarding_Ref)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.Regarding_Ref)
+        </dd>
+
+    </dl>
+</div>
+
+
+
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).ActionedByUserName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).Created)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).Type)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).TypeDetails)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).Comments)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).Attachment)
+        </th>
+    </tr>
+
+    @foreach (var item in Model.ActionsList)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ActionedByUserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Created)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TypeDetails)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Comments)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Attachment)
+            </td>
+        </tr>
+    }
+
+</table>
+

@@ -10,7 +10,7 @@ namespace ServiceDeskFYP.Models
     public class Call
     {
         [Key]
-        [StringLength(12)]
+        [StringLength(12, MinimumLength = 12)]
         public string Reference { get; set; }
 
         [StringLength(128)]

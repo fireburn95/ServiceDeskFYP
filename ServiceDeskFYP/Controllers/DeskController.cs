@@ -349,9 +349,88 @@ namespace ServiceDeskFYP.Controllers
             return reference;
         }
 
+        /*****************
+         * View a Call
+         * ***************/
 
+        [HttpGet]
+        [Route("desk/call/{Reference}")]
+        public ActionResult ViewCall(string Reference)
+        {
+            //Handle error and success messages
+            HandleMessages();
 
+            //Check Reference exists
+            var CallExists = _context.Call.Where(n => n.Reference.Equals(Reference)).Any();
+            if (!CallExists)
+            {
+                TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
 
+            //Get the Call
+            Call Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+            //Make Call Details model
+            CallDetailsForACallViewModel CallDetails = new CallDetailsForACallViewModel
+            {
+                Reference = Call.Reference,
+                ResourceUserId = Call.ResourceUserId,
+                ResourceGroupId = Call.ResourceGroupId,
+                SlaPolicy = _context.SLAPolicy.SingleOrDefault(n => n.Id == Call.SlaId).Name,
+                SlaLevel = Call.SlaLevel,
+                SlaExpiry = Call.Created, //TODO calculate expiry, must also make slaresettime = created upon call creation
+                Category = Call.Category,
+                Created = Call.Created,
+                Required_By = Call.Required_By,
+                SLAResetTime = Call.SLAResetTime,
+                Summary = Call.Summary,
+                Description = Call.Description,
+                ForUserId = Call.ForUserId,
+                Closed = Call.Closed,
+                Hidden = Call.Hidden,
+                LockedToUserId = Call.LockedToUserId,
+                Email = Call.Email,
+                FirstName = Call.FirstName,
+                Lastname = Call.Lastname,
+                PhoneNumber = Call.PhoneNumber,
+                Extension = Call.Extension,
+                OrganisationAlias = Call.OrganisationAlias,
+                Organisation = Call.Organisation,
+                Department = Call.Department,
+                Regarding_Ref = Call.Regarding_Ref
+            };
+
+            //Get the Actions
+            var Actions = _context.Action.Where(n => n.CallReference.Equals(Reference));
+            ApplicationDbContext _context2 = new ApplicationDbContext();
+            List<ActionDetailsForACallViewModel> ActionList = new List<ActionDetailsForACallViewModel>();
+            foreach (var item in Actions)
+            {
+                ActionList.Add(new ActionDetailsForACallViewModel
+                {
+                    Id = item.Id,
+                    ActionedByUserId = item.ActionedByUserId,
+                    ActionedByUserName = _context2.Users.SingleOrDefault(n => n.Id.Equals(item.ActionedByUserId)).UserName,
+                    CallReference = item.CallReference,
+                    Created = item.Created,
+                    Type = item.Type,
+                    TypeDetails = item.TypeDetails,
+                    Comments = item.Comments,
+                    Attachment = item.Attachment
+                });
+            }
+
+            //Construct the View Model
+            ViewCallPageViewModel model = new ViewCallPageViewModel()
+            {
+                ActionsList = ActionList.AsEnumerable(),
+                CallDetails = CallDetails
+            };
+
+            return View("ViewCallAndActions", model);
+
+        }
 
         /*******************
          *     HELPERS

@@ -9,7 +9,7 @@ namespace ServiceDeskFYP.Models
     public class CreateCallViewModel
     {
         [Key]
-        [StringLength(12)]
+        [StringLength(12, MinimumLength = 12)]
         [Required]
         public string Reference { get; set; }
 
@@ -73,7 +73,7 @@ namespace ServiceDeskFYP.Models
     }
 
     /*
-     * The following are used for displaying Calls in desk and desk/group,
+     * The following are used for displaying Calls in desk/,
      * as well as other details like group names.
      */
 
@@ -124,6 +124,136 @@ namespace ServiceDeskFYP.Models
     {
         public IEnumerable<ViewCallsViewModel> VCVMList { get; set; }
         public IEnumerable<GroupsSelectViewModel> GSVM { get; set; }
+    }
+
+    /*
+    * The following are used for viewing a specific call in desk/call/{reference}
+    */
+
+    public class CallDetailsForACallViewModel
+    {
+        [Key]
+        [StringLength(12, MinimumLength = 12)]
+        public string Reference { get; set; }
+
+        [StringLength(128)]
+        public string ResourceUserId { get; set; }
+
+        public int? ResourceGroupId { get; set; }
+
+        public string SlaPolicy { get; set; }
+
+        [Required]
+        [StringLength(10)]
+        public string SlaLevel { get; set; }
+
+        public DateTime SlaExpiry { get; set; }
+
+        [Required]
+        [StringLength(30)]
+        public string Category { get; set; }
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime Created { get; set; }
+
+        [DataType(DataType.DateTime)]
+        public DateTime? Required_By { get; set; }
+
+        [DataType(DataType.DateTime)]
+        public DateTime? SLAResetTime { get; set; }
+
+        [Required]
+        [StringLength(75)]
+        public string Summary { get; set; }
+
+        [DataType(DataType.MultilineText)]
+        public string Description { get; set; }
+
+        [StringLength(128)]
+        public string ForUserId { get; set; }
+
+        [Required]
+        public bool Closed { get; set; }
+
+        [Required]
+        public bool Hidden { get; set; }
+
+        [StringLength(128)]
+        public string LockedToUserId { get; set; }
+
+        [EmailAddress]
+        [StringLength(256)]
+        public string Email { get; set; }
+
+        [StringLength(20)]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [StringLength(20)]
+        [Display(Name = "Surname")]
+        public string Lastname { get; set; }
+
+        [DataType(DataType.PhoneNumber)]
+        [StringLength(40)]
+        [Display(Name = "Phone Number")]
+        public string PhoneNumber { get; set; }
+
+        [StringLength(10)]
+        public string Extension { get; set; }
+
+        [StringLength(15)]
+        [Display(Name = "Organisation Alias")]
+        public string OrganisationAlias { get; set; }
+
+        [StringLength(25)]
+        public string Organisation { get; set; }
+
+        [StringLength(20)]
+        public string Department { get; set; }
+
+        [StringLength(30)]
+        public string Regarding_Ref { get; set; }
+    }
+
+    public class ActionDetailsForACallViewModel
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        [StringLength(12)]
+        public string CallReference { get; set; }
+
+        [Required]
+        [StringLength(128)]
+        public string ActionedByUserId { get; set; }
+
+        [Display(Name ="Actioned By")]
+        public string ActionedByUserName { get; set; }
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime Created { get; set; }
+
+        [Required]
+        [StringLength(20)]
+        public string Type { get; set; }
+
+        [StringLength(200)]
+        public string TypeDetails { get; set; }
+
+        [DataType(DataType.MultilineText)]
+        public string Comments { get; set; }
+
+        [DataType(DataType.Upload)]
+        public string Attachment { get; set; }
+    }
+
+    public class ViewCallPageViewModel
+    {
+        public CallDetailsForACallViewModel CallDetails { get; set; }
+        public IEnumerable<ActionDetailsForACallViewModel> ActionsList { get; set; }
     }
 
 }
