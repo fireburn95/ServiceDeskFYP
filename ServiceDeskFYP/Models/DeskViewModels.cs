@@ -141,13 +141,17 @@ namespace ServiceDeskFYP.Models
 
         public int? ResourceGroupId { get; set; }
 
+        public string ResourceUserName { get; set; }
+
+        public string ResourceGroupName { get; set; }
+
         public string SlaPolicy { get; set; }
 
         [Required]
         [StringLength(10)]
         public string SlaLevel { get; set; }
 
-        public DateTime SlaExpiry { get; set; }
+        public DateTime? SlaExpiry { get; set; }
 
         [Required]
         [StringLength(30)]

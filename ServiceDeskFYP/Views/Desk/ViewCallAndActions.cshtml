@@ -9,25 +9,51 @@
 <div>
     <h4>CallDetailsForACallViewModel</h4>
     <hr />
+
+    <div>
+        @Html.ActionLink("Action", "") |
+        @Html.ActionLink("Notify", "") |
+        @Html.ActionLink("Close/Re-Open", "") |
+        @Html.ActionLink("Edit", "") |
+        @Html.ActionLink("PDF", "") |
+        @Html.ActionLink("Clear Lock", "") |
+        @Html.ActionLink("Assign Resource", "") |
+        @Html.ActionLink("Bookmark", "") |
+        @Html.ActionLink("View Report", "") |
+        @Html.ActionLink("Reset SLA", "")
+    </div>
+
+
+
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <h5 style="color:red">@ViewBag.ErrorMessage</h5>
+    }
+    @if (ViewBag.SuccessMessage != null)
+    {
+        <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
+    }
+
     <dl class="dl-horizontal">
         @if (!String.IsNullOrEmpty(Model.CallDetails.ResourceUserId))
         {
             <dt>
-                @Html.DisplayNameFor(model => model.CallDetails.ResourceUserId)
+                @Html.DisplayNameFor(model => model.CallDetails.ResourceUserName)
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.CallDetails.ResourceUserId)
+                @Html.DisplayFor(model => model.CallDetails.ResourceUserName)
             </dd>
         }
         else
         {
             <dt>
-                @Html.DisplayNameFor(model => model.CallDetails.ResourceGroupId)
+                @Html.DisplayNameFor(model => model.CallDetails.ResourceGroupName)
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.CallDetails.ResourceGroupId)
+                @Html.DisplayFor(model => model.CallDetails.ResourceGroupName)
             </dd>
         }
 

@@ -245,7 +245,13 @@ namespace ServiceDeskFYP.Controllers
                 ApplicationDbContext _context2 = new ApplicationDbContext();
                 var SLAIdPOST = _context.SLAPolicy.SingleOrDefault(n => n.Name == model.SlaName).Id;
 
+                //Check SLA Level is set
+                bool slaSet = false;
+                if (model.SlaLevel.Equals("Low") || model.SlaLevel.Equals("Medium") || model.SlaLevel.Equals("High"))
+                    slaSet = true;
+
                 //View Model to Call Mode
+                var DateTimeNow = DateTime.Now;
                 Call NewCall = new Call
                 {
                     Reference = model.Reference,
@@ -253,7 +259,7 @@ namespace ServiceDeskFYP.Controllers
                     SlaId = SLAIdPOST,
                     SlaLevel = model.SlaLevel,
                     Category = model.Category,
-                    Created = DateTime.Now,
+                    Created = DateTimeNow,
                     Required_By = model.Required_By,
                     Summary = model.Summary,
                     Description = model.Description,
@@ -266,8 +272,12 @@ namespace ServiceDeskFYP.Controllers
                     OrganisationAlias = model.OrganisationAlias,
                     Organisation = model.Organisation,
                     Department = model.Department,
-                    Regarding_Ref = model.Regarding_Ref
+                    Regarding_Ref = model.Regarding_Ref,
                 };
+
+                //Set SLAResetTime if necessary
+                if (slaSet)
+                    NewCall.SLAResetTime = DateTimeNow;
 
                 //Create an action for the call
                 var Action = new Models.Action
@@ -368,18 +378,21 @@ namespace ServiceDeskFYP.Controllers
                 return RedirectToAction("Index");
             }
 
-            //Get the Call
+            //Get the Call, and username and groupname for ease
             Call Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+            var resourceuser = _context.Users.SingleOrDefault(n => n.Id.Equals(Call.ResourceUserId));
+            var resourcegroup = _context.Group.SingleOrDefault(n => n.Id == Call.ResourceGroupId);
 
             //Make Call Details model
             CallDetailsForACallViewModel CallDetails = new CallDetailsForACallViewModel
             {
                 Reference = Call.Reference,
                 ResourceUserId = Call.ResourceUserId,
+                ResourceUserName = resourceuser?.UserName,
                 ResourceGroupId = Call.ResourceGroupId,
+                ResourceGroupName = resourcegroup?.Name,
                 SlaPolicy = _context.SLAPolicy.SingleOrDefault(n => n.Id == Call.SlaId).Name,
                 SlaLevel = Call.SlaLevel,
-                SlaExpiry = Call.Created, //TODO calculate expiry, must also make slaresettime = created upon call creation
                 Category = Call.Category,
                 Created = Call.Created,
                 Required_By = Call.Required_By,
@@ -400,6 +413,31 @@ namespace ServiceDeskFYP.Controllers
                 Department = Call.Department,
                 Regarding_Ref = Call.Regarding_Ref
             };
+
+            //Get the number of minutes
+            double mins = 0;
+            bool hasSla = false;
+            if (Call.SlaLevel.Equals("Low"))
+            {
+                mins = _context.SLAPolicy.SingleOrDefault(n => n.Id == Call.SlaId).LowMins;
+                hasSla = true;
+            }
+            else if (Call.SlaLevel.Equals("Medium"))
+            {
+                mins = _context.SLAPolicy.SingleOrDefault(n => n.Id == Call.SlaId).MedMins;
+                hasSla = true;
+            }
+            else if (Call.SlaLevel.Equals("High"))
+            {
+                mins = _context.SLAPolicy.SingleOrDefault(n => n.Id == Call.SlaId).HighMins;
+                hasSla = true;
+            }
+
+            //If there is an SLA Policy of low-high, set SLA Expiry time for view model
+            if (hasSla)
+                CallDetails.SlaExpiry = Call.SLAResetTime.Value.AddMinutes(mins);
+            else
+                CallDetails.SlaExpiry = null;
 
             //Get the Actions
             var Actions = _context.Action.Where(n => n.CallReference.Equals(Reference));

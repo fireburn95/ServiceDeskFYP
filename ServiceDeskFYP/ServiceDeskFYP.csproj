@@ -359,8 +359,6 @@
     <Content Include="Views\Admin\Categories.cshtml" />
     <Content Include="Views\Desk\CreateCall.cshtml" />
     <Content Include="Views\Desk\ViewCalls.cshtml" />
-    <Content Include="Views\Desk\abcCallDetails.cshtml" />
-    <Content Include="Views\Desk\abcActions.cshtml" />
     <Content Include="Views\Desk\ViewCallAndActions.cshtml" />
   </ItemGroup>
   <ItemGroup>
