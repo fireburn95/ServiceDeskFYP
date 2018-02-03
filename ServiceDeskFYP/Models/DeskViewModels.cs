@@ -233,7 +233,7 @@ namespace ServiceDeskFYP.Models
         [StringLength(128)]
         public string ActionedByUserId { get; set; }
 
-        [Display(Name ="Actioned By")]
+        [Display(Name = "Actioned By")]
         public string ActionedByUserName { get; set; }
 
         [Required]
@@ -258,8 +258,35 @@ namespace ServiceDeskFYP.Models
     {
         public CallDetailsForACallViewModel CallDetails { get; set; }
         public IEnumerable<ActionDetailsForACallViewModel> ActionsList { get; set; }
+        public Action ActionForCreate { get; set; }
     }
 
+    /*
+    * The following are used for creating an Action in desk/call/{reference}/action
+    */
+
+    public class CreateActionViewModel
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        [StringLength(20)]
+        public string Type { get; set; }
+
+        [Required]
+        [DataType(DataType.MultilineText)]
+        public string Comments { get; set; }
+
+        [DataType(DataType.Upload)]
+        public string Attachment { get; set; }
+    }
+
+    public class CreateActionPageViewModel
+    {
+        public CreateActionViewModel CreateAction { get; set; }
+        public IEnumerable<String> ActionTypes { get; set; }
+    }
 }
 
 

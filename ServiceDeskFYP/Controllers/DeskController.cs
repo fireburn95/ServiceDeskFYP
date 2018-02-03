@@ -462,12 +462,132 @@ namespace ServiceDeskFYP.Controllers
             //Construct the View Model
             ViewCallPageViewModel model = new ViewCallPageViewModel()
             {
-                ActionsList = ActionList.AsEnumerable(),
+                ActionsList = ActionList.OrderByDescending(n => n.Created).AsEnumerable(),
                 CallDetails = CallDetails
             };
 
             return View("ViewCallAndActions", model);
 
+        }
+
+        [HttpGet]
+        [Route("desk/call/{Reference}/action")]
+        public ActionResult ActionCallGET(string Reference)
+        {
+            //Handle messages
+            HandleMessages();
+
+            //Check Reference exists
+            var CallExists = _context.Call.Where(n => n.Reference.Equals(Reference)).Any();
+            if (!CallExists)
+            {
+                TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Authorise access/permissions
+            //If Call is associated to logged in user
+            var Call = _context.Call.SingleOrDefault(n => n.Reference == Reference);
+            var permissions = false;
+            var loggedInUser = User.Identity.GetUserId();
+            if (!string.IsNullOrEmpty(Call.ResourceUserId))
+            {
+                if (Call.ResourceUserId.Equals(loggedInUser))
+                    permissions = true;
+            }
+            else
+            {
+                //If call is associated to a group which the logged in user is a member of
+                var GroupMembers = _context.GroupMember.SingleOrDefault(n => (n.Group_Id == Call.ResourceGroupId) && (n.User_Id.Equals(loggedInUser)));
+                if (GroupMembers != null)
+                    permissions = true;
+            }
+
+            if (permissions == false)
+            {
+                TempData["ErrorMessage"] = "Sorry, you do not have the permissions to action this call, please contact the resource";
+                return RedirectToAction("call/" + Reference);
+            }
+
+
+            //Create Model
+            CreateActionPageViewModel model = new CreateActionPageViewModel();
+
+            //Populate Action Types select box
+            string[] categories = System.IO.File.ReadAllLines(Server.MapPath(@"~/Content/ActionTypes.txt"));
+            model.ActionTypes = categories.Where(n => !string.IsNullOrEmpty(n)).ToArray().AsEnumerable();
+
+            //Return view
+            return View("Call_Action", model);
+        }
+
+        [HttpPost]
+        [Route("desk/call/{Reference}/action")]
+        public ActionResult ActionCallPOST(CreateActionPageViewModel model, string Reference)
+        {
+            //Fill Types
+            string[] categories = System.IO.File.ReadAllLines(Server.MapPath(@"~/Content/ActionTypes.txt"));
+            model.ActionTypes = categories.Where(n => !string.IsNullOrEmpty(n)).ToArray().AsEnumerable();
+
+            //If model passes validation
+            if (ModelState.IsValid)
+            {
+                //Check Reference exists
+                var CallExists = _context.Call.Where(n => n.Reference.Equals(Reference)).Any();
+                if (!CallExists)
+                {
+                    TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                    return RedirectToAction("Index");
+                }
+
+                //Authorise access/permissions
+                //If Call is associated to logged in user
+                var Call = _context.Call.SingleOrDefault(n => n.Reference == Reference);
+                var permissions = false;
+                var loggedInUser = User.Identity.GetUserId();
+                if (!string.IsNullOrEmpty(Call.ResourceUserId))
+                {
+                    if (Call.ResourceUserId.Equals(loggedInUser))
+                        permissions = true;
+                }
+                else
+                {
+                    //If call is associated to a group which the logged in user is a member of
+                    var GroupMembers = _context.GroupMember.SingleOrDefault(n => (n.Group_Id == Call.ResourceGroupId) && (n.User_Id.Equals(loggedInUser)));
+                    if (GroupMembers != null)
+                        permissions = true;
+                }
+
+                if (permissions == false)
+                {
+                    TempData["ErrorMessage"] = "Sorry, you do not have the permissions to action this call, please contact the resource";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Create the Action
+                var Action = new Models.Action()
+                {
+                    Id = model.CreateAction.Id,
+                    ActionedByUserId = loggedInUser,
+                    CallReference = Reference,
+                    Created = DateTime.Now,
+                    Type = model.CreateAction.Type,
+                    TypeDetails = null,
+                    Comments = model.CreateAction.Comments,
+                    Attachment = model.CreateAction.Attachment //TODO Attachment
+                };
+
+                //Add to DB
+                _context.Action.Add(Action);
+                _context.SaveChanges();
+
+                //Redirect back to call
+                TempData["SuccessMessage"] = "Your Action has been saved";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Error so return view
+            return View("Call_Action", model);
         }
 
         /*******************

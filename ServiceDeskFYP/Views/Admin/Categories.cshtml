@@ -1,20 +1,37 @@
-﻿@model string[]
+﻿@model string[][]
 
 @{
     ViewBag.Title = "Categories";
 }
 
-<h2>Categories</h2>
+<h2>Add Data</h2>
+<hr />
+<h3>Call Categories</h3>
 <h5>Add a new category on each line</h5>
 
 <form method="post" action="">
     <textarea name="categories" class="form-control">
 @if (Model != null)
 {
-foreach(var item in Model)
+foreach(var item in Model[0])
+{
+<text>@item</text>
+}}</textarea>
+
+    <br />
+
+    <h3>Action Types</h3>
+    <h5>Add a new action type on each line</h5>
+
+    <textarea name="actiontypes" class="form-control">
+@if (Model != null)
+{
+foreach(var item in Model[1])
 {
 <text>@item</text>
 }}</textarea>
     <br />
+
+
     <input type="submit" value="Save" name="submit" />
 </form>

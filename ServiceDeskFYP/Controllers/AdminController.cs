@@ -933,7 +933,7 @@ namespace ServiceDeskFYP.Controllers
                 }
 
                 //Check if any values are negatives
-                if(model.LowMins <= 0 || model.MedMins <= 0 || model.HighMins <= 0)
+                if (model.LowMins <= 0 || model.MedMins <= 0 || model.HighMins <= 0)
                 {
                     ViewBag.ErrorMessage = "Error: Non-positive integers are not allowed";
                     return View("CreateSLA");
@@ -971,7 +971,7 @@ namespace ServiceDeskFYP.Controllers
 
             //Check if SLA exists
             var SLA = _context.SLAPolicy.SingleOrDefault(n => n.Id == SlaId);
-            if(SLA == null)
+            if (SLA == null)
             {
                 TempData["ErrorMessage"] = "Sorry, the SLA Policy you tried to access doesn't exist";
                 return RedirectToAction("SLA");
@@ -993,7 +993,7 @@ namespace ServiceDeskFYP.Controllers
                 var SLA = _context.SLAPolicy.SingleOrDefault(n => n.Name.ToLower() == model.Name.ToLower());
                 if (SLA != null)
                 {
-                    if(model.Id != SLA.Id)
+                    if (model.Id != SLA.Id)
                     {
                         ViewBag.ErrorMessage = "Sorry, that name is already taken";
                         return View("EditSLA", model);
@@ -1041,20 +1041,43 @@ namespace ServiceDeskFYP.Controllers
         [Route("admin/categories")]
         public ActionResult CategoriesGET()
         {
-            //Read from text file
-            string[] lines = System.IO.File.ReadAllLines(Server.MapPath(@"~/Content/CallCategories.txt"));
+            /****************************
+             * Categories
+             ****************************/
+            //Read Categories from text file
+            string[] categories = System.IO.File.ReadAllLines(Server.MapPath(@"~/Content/CallCategories.txt"));
 
-            //Remove empties
-            lines = lines.Where(n => !string.IsNullOrEmpty(n)).ToArray();
+            //Remove empties from Categories
+            categories = categories.Where(n => !string.IsNullOrEmpty(n)).ToArray();
+
+            //TODO Remove beginning and end whitespace from each
+
+            /****************************
+             * Action Types
+             ****************************/
+            //Read Action Types from text file
+            string[] actiontypes = System.IO.File.ReadAllLines(Server.MapPath(@"~/Content/ActionTypes.txt"));
+
+            //Remove empties from Categories
+            actiontypes = actiontypes.Where(n => !string.IsNullOrEmpty(n)).ToArray();
+
+            //TODO Remove beginning and end whitespace from each
+
+            /******************************
+             * Save into Jagged Array
+             *******************************/
+            string[][] data = new string[2][];
+            data[0] = categories;
+            data[1] = actiontypes;
 
             //Pass text to view
-            return View("Categories", lines);
+            return View("Categories", data);
         }
 
         //View Categories POST
         [HttpPost]
         [Route("admin/categories")]
-        public ActionResult CategoriesPOST(string categories)
+        public ActionResult CategoriesPOST(string categories, string actiontypes)
         {
             //Check if POST data exists
             if (string.IsNullOrEmpty(categories))
@@ -1063,8 +1086,18 @@ namespace ServiceDeskFYP.Controllers
                 return View("Categories");
             }
 
+            if (string.IsNullOrEmpty(actiontypes))
+            {
+                ViewBag.ErrorMessage = "Error: No action types have been set";
+                return View("Categories");
+            }
+
+            /****************************
+            * Categories
+            ****************************/
+
             //Split into array
-            string[] CategoryArray = categories.Split( new[] { Environment.NewLine }, StringSplitOptions.None );
+            string[] CategoryArray = categories.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
             //Remove empties
             CategoryArray = CategoryArray.Where(n => !string.IsNullOrEmpty(n)).ToArray();
@@ -1075,9 +1108,37 @@ namespace ServiceDeskFYP.Controllers
             //Write to text file
             System.IO.File.WriteAllLines(Server.MapPath(@"~/Content/CallCategories.txt"), CategoryArray);
 
+            //TODO remove empties from both sides in each line
+
+            /****************************
+            * Action Types
+            ****************************/
+
+            //Split into array
+            string[] ActionTypesArray = actiontypes.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+            //Remove empties
+            ActionTypesArray = ActionTypesArray.Where(n => !string.IsNullOrEmpty(n)).ToArray();
+
+            //Remove Duplicates
+            ActionTypesArray = ActionTypesArray.Distinct().ToArray();
+
+            //Write to text file
+            System.IO.File.WriteAllLines(Server.MapPath(@"~/Content/ActionTypes.txt"), ActionTypesArray);
+
+            //TODO remove empties from both sides in each line
+
+            /****************************
+            * Return to view
+            ****************************/
+            //Put data into array
+            string[][] data = new string[2][];
+            data[0] = CategoryArray;
+            data[1] = ActionTypesArray;
+
             //Return
             ViewBag.SuccessMessage = "Changes made";
-            return View("Categories", CategoryArray);
+            return View("Categories", data);
         }
 
 

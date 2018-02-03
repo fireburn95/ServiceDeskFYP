@@ -281,6 +281,7 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\ActionTypes.txt" />
     <Content Include="Content\CallCategories.txt" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -360,6 +361,7 @@
     <Content Include="Views\Desk\CreateCall.cshtml" />
     <Content Include="Views\Desk\ViewCalls.cshtml" />
     <Content Include="Views\Desk\ViewCallAndActions.cshtml" />
+    <Content Include="Views\Desk\Call_Action.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

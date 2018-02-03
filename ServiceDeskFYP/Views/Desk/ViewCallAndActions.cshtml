@@ -11,19 +11,17 @@
     <hr />
 
     <div>
-        @Html.ActionLink("Action", "") |
-        @Html.ActionLink("Notify", "") |
-        @Html.ActionLink("Close/Re-Open", "") |
-        @Html.ActionLink("Edit", "") |
-        @Html.ActionLink("PDF", "") |
-        @Html.ActionLink("Clear Lock", "") |
-        @Html.ActionLink("Assign Resource", "") |
-        @Html.ActionLink("Bookmark", "") |
-        @Html.ActionLink("View Report", "") |
-        @Html.ActionLink("Reset SLA", "")
+        @Html.ActionLink("Action", "ActionCallGET") |
+        @Html.ActionLink("oNotify", "") |
+        @Html.ActionLink("oClose/Re-Open", "") |
+        @Html.ActionLink("oEdit", "") |
+        @Html.ActionLink("oPDF", "") |
+        @Html.ActionLink("oClear Lock", "") |
+        @Html.ActionLink("oAssign Resource", "") |
+        @Html.ActionLink("oBookmark", "") |
+        @Html.ActionLink("oView Report", "") |
+        @Html.ActionLink("oReset SLA", "")
     </div>
-
-
 
 
     @if (ViewBag.ErrorMessage != null)
