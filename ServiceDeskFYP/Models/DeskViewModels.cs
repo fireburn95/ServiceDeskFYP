@@ -287,6 +287,23 @@ namespace ServiceDeskFYP.Models
         public CreateActionViewModel CreateAction { get; set; }
         public IEnumerable<String> ActionTypes { get; set; }
     }
+
+    /*
+    * The following are used for assigning a resource in desk/call/{reference}/assign
+    */
+
+    public class SelectResourceViewModel
+    {
+        public string Username { get; set; }
+        public string GroupName { get; set; }
+    }
+
+    public class AssignResourcePageViewModel
+    {
+        public SelectResourceViewModel SelectResource { get; set; }
+        public IEnumerable<ApplicationUser> UserList { get; set; }
+        public IEnumerable<Group> GroupList { get; set; }
+    }
 }
 
 

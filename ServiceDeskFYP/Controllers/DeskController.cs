@@ -7,6 +7,7 @@ using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 
 namespace ServiceDeskFYP.Controllers
 {
@@ -363,6 +364,7 @@ namespace ServiceDeskFYP.Controllers
          * View a Call
          * ***************/
 
+        //View Call page showing Call details and Actions for the call
         [HttpGet]
         [Route("desk/call/{Reference}")]
         public ActionResult ViewCall(string Reference)
@@ -470,6 +472,7 @@ namespace ServiceDeskFYP.Controllers
 
         }
 
+        //GET page for actioning a call
         [HttpGet]
         [Route("desk/call/{Reference}/action")]
         public ActionResult ActionCallGET(string Reference)
@@ -478,32 +481,14 @@ namespace ServiceDeskFYP.Controllers
             HandleMessages();
 
             //Check Reference exists
-            var CallExists = _context.Call.Where(n => n.Reference.Equals(Reference)).Any();
-            if (!CallExists)
+            if (!CheckReferenceExists(Reference))
             {
                 TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
                 return RedirectToAction("Index");
             }
 
             //Authorise access/permissions
-            //If Call is associated to logged in user
-            var Call = _context.Call.SingleOrDefault(n => n.Reference == Reference);
-            var permissions = false;
-            var loggedInUser = User.Identity.GetUserId();
-            if (!string.IsNullOrEmpty(Call.ResourceUserId))
-            {
-                if (Call.ResourceUserId.Equals(loggedInUser))
-                    permissions = true;
-            }
-            else
-            {
-                //If call is associated to a group which the logged in user is a member of
-                var GroupMembers = _context.GroupMember.SingleOrDefault(n => (n.Group_Id == Call.ResourceGroupId) && (n.User_Id.Equals(loggedInUser)));
-                if (GroupMembers != null)
-                    permissions = true;
-            }
-
-            if (permissions == false)
+            if (!ModifyCallAuthorisation(Reference))
             {
                 TempData["ErrorMessage"] = "Sorry, you do not have the permissions to action this call, please contact the resource";
                 return RedirectToAction("call/" + Reference);
@@ -521,6 +506,7 @@ namespace ServiceDeskFYP.Controllers
             return View("Call_Action", model);
         }
 
+        //POST page for actioning a call
         [HttpPost]
         [Route("desk/call/{Reference}/action")]
         public ActionResult ActionCallPOST(CreateActionPageViewModel model, string Reference)
@@ -533,38 +519,22 @@ namespace ServiceDeskFYP.Controllers
             if (ModelState.IsValid)
             {
                 //Check Reference exists
-                var CallExists = _context.Call.Where(n => n.Reference.Equals(Reference)).Any();
-                if (!CallExists)
+                //Check Reference exists
+                if (!CheckReferenceExists(Reference))
                 {
                     TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
                     return RedirectToAction("Index");
                 }
 
                 //Authorise access/permissions
-                //If Call is associated to logged in user
-                var Call = _context.Call.SingleOrDefault(n => n.Reference == Reference);
-                var permissions = false;
-                var loggedInUser = User.Identity.GetUserId();
-                if (!string.IsNullOrEmpty(Call.ResourceUserId))
-                {
-                    if (Call.ResourceUserId.Equals(loggedInUser))
-                        permissions = true;
-                }
-                else
-                {
-                    //If call is associated to a group which the logged in user is a member of
-                    var GroupMembers = _context.GroupMember.SingleOrDefault(n => (n.Group_Id == Call.ResourceGroupId) && (n.User_Id.Equals(loggedInUser)));
-                    if (GroupMembers != null)
-                        permissions = true;
-                }
-
-                if (permissions == false)
+                if (!ModifyCallAuthorisation(Reference))
                 {
                     TempData["ErrorMessage"] = "Sorry, you do not have the permissions to action this call, please contact the resource";
                     return RedirectToAction("call/" + Reference);
                 }
 
                 //Create the Action
+                var loggedInUser = User.Identity.GetUserId();
                 var Action = new Models.Action()
                 {
                     Id = model.CreateAction.Id,
@@ -588,6 +558,233 @@ namespace ServiceDeskFYP.Controllers
 
             //Error so return view
             return View("Call_Action", model);
+        }
+
+        //GET page for re-assigning a call
+        [HttpGet]
+        [Route("desk/call/{Reference}/assign")]
+        public ActionResult AssignResourceGET(string Reference)
+        {
+            //Check reference exists
+            if (!CheckReferenceExists(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Authorise access/permissions
+            if (!ModifyCallAuthorisation(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, you do not have the permissions to action this call, please contact the resource";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Create View Model
+            AssignResourcePageViewModel model = new AssignResourcePageViewModel()
+            {
+                UserList = GetNonDisabledEmployees(),
+                GroupList = GetGroups()
+            };
+
+            //Pass into view
+            return View("Call_Assign", model);
+
+        }
+
+        //POST page for re-assigning a call
+        [HttpPost]
+        [Route("desk/call/{Reference}/assign")]
+        public ActionResult AssignResourcePOST(AssignResourcePageViewModel model, string Reference)
+        {
+            //Populate model list fields
+            model.UserList = GetNonDisabledEmployees();
+            model.GroupList = GetGroups();
+
+            //If model fields pass validation
+            if (ModelState.IsValid)
+            {
+                //Check reference exists
+                if (!CheckReferenceExists(Reference))
+                {
+                    TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                    return RedirectToAction("Index");
+                }
+
+                //Authorise access/permissions
+                if (!ModifyCallAuthorisation(Reference))
+                {
+                    TempData["ErrorMessage"] = "Sorry, you do not have the permissions to re-assign this call, please contact the resource";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check if both fields set
+                if ((!string.IsNullOrEmpty(model.SelectResource.Username)) && (!string.IsNullOrEmpty(model.SelectResource.GroupName)))
+                {
+                    ViewBag.ErrorMessage = "Please only select one resource";
+                    return View("Call_Assign", model);
+                }
+
+                //Check if both fields empty
+                if ((string.IsNullOrEmpty(model.SelectResource.Username)) && (string.IsNullOrEmpty(model.SelectResource.GroupName)))
+                {
+                    ViewBag.ErrorMessage = "Please select a resource";
+                    return View("Call_Assign", model);
+                }
+
+                //If User is set
+                if (!string.IsNullOrEmpty(model.SelectResource.Username))
+                {
+                    //Get the user ID
+                    var ResourceUserId = _context.Users.SingleOrDefault(n => n.UserName.Equals(model.SelectResource.Username)).Id;
+
+                    //Check if resource already same
+                    var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+                    if (Call.ResourceUserId == ResourceUserId)
+                    {
+                        ViewBag.ErrorMessage = "The selected user is already assigned to this call";
+                        return View("Call_Assign", model);
+                    }
+
+                    //Clear current call resource
+                    Call.ResourceUserId = null;
+                    Call.ResourceGroupId = null;
+
+                    //Set the resource
+                    Call.ResourceUserId = ResourceUserId;
+
+                    //Save
+                    _context.SaveChanges();
+
+                    //Create Action
+                    var ActionMade = new Models.Action()
+                    {
+                        CallReference = Reference,
+                        ActionedByUserId = User.Identity.GetUserId(),
+                        Created = DateTime.Now,
+                        Attachment = null,
+                        Type = "Assigned",
+                        TypeDetails = model.SelectResource.Username,
+                        Comments = null
+                    };
+
+                    //Save action
+                    _context.Action.Add(ActionMade);
+                    _context.SaveChanges();
+                }
+                //Else Group is set
+                else
+                {
+                    //Get the group ID
+                    var ResourceGroupId = _context.Group.SingleOrDefault(n => n.Name.Equals(model.SelectResource.GroupName)).Id;
+
+                    //Check if resource already same
+                    var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+                    if (Call.ResourceGroupId.Equals(ResourceGroupId))
+                    {
+                        ViewBag.ErrorMessage = "The selected group is already assigned to this call";
+                        return View("Call_Assign", model);
+                    }
+
+                    //Clear current resources
+                    Call.ResourceUserId = null;
+                    Call.ResourceGroupId = null;
+
+                    //Set the resource
+                    Call.ResourceGroupId = ResourceGroupId;
+
+                    //Save
+                    _context.SaveChanges();
+
+                    //Create Action
+                    var ActionMade = new Models.Action()
+                    {
+                        CallReference = Reference,
+                        ActionedByUserId = User.Identity.GetUserId(),
+                        Created = DateTime.Now,
+                        Attachment = null,
+                        Type = "Assigned",
+                        TypeDetails = model.SelectResource.GroupName,
+                        Comments = null
+                    };
+
+                    //Save action
+                    _context.Action.Add(ActionMade);
+                    _context.SaveChanges();
+                }
+
+                //Return to Call
+                TempData["SuccessMessage"] = "Call assigned to new resource";
+                return RedirectToAction("call/" + Reference);
+
+            }
+
+            //Failed validation
+            return View("Call_Assign", model);
+        }
+
+        //Check if the reference for a call supplied exists
+        public bool CheckReferenceExists(string Reference)
+        {
+            ApplicationDbContext dbcontext = new ApplicationDbContext();
+
+            //Check Reference exists
+            var CallExists = dbcontext.Call.Where(n => n.Reference.Equals(Reference)).Any();
+            if (!CallExists)
+            {
+                return false;
+            }
+            //Else return true
+            return true;
+        }
+
+        //Check if the logged in user has authority to modify the call
+        public bool ModifyCallAuthorisation(string Reference)
+        {
+            //Make db access
+            ApplicationDbContext dbcontext = new ApplicationDbContext();
+
+            //Get the call
+            var Call = dbcontext.Call.SingleOrDefault(n => n.Reference == Reference);
+
+            //Check if resource User ID of call is same as logged in user
+            var permissions = false;
+            var loggedInUser = User.Identity.GetUserId();
+            if (!string.IsNullOrEmpty(Call.ResourceUserId))
+            {
+                if (Call.ResourceUserId.Equals(loggedInUser))
+                    permissions = true;
+            }
+
+            //Check if resource Group Id of call is same as one which logged in user is a member of
+            else
+            {
+                //If call is associated to a group which the logged in user is a member of
+                var GroupMembers = dbcontext.GroupMember.SingleOrDefault(n => (n.Group_Id == Call.ResourceGroupId) && (n.User_Id.Equals(loggedInUser)));
+                if (GroupMembers != null)
+                    permissions = true;
+            }
+
+            //Return true or false
+            return permissions;
+        }
+
+        //Get non-disabled employees as IEnumerable
+        public IEnumerable<ApplicationUser> GetNonDisabledEmployees()
+        {
+            //Get the role ID for the Employee
+            var roleId = roleManager.FindByName("Employee").Id;
+
+            //Check the Users in the Roles table with the matching ID using LINQ
+            var Employees = _context.Users.Where(n => n.Roles.Select(r => r.RoleId).Contains(roleId)).AsEnumerable();
+
+            //Filter out disabled users and return
+            return Employees.Where(n => n.Disabled == false);
+        }
+
+        //Get groups as IEnumberable
+        public IEnumerable<Group> GetGroups()
+        {
+            return _context.Group.AsEnumerable();
         }
 
         /*******************

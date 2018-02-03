@@ -362,6 +362,7 @@
     <Content Include="Views\Desk\ViewCalls.cshtml" />
     <Content Include="Views\Desk\ViewCallAndActions.cshtml" />
     <Content Include="Views\Desk\Call_Action.cshtml" />
+    <Content Include="Views\Desk\Call_Assign.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

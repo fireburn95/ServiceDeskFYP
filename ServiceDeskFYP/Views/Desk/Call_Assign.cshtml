@@ -1,0 +1,53 @@
+﻿@model ServiceDeskFYP.Models.AssignResourcePageViewModel
+
+@{
+    ViewBag.Title = "Call_Assign";
+}
+
+<h2>Call_Assign</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>SelectResourceViewModel</h4>
+        <hr />
+
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <h5 style="color:red">@ViewBag.ErrorMessage</h5>
+        }
+        @if (ViewBag.SuccessMessage != null)
+        {
+            <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
+        }
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.SelectResource.Username, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.SelectResource.Username, new SelectList(Model.UserList.Select(n => n.UserName)), "Select User", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SelectResource.Username, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SelectResource.GroupName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.SelectResource.GroupName, new SelectList(Model.GroupList.Select(n => n.Name)), "Select Group", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SelectResource.GroupName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
