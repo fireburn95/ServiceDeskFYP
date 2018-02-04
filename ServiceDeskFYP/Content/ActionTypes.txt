@@ -1,3 +1,7 @@
-Action1
-Action2
-Action3
+Update
+Additional Details
+Advice Given
+Identified Problem
+Investigation
+Suggestion
+Other

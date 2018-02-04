@@ -722,6 +722,109 @@ namespace ServiceDeskFYP.Controllers
             return View("Call_Assign", model);
         }
 
+        //GET page for re-setting an SLA
+        [HttpGet]
+        [Route("desk/call/{Reference}/sla")]
+        public ActionResult ResetSlaGET(string Reference)
+        {
+            //Check reference exists
+            if (!CheckReferenceExists(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Authorise access/permissions
+            if (!ModifyCallAuthorisation(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, you do not have the permissions to action this call, please contact the resource";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Create View Model
+            ResetSLAPageViewModel model = new ResetSLAPageViewModel
+            {
+                //Populate SLA Policies in model
+                SLAPolicies = _context.SLAPolicy.AsEnumerable(),
+
+                //Populate SLA Levels in model
+                SLALevels = new List<String> { "Low", "Medium", "High", "Task", "On-Going" }
+            };
+
+            //Return to view
+            return View("Call_ResetSLA", model);
+        }
+
+        //POST page for re-setting an SLA
+        [HttpPost]
+        [Route("desk/call/{Reference}/sla")]
+        public ActionResult ResetSlaPOST(ResetSLAPageViewModel model, string Reference)
+        {
+            //Populate SLA Policies in model
+            model.SLAPolicies = _context.SLAPolicy.AsEnumerable();
+
+            //Populate SLA Levels in model
+            model.SLALevels = new List<String> { "Low", "Medium", "High", "Task", "On-Going" };
+
+            //If model passes validation
+            if (ModelState.IsValid)
+            {
+                //Check reference exists
+                if (!CheckReferenceExists(Reference))
+                {
+                    TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                    return RedirectToAction("Index");
+                }
+
+                //Authorise access/permissions
+                if (!ModifyCallAuthorisation(Reference))
+                {
+                    TempData["ErrorMessage"] = "Sorry, you do not have the permissions to action this call, please contact the resource";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Get the SLA ID
+                var SlaId = _context.SLAPolicy.SingleOrDefault(n => n.Name.Equals(model.SLAForm.SLAPolicyName)).Id;
+
+                //Get the call
+                ApplicationDbContext _context2 = new ApplicationDbContext();
+                var Call = _context2.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+                //Update relevant fields
+                var CurrentPolicy = _context.SLAPolicy.Single(n => n.Id == SlaId).Name;
+                var CurrentLevel = Call.SlaLevel;
+                Call.SlaId = SlaId;
+                Call.SlaLevel = model.SLAForm.SLALevel;
+                Call.SLAResetTime = DateTime.Now;
+
+                //Save changes
+                _context2.SaveChanges();
+
+                //Create Action
+                var ActionMade = new Models.Action
+                {
+                    CallReference = Reference,
+                    ActionedByUserId = User.Identity.GetUserId(),
+                    Created = DateTime.Now,
+                    Type = "SLA Reset",
+                    TypeDetails = "From [" + CurrentPolicy + " - " + CurrentLevel + "] to [" + model.SLAForm.SLAPolicyName + " - " + model.SLAForm.SLALevel + "]",
+                    Comments = null,
+                    Attachment = null,
+                };
+
+                //Add Alert to DB and Save changes
+                _context.Action.Add(ActionMade);
+                _context.SaveChanges();
+
+                //Return to Call
+                TempData["SuccessMessage"] = "SLA has been reset";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Failed validation
+            return View("Call_ResetSLA", model);
+        }
+
         //Check if the reference for a call supplied exists
         public bool CheckReferenceExists(string Reference)
         {

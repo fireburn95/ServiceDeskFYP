@@ -304,6 +304,27 @@ namespace ServiceDeskFYP.Models
         public IEnumerable<ApplicationUser> UserList { get; set; }
         public IEnumerable<Group> GroupList { get; set; }
     }
+
+    /*
+    * The following are used for re-setting SLA in desk/call/{reference}/sla
+    */
+
+    public class ResetSLAForm
+    {
+        [Required]
+        public string SLAPolicyName { get; set; }
+
+        [Required]
+        public string SLALevel { get; set; }
+    }
+
+
+    public class ResetSLAPageViewModel
+    {
+        public ResetSLAForm SLAForm { get; set; }
+        public IEnumerable<SLAPolicy> SLAPolicies { get; set; }
+        public IEnumerable<String> SLALevels { get; set; }
+    }
 }
 
 
