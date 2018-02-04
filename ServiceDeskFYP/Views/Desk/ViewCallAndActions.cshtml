@@ -13,7 +13,14 @@
     <div>
         @Html.ActionLink("Action", "ActionCallGET") |
         @Html.ActionLink("oNotify", "") |
-        @Html.ActionLink("oClose/Re-Open", "") |
+        @if (Model.CallDetails.Closed)
+        {
+            @Html.ActionLink("Re-Open Call", "CloseOpenCall", new { Reference = Model.CallDetails.Reference })
+        }
+        else
+        {
+            @Html.ActionLink("Close Call", "CloseOpenCall", new { Reference = Model.CallDetails.Reference })
+        } |
         @Html.ActionLink("oEdit", "") |
         <text>PDF</text> |
         <text>Clear Lock</text> |

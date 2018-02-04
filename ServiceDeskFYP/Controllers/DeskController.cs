@@ -825,6 +825,52 @@ namespace ServiceDeskFYP.Controllers
             return View("Call_ResetSLA", model);
         }
 
+        //POST page for re-setting an SLA
+        [HttpGet]
+        public ActionResult CloseOpenCall(string Reference)
+        {
+            //Check reference exists
+            if (!CheckReferenceExists(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Authorise access/permissions
+            if (!ModifyCallAuthorisation(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, you do not have the permissions to close this call, please contact the resource";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Get the call
+            var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+            //Update closed field and save
+            if (Call.Closed == true)
+                Call.Closed = false;
+            else
+                Call.Closed = true;
+            _context.SaveChanges();
+
+            //Create Action and save
+            var ActionMade = new Models.Action
+            {
+                CallReference = Reference,
+                Created = DateTime.Now,
+                Type = Call.Closed? "Call Closed":"Call Re-Opened",
+                TypeDetails = null,
+                Comments = null,
+                Attachment = null,
+                ActionedByUserId = User.Identity.GetUserId()
+            };
+            _context.Action.Add(ActionMade);
+            _context.SaveChanges();
+
+            //Return to call
+            return RedirectToAction("call/" + Reference);
+        }
+
         //Check if the reference for a call supplied exists
         public bool CheckReferenceExists(string Reference)
         {
