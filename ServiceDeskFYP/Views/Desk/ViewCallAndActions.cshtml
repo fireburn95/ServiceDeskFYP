@@ -21,7 +21,7 @@
         {
             @Html.ActionLink("Close Call", "CloseOpenCall", new { Reference = Model.CallDetails.Reference })
         } |
-        @Html.ActionLink("oEdit", "") |
+        @Html.ActionLink("Edit", "EditCallGET") |
         <text>PDF</text> |
         <text>Clear Lock</text> |
         @Html.ActionLink("Assign Resource", "AssignResourceGET") |
@@ -63,27 +63,15 @@
         }
 
         <dt>
-            @Html.DisplayNameFor(model => model.CallDetails.SlaPolicy)
+            SLA
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.CallDetails.SlaPolicy)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CallDetails.SlaLevel)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CallDetails.SlaLevel)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CallDetails.SlaExpiry)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CallDetails.SlaExpiry)
+            @Html.DisplayFor(model => model.CallDetails.SlaPolicy) - @Html.DisplayFor(model => model.CallDetails.SlaLevel)
+            @if (Model.CallDetails.SlaExpiry != null)
+            {
+                <text>- Expected: @Html.DisplayFor(model => model.CallDetails.SlaExpiry)</text>
+            }
         </dd>
 
         <dt>
@@ -102,13 +90,16 @@
             @Html.DisplayFor(model => model.CallDetails.Created)
         </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.CallDetails.Required_By)
-        </dt>
+        @if (Model.CallDetails.Required_By != null)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.CallDetails.Required_By)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.CallDetails.Required_By)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.CallDetails.Required_By)
+            </dd>
+        }
 
         <dt>
             @Html.DisplayNameFor(model => model.CallDetails.Summary)
@@ -124,14 +115,6 @@
 
         <dd>
             @Html.DisplayFor(model => model.CallDetails.Description)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CallDetails.ForUserId)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CallDetails.ForUserId)
         </dd>
 
         <dt>

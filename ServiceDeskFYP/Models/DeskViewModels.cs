@@ -141,16 +141,21 @@ namespace ServiceDeskFYP.Models
 
         public int? ResourceGroupId { get; set; }
 
+        [Display(Name = "Employee Resource")]
         public string ResourceUserName { get; set; }
 
+        [Display(Name = "Group Resource")]
         public string ResourceGroupName { get; set; }
 
+        [Display(Name = "SLA Policy")]
         public string SlaPolicy { get; set; }
 
         [Required]
         [StringLength(10)]
+        [Display(Name = "SLA Level")]
         public string SlaLevel { get; set; }
 
+        [Display(Name = "SLA Expiry")]
         public DateTime? SlaExpiry { get; set; }
 
         [Required]
@@ -159,9 +164,11 @@ namespace ServiceDeskFYP.Models
 
         [Required]
         [DataType(DataType.DateTime)]
+        [Display(Name = "Call Opened")]
         public DateTime Created { get; set; }
 
         [DataType(DataType.DateTime)]
+        [Display(Name = "Required By")]
         public DateTime? Required_By { get; set; }
 
         [DataType(DataType.DateTime)]
@@ -178,9 +185,11 @@ namespace ServiceDeskFYP.Models
         public string ForUserId { get; set; }
 
         [Required]
+        [Display(Name = "Closed?")]
         public bool Closed { get; set; }
 
         [Required]
+        [Display(Name = "Hidden?")]
         public bool Hidden { get; set; }
 
         [StringLength(128)]
@@ -217,6 +226,7 @@ namespace ServiceDeskFYP.Models
         public string Department { get; set; }
 
         [StringLength(30)]
+        [Display(Name = "Regarding Reference")]
         public string Regarding_Ref { get; set; }
     }
 
@@ -325,6 +335,79 @@ namespace ServiceDeskFYP.Models
         public IEnumerable<SLAPolicy> SLAPolicies { get; set; }
         public IEnumerable<String> SLALevels { get; set; }
     }
+
+    /*
+    * The following are used for Editing a call SLA in desk/call/{reference}/edit
+    */
+
+    public class EditCallViewModel
+    {
+        [Key]
+        [StringLength(12, MinimumLength = 12)]
+        [Required]
+        public string Reference { get; set; }
+
+        [Required]
+        [StringLength(30)]
+        public string Category { get; set; }
+
+        [DataType(DataType.DateTime)]
+        public DateTime? Required_By { get; set; }
+
+        [Required]
+        [StringLength(75)]
+        public string Summary { get; set; }
+
+        [DataType(DataType.MultilineText)]
+        public string Description { get; set; }
+
+        [Required]
+        public bool Hidden { get; set; }
+
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [StringLength(20)]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [StringLength(20)]
+        [Display(Name = "Surname")]
+        public string Lastname { get; set; }
+
+        [DataType(DataType.PhoneNumber)]
+        [StringLength(40)]
+        [Display(Name = "Phone Number")]
+        public string PhoneNumber { get; set; }
+
+        [StringLength(10)]
+        public string Extension { get; set; }
+
+        [StringLength(15)]
+        [Display(Name = "Organisation Alias")]
+        public string OrganisationAlias { get; set; }
+
+        [StringLength(25)]
+        public string Organisation { get; set; }
+
+        [StringLength(20)]
+        public string Department { get; set; }
+
+        [StringLength(30)]
+        public string Regarding_Ref { get; set; }
+
+        [Required(ErrorMessage = "Please specify the purpose for the changes made")]
+        [DataType(DataType.MultilineText)]
+        [Display(Name ="Reason for changes? (for Action)")]
+        public string EditComments { get; set; }
+    }
+
+    public class EditCallPageViewModel
+    {
+        public IEnumerable<String> Categories { get; set; }
+        public EditCallViewModel EditCall { get; set; }
+    }
+
 }
 
 

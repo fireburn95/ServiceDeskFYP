@@ -235,7 +235,7 @@ namespace ServiceDeskFYP.Controllers
                     return View("CreateCall", model);
                 }
 
-                //Check Required By is not in the past TODO
+                //Check Required By is not in the past
                 if (model.Required_By < DateTime.Now)
                 {
                     ViewBag.ErrorMessage = "Sorry, 'Required By' cannot be set in the past";
@@ -825,7 +825,7 @@ namespace ServiceDeskFYP.Controllers
             return View("Call_ResetSLA", model);
         }
 
-        //POST page for re-setting an SLA
+        //GET page for re-setting an SLA
         [HttpGet]
         public ActionResult CloseOpenCall(string Reference)
         {
@@ -858,7 +858,7 @@ namespace ServiceDeskFYP.Controllers
             {
                 CallReference = Reference,
                 Created = DateTime.Now,
-                Type = Call.Closed? "Call Closed":"Call Re-Opened",
+                Type = Call.Closed ? "Call Closed" : "Call Re-Opened",
                 TypeDetails = null,
                 Comments = null,
                 Attachment = null,
@@ -869,6 +869,138 @@ namespace ServiceDeskFYP.Controllers
 
             //Return to call
             return RedirectToAction("call/" + Reference);
+        }
+
+        //GET page for Editing a Call
+        [HttpGet]
+        [Route("desk/call/{Reference}/edit")]
+        public ActionResult EditCallGET(string Reference)
+        {
+            //Check reference exists
+            if (!CheckReferenceExists(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Authorise access/permissions
+            if (!ModifyCallAuthorisation(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, you do not have the permissions to close this call, please contact the resource";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Create the view model
+            EditCallPageViewModel model = new EditCallPageViewModel();
+
+            //Populate Category, read and remove empties
+            string[] categories = System.IO.File.ReadAllLines(Server.MapPath(@"~/Content/CallCategories.txt"));
+            categories = categories.Where(n => !string.IsNullOrEmpty(n)).ToArray();
+            model.Categories = categories.AsEnumerable();
+
+            //Get the call
+            var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+            //Populate Edit Call fields
+            model.EditCall = new EditCallViewModel
+            {
+                Reference = Call.Reference,
+                Category = Call.Category,
+                Required_By = Call.Required_By,
+                Summary = Call.Summary,
+                Description = Call.Description,
+                Hidden = Call.Hidden,
+                Email = Call.Email,
+                FirstName = Call.FirstName,
+                Lastname = Call.Lastname,
+                PhoneNumber = Call.PhoneNumber,
+                Extension = Call.Extension,
+                OrganisationAlias = Call.OrganisationAlias,
+                Organisation = Call.Organisation,
+                Department = Call.Department,
+                Regarding_Ref = Call.Regarding_Ref,
+                EditComments = null
+            };
+
+            //Pass to view
+            return View("Call_EditCall", model);
+        }
+
+        //POST page for Editing a Call
+        [HttpPost]
+        [Route("desk/call/{Reference}/edit")]
+        public ActionResult EditCallPOST(EditCallPageViewModel model ,string Reference)
+        {
+            //Populate Category, read and remove empties
+            string[] categories = System.IO.File.ReadAllLines(Server.MapPath(@"~/Content/CallCategories.txt"));
+            categories = categories.Where(n => !string.IsNullOrEmpty(n)).ToArray();
+            model.Categories = categories.AsEnumerable();
+
+            //If validated
+            if (ModelState.IsValid)
+            {
+                //Check reference exists
+                if (!CheckReferenceExists(Reference))
+                {
+                    TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                    return RedirectToAction("Index");
+                }
+
+                //Authorise access/permissions
+                if (!ModifyCallAuthorisation(Reference))
+                {
+                    TempData["ErrorMessage"] = "Sorry, you do not have the permissions to close this call, please contact the resource";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check Required By is not in the past
+                if (model.EditCall.Required_By < DateTime.Now)
+                {
+                    ViewBag.ErrorMessage = "Sorry, 'Required By' cannot be set in the past";
+                    return View("Call_EditCall", model);
+                }
+
+                //Get the call
+                var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+                //Update the fields and save
+                Call.Category = model.EditCall.Category;
+                Call.Required_By = model.EditCall.Required_By;
+                Call.Summary = model.EditCall.Summary;
+                Call.Description = model.EditCall.Description;
+                Call.Hidden = model.EditCall.Hidden;
+                Call.Email = model.EditCall.Email;
+                Call.FirstName = model.EditCall.FirstName;
+                Call.Lastname = model.EditCall.Lastname;
+                Call.PhoneNumber = model.EditCall.Extension;
+                Call.Extension = model.EditCall.Extension;
+                Call.OrganisationAlias = model.EditCall.OrganisationAlias;
+                Call.Organisation = model.EditCall.Organisation;
+                Call.Department = model.EditCall.Department;
+                Call.Regarding_Ref = model.EditCall.Regarding_Ref;
+                _context.SaveChanges();
+
+                //Create Action
+                var ActionMade = new Models.Action
+                {
+                    CallReference = Reference,
+                    Type = "Edited Details",
+                    TypeDetails = null,
+                    Comments = model.EditCall.EditComments,
+                    ActionedByUserId = User.Identity.GetUserId(),
+                    Created = DateTime.Now,
+                    Attachment = null
+                };
+                _context.Action.Add(ActionMade);
+                _context.SaveChanges();
+
+                //Return to Call
+                TempData["SuccessMessage"] = "Changes saved";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Failed validation
+            return View("Call_EditCall", model);
         }
 
         //Check if the reference for a call supplied exists
