@@ -405,6 +405,7 @@ namespace ServiceDeskFYP.Controllers
                 Closed = Call.Closed,
                 Hidden = Call.Hidden,
                 LockedToUserId = Call.LockedToUserId,
+                LockedToUsername = Call.LockedToUserId!=null?_context.Users.SingleOrDefault(n => n.Id.Equals(Call.LockedToUserId)).UserName:null,
                 Email = Call.Email,
                 FirstName = Call.FirstName,
                 Lastname = Call.Lastname,
@@ -847,8 +848,6 @@ namespace ServiceDeskFYP.Controllers
             return View("Call_Notify", model);
         }
 
-
-
         /*****************
          * Reset SLA
          * ***************/
@@ -1068,7 +1067,7 @@ namespace ServiceDeskFYP.Controllers
         //POST page for Editing a Call
         [HttpPost]
         [Route("desk/call/{Reference}/edit")]
-        public ActionResult EditCallPOST(EditCallPageViewModel model ,string Reference)
+        public ActionResult EditCallPOST(EditCallPageViewModel model, string Reference)
         {
             //Populate Category, read and remove empties
             string[] categories = System.IO.File.ReadAllLines(Server.MapPath(@"~/Content/CallCategories.txt"));
@@ -1140,6 +1139,62 @@ namespace ServiceDeskFYP.Controllers
 
             //Failed validation
             return View("Call_EditCall", model);
+        }
+
+        /*****************
+         * Clear Lock
+         * ***************/
+
+        [HttpGet]
+        public ActionResult ClearLock(string Reference)
+        {
+            //Check reference exists
+            if (!CheckReferenceExists(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Get the call
+            ApplicationDbContext _context2 = new ApplicationDbContext();
+            var Call = _context2.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+            //Check permissions
+            var permissions = false;
+            if (Call.LockedToUserId != null)
+            {
+                var LoggedInUser = User.Identity.GetUserId();
+
+                //If it's the logged in user
+                if (Call.LockedToUserId.Equals(LoggedInUser))
+                    permissions = true;
+                //Else if current user is admin
+                else if (User.IsInRole(LoggedInUser))
+                    permissions = true;
+                //Else if it's a group call, and it's the group owner
+                else if 
+                (
+                    Call.ResourceGroupId != null &&
+                    _context.GroupMember.Where(n => n.User_Id.Equals(LoggedInUser) && n.Group_Id==Call.ResourceGroupId).Any() &&
+                    _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInUser) && n.Group_Id == Call.ResourceGroupId).Owner == true
+                )
+                    permissions = true;
+            }
+
+            //If they have permissions to clear lock, then clear
+            if (permissions == true)
+            {
+                Call.LockedToUserId = null;
+                _context2.SaveChanges();
+                TempData["SuccessMessage"] = "Lock cleared";
+                return RedirectToAction("call/" + Reference);
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Sorry, you need to be either the user, the group owner or an admin to clear the lock";
+                return RedirectToAction("call/" + Reference);
+            }
+
         }
 
         /*******************
