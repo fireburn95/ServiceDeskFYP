@@ -408,6 +408,25 @@ namespace ServiceDeskFYP.Models
         public EditCallViewModel EditCall { get; set; }
     }
 
+    /*
+     * 
+     */
+
+    public class NotifyViewModel
+    {
+        public string Username { get; set; }
+        public string GroupName { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string Message { get; set; }
+    }
+
+    public class NotifyPageViewModel
+    {
+        public NotifyViewModel Notify { get; set; }
+        public IEnumerable<ApplicationUser> UserList { get; set; }
+        public IEnumerable<Group> GroupList { get; set; }
+    }
+
 }
 
 

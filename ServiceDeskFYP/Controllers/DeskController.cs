@@ -472,6 +472,10 @@ namespace ServiceDeskFYP.Controllers
 
         }
 
+        /*****************
+         * Action a Call
+         * ***************/
+
         //GET page for actioning a call
         [HttpGet]
         [Route("desk/call/{Reference}/action")]
@@ -559,6 +563,10 @@ namespace ServiceDeskFYP.Controllers
             //Error so return view
             return View("Call_Action", model);
         }
+
+        /*****************
+         * Assign a Call
+         * ***************/
 
         //GET page for re-assigning a call
         [HttpGet]
@@ -722,6 +730,129 @@ namespace ServiceDeskFYP.Controllers
             return View("Call_Assign", model);
         }
 
+        /*****************
+         * Notify User/Group
+         * ***************/
+
+        //GET page for notifying a user/group
+        [HttpGet]
+        [Route("desk/call/{Reference}/notify")]
+        public ActionResult NotifyGET(string Reference)
+        {
+            //Check reference exists
+            if (!CheckReferenceExists(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Create View Model
+            NotifyPageViewModel model = new NotifyPageViewModel()
+            {
+                UserList = GetNonDisabledEmployees(),
+                GroupList = GetGroups()
+            };
+
+            //Pass into view
+            return View("Call_Notify", model);
+
+        }
+
+        //POST page for notifying a user/group
+        [HttpPost]
+        [Route("desk/call/{Reference}/notify")]
+        public ActionResult NotifyPOST(NotifyPageViewModel model, string Reference)
+        {
+            //Populate model list fields
+            model.UserList = GetNonDisabledEmployees();
+            model.GroupList = GetGroups();
+
+            //If model fields pass validation
+            if (ModelState.IsValid)
+            {
+                //Check reference exists
+                if (!CheckReferenceExists(Reference))
+                {
+                    TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                    return RedirectToAction("Index");
+                }
+
+                //Check if both fields set
+                if ((!string.IsNullOrEmpty(model.Notify.Username)) && (!string.IsNullOrEmpty(model.Notify.GroupName)))
+                {
+                    ViewBag.ErrorMessage = "Please only select one resource";
+                    return View("Call_Notify", model);
+                }
+
+                //Check if both fields empty
+                if ((string.IsNullOrEmpty(model.Notify.Username)) && (string.IsNullOrEmpty(model.Notify.GroupName)))
+                {
+                    ViewBag.ErrorMessage = "Please select a resource";
+                    return View("Call_Notify", model);
+                }
+
+                //If User is set
+                if (!string.IsNullOrEmpty(model.Notify.Username))
+                {
+                    //Get the user ID
+                    var ResourceUserId = _context.Users.SingleOrDefault(n => n.UserName.Equals(model.Notify.Username)).Id;
+
+                    //Create Alert
+                    var Alert = new Alert
+                    {
+                        FromUserId = User.Identity.GetUserId(),
+                        ToUserId = ResourceUserId,
+                        ToGroupId = null,
+                        Text = model.Notify.Message,
+                        AssociatedCallRef = Reference,
+                        Created = DateTime.Now,
+                        Dismissed = false,
+                        DismissedByUserId = null,
+                    };
+                    _context.Alert.Add(Alert);
+                    _context.SaveChanges();
+                    TempData["SuccessMessage"] = model.Notify.Username + " notified";
+
+                }
+                //Else Group is set
+                else
+                {
+                    //Get the group ID
+                    var ResourceGroupId = _context.Group.SingleOrDefault(n => n.Name.Equals(model.Notify.GroupName)).Id;
+
+                    //Create Alert
+                    var Alert = new Alert
+                    {
+                        FromUserId = User.Identity.GetUserId(),
+                        ToUserId = null,
+                        ToGroupId = ResourceGroupId,
+                        Text = model.Notify.Message,
+                        AssociatedCallRef = Reference,
+                        Created = DateTime.Now,
+                        Dismissed = false,
+                        DismissedByUserId = null,
+                    };
+                    _context.Alert.Add(Alert);
+                    _context.SaveChanges();
+                    TempData["SuccessMessage"] = model.Notify.GroupName + " notified";
+
+                }
+
+                //Return to Call
+                return RedirectToAction("call/" + Reference);
+
+            }
+
+            //Failed validation
+            return View("Call_Notify", model);
+        }
+
+
+
+        /*****************
+         * Reset SLA
+         * ***************/
+
         //GET page for re-setting an SLA
         [HttpGet]
         [Route("desk/call/{Reference}/sla")]
@@ -825,6 +956,10 @@ namespace ServiceDeskFYP.Controllers
             return View("Call_ResetSLA", model);
         }
 
+        /*****************
+         * Close/Open a Call
+         * ***************/
+
         //GET page for re-setting an SLA
         [HttpGet]
         public ActionResult CloseOpenCall(string Reference)
@@ -870,6 +1005,10 @@ namespace ServiceDeskFYP.Controllers
             //Return to call
             return RedirectToAction("call/" + Reference);
         }
+
+        /*****************
+         * Edit Call
+         * ***************/
 
         //GET page for Editing a Call
         [HttpGet]
@@ -1003,6 +1142,26 @@ namespace ServiceDeskFYP.Controllers
             return View("Call_EditCall", model);
         }
 
+        /*******************
+         *     HELPERS
+         ******************/
+
+        //Error and success messages
+        public void HandleMessages()
+        {
+            //Check for an error message from another action
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+            }
+
+            //Check for a message from another action
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            }
+        }
+
         //Check if the reference for a call supplied exists
         public bool CheckReferenceExists(string Reference)
         {
@@ -1066,25 +1225,6 @@ namespace ServiceDeskFYP.Controllers
         public IEnumerable<Group> GetGroups()
         {
             return _context.Group.AsEnumerable();
-        }
-
-        /*******************
-         *     HELPERS
-         ******************/
-
-        public void HandleMessages()
-        {
-            //Check for an error message from another action
-            if (TempData["ErrorMessage"] != null)
-            {
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
-            }
-
-            //Check for a message from another action
-            if (TempData["SuccessMessage"] != null)
-            {
-                ViewBag.SuccessMessage = TempData["SuccessMessage"];
-            }
         }
     }
 }

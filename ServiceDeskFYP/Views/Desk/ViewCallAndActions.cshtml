@@ -12,7 +12,7 @@
 
     <div>
         @Html.ActionLink("Action", "ActionCallGET") |
-        @Html.ActionLink("oNotify", "") |
+        @Html.ActionLink("Notify", "NotifyGET") |
         @if (Model.CallDetails.Closed)
         {
             @Html.ActionLink("Re-Open Call", "CloseOpenCall", new { Reference = Model.CallDetails.Reference })
