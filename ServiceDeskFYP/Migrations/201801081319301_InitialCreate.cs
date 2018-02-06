@@ -48,7 +48,8 @@ namespace ServiceDeskFYP.Migrations
                         UserName = c.String(nullable: false, maxLength: 256),
                     })
                 .PrimaryKey(t => t.Id)
-                .Index(t => t.UserName, unique: true, name: "UserNameIndex");
+                .Index(t => t.UserName, unique: true, name: "UserNameIndex")
+                .Index(t => t.Email, unique:true, name: "EmailIndex");
             
             CreateTable(
                 "dbo.AspNetUserClaims",

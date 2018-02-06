@@ -245,10 +245,6 @@
     <Compile Include="Migrations\201801081933443_CreatedManagerEmployeeTable.Designer.cs">
       <DependentUpon>201801081933443_CreatedManagerEmployeeTable.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201801141523219_MakeEmailUnique.cs" />
-    <Compile Include="Migrations\201801141523219_MakeEmailUnique.Designer.cs">
-      <DependentUpon>201801141523219_MakeEmailUnique.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201801141639047_AddedClientEmployeeAndAdminRoles.cs" />
     <Compile Include="Migrations\201801141639047_AddedClientEmployeeAndAdminRoles.Designer.cs">
       <DependentUpon>201801141639047_AddedClientEmployeeAndAdminRoles.cs</DependentUpon>
@@ -260,6 +256,10 @@
     <Compile Include="Migrations\201801291940055_UpdatedCallTable_LimitEmailSize.cs" />
     <Compile Include="Migrations\201801291940055_UpdatedCallTable_LimitEmailSize.Designer.cs">
       <DependentUpon>201801291940055_UpdatedCallTable_LimitEmailSize.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802061601211_AddedTestUsers.cs" />
+    <Compile Include="Migrations\201802061601211_AddedTestUsers.Designer.cs">
+      <DependentUpon>201802061601211_AddedTestUsers.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DeskViewModels.cs" />
@@ -420,9 +420,6 @@
     <EmbeddedResource Include="Migrations\201801081933443_CreatedManagerEmployeeTable.resx">
       <DependentUpon>201801081933443_CreatedManagerEmployeeTable.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201801141523219_MakeEmailUnique.resx">
-      <DependentUpon>201801141523219_MakeEmailUnique.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801141639047_AddedClientEmployeeAndAdminRoles.resx">
       <DependentUpon>201801141639047_AddedClientEmployeeAndAdminRoles.cs</DependentUpon>
     </EmbeddedResource>
@@ -431,6 +428,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801291940055_UpdatedCallTable_LimitEmailSize.resx">
       <DependentUpon>201801291940055_UpdatedCallTable_LimitEmailSize.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802061601211_AddedTestUsers.resx">
+      <DependentUpon>201802061601211_AddedTestUsers.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -9,6 +9,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 
+//TODO Lock Calls
+
 namespace ServiceDeskFYP.Controllers
 {
     [Authorize(Roles = "Employee")]
@@ -499,6 +501,21 @@ namespace ServiceDeskFYP.Controllers
                 return RedirectToAction("call/" + Reference);
             }
 
+            //Check if call closed
+            if (IsCallClosed(Reference))
+            {
+                TempData["ErrorMessage"] = "This call is closed";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Check if call locked
+            if (IsCallLockedToSomeoneElse(Reference))
+            {
+                var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
+                var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
+                TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
+                return RedirectToAction("call/" + Reference);
+            }
 
             //Create Model
             CreateActionPageViewModel model = new CreateActionPageViewModel();
@@ -535,6 +552,22 @@ namespace ServiceDeskFYP.Controllers
                 if (!ModifyCallAuthorisation(Reference))
                 {
                     TempData["ErrorMessage"] = "Sorry, you do not have the permissions to action this call, please contact the resource";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check if call closed
+                if (IsCallClosed(Reference))
+                {
+                    TempData["ErrorMessage"] = "This call is closed";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check if call locked
+                if (IsCallLockedToSomeoneElse(Reference))
+                {
+                    var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
+                    var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
+                    TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
                     return RedirectToAction("call/" + Reference);
                 }
 
@@ -588,6 +621,22 @@ namespace ServiceDeskFYP.Controllers
                 return RedirectToAction("call/" + Reference);
             }
 
+            //Check if call closed
+            if (IsCallClosed(Reference))
+            {
+                TempData["ErrorMessage"] = "This call is closed";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Check if call locked
+            if (IsCallLockedToSomeoneElse(Reference))
+            {
+                var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
+                var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
+                TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
+                return RedirectToAction("call/" + Reference);
+            }
+
             //Create View Model
             AssignResourcePageViewModel model = new AssignResourcePageViewModel()
             {
@@ -623,6 +672,22 @@ namespace ServiceDeskFYP.Controllers
                 if (!ModifyCallAuthorisation(Reference))
                 {
                     TempData["ErrorMessage"] = "Sorry, you do not have the permissions to re-assign this call, please contact the resource";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check if call closed
+                if (IsCallClosed(Reference))
+                {
+                    TempData["ErrorMessage"] = "This call is closed";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check if call locked
+                if (IsCallLockedToSomeoneElse(Reference))
+                {
+                    var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
+                    var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
+                    TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
                     return RedirectToAction("call/" + Reference);
                 }
 
@@ -871,6 +936,22 @@ namespace ServiceDeskFYP.Controllers
                 return RedirectToAction("call/" + Reference);
             }
 
+            //Check if call closed
+            if (IsCallClosed(Reference))
+            {
+                TempData["ErrorMessage"] = "This call is closed";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Check if call locked
+            if (IsCallLockedToSomeoneElse(Reference))
+            {
+                var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
+                var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
+                TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
+                return RedirectToAction("call/" + Reference);
+            }
+
             //Create View Model
             ResetSLAPageViewModel model = new ResetSLAPageViewModel
             {
@@ -910,6 +991,22 @@ namespace ServiceDeskFYP.Controllers
                 if (!ModifyCallAuthorisation(Reference))
                 {
                     TempData["ErrorMessage"] = "Sorry, you do not have the permissions to action this call, please contact the resource";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check if call closed
+                if (IsCallClosed(Reference))
+                {
+                    TempData["ErrorMessage"] = "This call is closed";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check if call locked
+                if (IsCallLockedToSomeoneElse(Reference))
+                {
+                    var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
+                    var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
+                    TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
                     return RedirectToAction("call/" + Reference);
                 }
 
@@ -977,6 +1074,15 @@ namespace ServiceDeskFYP.Controllers
                 return RedirectToAction("call/" + Reference);
             }
 
+            //Check if call locked
+            if (IsCallLockedToSomeoneElse(Reference))
+            {
+                var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
+                var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
+                TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
+                return RedirectToAction("call/" + Reference);
+            }
+
             //Get the call
             var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
 
@@ -1000,6 +1106,9 @@ namespace ServiceDeskFYP.Controllers
             };
             _context.Action.Add(ActionMade);
             _context.SaveChanges();
+
+            //Success Message
+            TempData["SuccessMessage"] = Call.Closed ? "Call closed" : "Call-Reopened";
 
             //Return to call
             return RedirectToAction("call/" + Reference);
@@ -1025,6 +1134,22 @@ namespace ServiceDeskFYP.Controllers
             if (!ModifyCallAuthorisation(Reference))
             {
                 TempData["ErrorMessage"] = "Sorry, you do not have the permissions to close this call, please contact the resource";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Check if call closed
+            if (IsCallClosed(Reference))
+            {
+                TempData["ErrorMessage"] = "This call is closed";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Check if call locked
+            if (IsCallLockedToSomeoneElse(Reference))
+            {
+                var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
+                var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
+                TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
                 return RedirectToAction("call/" + Reference);
             }
 
@@ -1088,6 +1213,22 @@ namespace ServiceDeskFYP.Controllers
                 if (!ModifyCallAuthorisation(Reference))
                 {
                     TempData["ErrorMessage"] = "Sorry, you do not have the permissions to close this call, please contact the resource";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check if call closed
+                if (IsCallClosed(Reference))
+                {
+                    TempData["ErrorMessage"] = "This call is closed";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check if call locked
+                if (IsCallLockedToSomeoneElse(Reference))
+                {
+                    var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
+                    var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
+                    TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
                     return RedirectToAction("call/" + Reference);
                 }
 
@@ -1261,6 +1402,32 @@ namespace ServiceDeskFYP.Controllers
 
             //Return true or false
             return permissions;
+        }
+
+        //Check if call closed
+        public bool IsCallClosed(string Reference)
+        {
+            //Create db access
+            ApplicationDbContext dbcontext = new ApplicationDbContext();
+
+            //Get the call
+            var Call = dbcontext.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+            //Check if closed
+            return Call.Closed;
+        }
+
+        //Check if call locked
+        public bool IsCallLockedToSomeoneElse(string Reference)
+        {
+            //Create db access
+            ApplicationDbContext dbcontext = new ApplicationDbContext();
+
+            //Get the call
+            var Call = dbcontext.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+            //Check if locked to someone else
+            return Call.LockedToUserId!=null && !Call.LockedToUserId.Equals(User.Identity.GetUserId());
         }
 
         //Get non-disabled employees as IEnumerable

@@ -7,13 +7,13 @@ namespace ServiceDeskFYP.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class MakeEmailUnique : IMigrationMetadata
+    public sealed partial class AddedTestUsers : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(MakeEmailUnique));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddedTestUsers));
         
         string IMigrationMetadata.Id
         {
-            get { return "201801141523219_MakeEmailUnique"; }
+            get { return "201802061601211_AddedTestUsers"; }
         }
         
         string IMigrationMetadata.Source

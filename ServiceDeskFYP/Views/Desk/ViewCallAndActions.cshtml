@@ -44,6 +44,15 @@
     }
 
     <dl class="dl-horizontal">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CallDetails.Reference)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CallDetails.Reference)
+        </dd>
+
         @if (!String.IsNullOrEmpty(Model.CallDetails.ResourceUserId))
         {
             <dt>
