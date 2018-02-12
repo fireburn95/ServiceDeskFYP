@@ -93,7 +93,7 @@
         @Html.ActionLink("Re-enable", "DisableEnable", new { PassedId = Model.Id })
     }
 
-    |
+    | @Html.ActionLink("Manage Subordinates", "ManageSubordinates") |
 
     @if ((ViewBag.Referrer != null) && (ViewBag.Referrer != Request.Url.AbsoluteUri))
     {

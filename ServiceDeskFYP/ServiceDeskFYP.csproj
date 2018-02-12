@@ -366,6 +366,7 @@
     <Content Include="Views\Desk\Call_ResetSLA.cshtml" />
     <Content Include="Views\Desk\Call_EditCall.cshtml" />
     <Content Include="Views\Desk\Call_Notify.cshtml" />
+    <Content Include="Views\Admin\ManageSubordinates.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

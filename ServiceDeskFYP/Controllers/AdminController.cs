@@ -290,6 +290,144 @@ namespace ServiceDeskFYP.Controllers
             return RedirectToAction("ViewAnEmployee", new { UserId = PassedId });
         }
 
+        // View Employees(manager's) subordinates
+        [HttpGet]
+        [Route("admin/employees/{UserId}/subordinates")]
+        public ActionResult ManageSubordinates(string UserId)
+        {
+            //Check for an error message from another action
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+            }
+
+            //Check for a success message from another action
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            }
+
+            //Get the employee
+            var Employee = _context.Users.FirstOrDefault(n => n.Id == UserId);
+
+            //Check if doesn't exist
+            if (Employee == null)
+            {
+                //Create temp session message
+                TempData["ErrorMessage"] = "Sorry, the user you have attempted to access does not exist";
+
+                //Redirect to Employees list
+                return RedirectToAction("Employees");
+            }
+
+            //Get the list of users that are a subordinate
+            var subUsers = _context.ManagerEmployee.Where(n => n.ManagerUserId.Equals(UserId)).AsEnumerable();
+            List<ViewAnEmployeeOfSubordinateViewModel> Subordinates = new List<ViewAnEmployeeOfSubordinateViewModel>();
+
+            //Save into a list
+            using (ApplicationDbContext _context2 = new ApplicationDbContext())
+            {
+                ApplicationUser UserClass = null;
+                foreach (var user in subUsers)
+                {
+                    UserClass = _context2.Users.SingleOrDefault(n => n.Id.Equals(user.SubUserId));
+
+                    Subordinates.Add(new ViewAnEmployeeOfSubordinateViewModel
+                    {
+                        Id = UserClass.Id,
+                        UserName = UserClass.UserName,
+                        FirstName = UserClass.FirstName,
+                        LastName = UserClass.LastName,
+                        Email = UserClass.Email,
+                        Department = UserClass.Department,
+                        Disabled = UserClass.Disabled,
+                        ManagerId = UserId
+                    });
+                }
+            }
+
+            //Pass to view
+            return View("ManageSubordinates", Subordinates.AsEnumerable());
+        }
+
+        // POST add sub manager relationship record
+        [HttpPost]
+        [Route("admin/employees/{UserId}/subordinates")]
+        public ActionResult AddSubordinateToManager(string UserId, string username = null)
+        {
+            //Check if username is empty
+            if (string.IsNullOrEmpty(username))
+            {
+                TempData["ErrorMessage"] = "No username entered";
+                return RedirectToAction("ManageSubordinates", new { UserId });
+            }
+
+            //Check username exists
+            var user = _context.Users.SingleOrDefault(n => n.UserName.ToLower().Equals(username));
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, the user entered doesn't exist";
+                return RedirectToAction("ManageSubordinates", new { UserId });
+            }
+
+            //Check if not an employee
+            if (!userManager.IsInRole(user.Id, "Employee"))
+            {
+                TempData["ErrorMessage"] = "This user is not an employee, so cannot be added here";
+                return RedirectToAction("ManageSubordinates", new { UserId });
+            }
+
+            //Check if already a subordinate
+            var ManagerEmployee = _context.ManagerEmployee.SingleOrDefault(n => (n.ManagerUserId == UserId) && (n.SubUserId == user.Id));
+            if (ManagerEmployee != null)
+            {
+                TempData["ErrorMessage"] = "User is already a subordinate";
+                return RedirectToAction("ManageSubordinates", new { UserId });
+            }
+
+            //Check if self
+            if (username.Equals(User.Identity.GetUserName()))
+            {
+                TempData["ErrorMessage"] = "You cannot add yourself";
+                return RedirectToAction("ManageSubordinates", new { UserId });
+            }
+
+            //Add to ManagerEmployee
+            _context.ManagerEmployee.Add(new ManagerEmployee { ManagerUserId = UserId, SubUserId = user.Id });
+            _context.SaveChanges();
+
+            //Return Redirect
+            TempData["SuccessMessage"] = "User is now a subordinate";
+            return RedirectToAction("ManageSubordinates", new { UserId });
+        }
+
+        //Remove sub manager record
+        public ActionResult RemoveSubordinate(string managerId, string subId)
+        {
+            //Get the ManagerEmployee Record
+            var ManagerEmployee = _context.ManagerEmployee.SingleOrDefault(n => (n.ManagerUserId.Equals(managerId)) && (n.SubUserId.Equals(subId)));
+
+            //Check combo actually exists
+            if (ManagerEmployee == null)
+            {
+                //Create temp data session
+                TempData["ErrorMessage"] = "Sorry, the Employee/Manager combo you attempted to remove does not exist";
+
+                //Return to and pass it to the action
+                return RedirectToAction("ManageSubordinates", new { UserId = managerId });
+            }
+
+            //Remove
+            _context.ManagerEmployee.Remove(ManagerEmployee);
+            _context.SaveChanges();
+
+            //Create temp data session
+            TempData["SuccessMessage"] = "Subordinate removed";
+
+            //Return to and pass it to the action
+            return RedirectToAction("ManageSubordinates", new { UserId = managerId });
+        }
+
         /**************************
          *     Manage Groups      *
          * ***********************/
