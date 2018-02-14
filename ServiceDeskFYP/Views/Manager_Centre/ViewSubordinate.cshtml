@@ -1,0 +1,76 @@
+﻿@model ServiceDeskFYP.Models.ApplicationUser
+
+@{
+    ViewBag.Title = "ViewSubordinate";
+}
+
+<h2>ViewSubordinate</h2>
+
+<div>
+    <h4>ApplicationUser</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PhoneNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PhoneNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Extension)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Extension)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Department)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Department)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("View Calls", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("User Report", "Index") |
+    @Html.ActionLink("Send Alert", "Index") |
+    @Html.ActionLink("Back to List", "Index")
+</p>
