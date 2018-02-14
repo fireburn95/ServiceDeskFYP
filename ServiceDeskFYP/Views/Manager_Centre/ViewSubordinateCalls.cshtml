@@ -1,0 +1,82 @@
+﻿@model IEnumerable<ServiceDeskFYP.Models.Call>
+
+@{
+    ViewBag.Title = "ViewSubordinateCalls";
+}
+
+<h2>ViewSubordinateCalls</h2>
+<p>
+    @if (string.IsNullOrEmpty(Request["closed"]))
+    {
+        @Html.ActionLink("Closed Calls", "ViewSubordinateCalls", new { closed = true });
+    }
+    else if (Request["closed"].ToLower().Equals("true"))
+    {
+        @Html.ActionLink("Open Calls", "ViewSubordinateCalls", new { closed = false });
+    }
+    else
+    {
+        @Html.ActionLink("Closed Calls", "ViewSubordinateCalls", new { closed = true });
+    }
+</p>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Reference)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SlaLevel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Created)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Required_By)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Summary)
+            </th>
+            <th>
+                Name
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr onclick="window.location='/desk/call/@item.Reference';">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Reference)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SlaLevel)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Created)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Required_By)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Summary)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.Lastname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ForUserId)
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+

@@ -370,6 +370,7 @@
     <Content Include="Views\Admin\ManageSubordinates.cshtml" />
     <Content Include="Views\Manager_Centre\Index.cshtml" />
     <Content Include="Views\Manager_Centre\ViewSubordinate.cshtml" />
+    <Content Include="Views\Manager_Centre\ViewSubordinateCalls.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

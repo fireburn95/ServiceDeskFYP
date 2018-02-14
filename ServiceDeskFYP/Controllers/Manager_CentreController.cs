@@ -28,9 +28,9 @@ namespace ServiceDeskFYP.Controllers
         }
 
 
-        /*
+        /*********************************
          * Index - View Subordinates list
-         */
+         *********************************/
 
         // GET: Manager_Centre view employees
         public ActionResult Index()
@@ -60,10 +60,10 @@ namespace ServiceDeskFYP.Controllers
             return View(SubordinatesList.AsEnumerable());
         }
 
-        /*
+        /*********************************
          * View Employee and options
-         */
-         // Handles no username specified
+         *********************************/
+        // Handles no username specified
         [Route("manager_centre/sub")]
         public ActionResult Sub()
         {
@@ -102,9 +102,54 @@ namespace ServiceDeskFYP.Controllers
             return View(Subordinate);
         }
 
-        /*
+        //View Subordinate's calls
+        [Route("manager_centre/sub/{sub_username}/calls")]
+        public ActionResult ViewSubordinateCalls(string sub_username, bool closed = false)
+        {
+            //Handle Messages
+            HandleMessages();
+
+            //Get logged in user id
+            var LoggedInId = User.Identity.GetUserId();
+
+            //Get Subordinate
+            var Subordinate = _context.Users.SingleOrDefault(n => n.UserName.Equals(sub_username));
+
+            //Check if exists
+            if (Subordinate == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, the user you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Check if actually a subordinate
+            var ManagerEmployee = _context.ManagerEmployee.SingleOrDefault(n => n.ManagerUserId.Equals(LoggedInId) && n.SubUserId.Equals(Subordinate.Id));
+            if (ManagerEmployee == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, you are not authorised to access this user";
+                return RedirectToAction("Index");
+            }
+
+            //If No Closed parameter set, or is false
+            IEnumerable<Call> Calls = null;
+            if (!closed)
+            {
+                //Get the open calls of the subordinate
+                Calls = _context.Call.Where(n => (n.ResourceUserId.Equals(Subordinate.Id)) && (n.Closed==false)).AsEnumerable();
+            }
+            else
+            {
+                //Get the closed calls of the subordinate
+                Calls = _context.Call.Where(n => (n.ResourceUserId.Equals(Subordinate.Id)) && (n.Closed==true)).AsEnumerable();
+            }
+
+            //Pass Calls to model
+            return View(Calls);
+        }
+
+        /*********************************
          * Helpers
-         */
+         *********************************/
         //Error and success messages
         public void HandleMessages()
         {

@@ -69,7 +69,7 @@
     </dl>
 </div>
 <p>
-    @Html.ActionLink("View Calls", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("View Calls", "ViewSubordinateCalls", new { sub_username = Model.UserName }) |
     @Html.ActionLink("User Report", "Index") |
     @Html.ActionLink("Send Alert", "Index") |
     @Html.ActionLink("Back to List", "Index")
