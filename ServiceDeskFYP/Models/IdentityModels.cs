@@ -60,6 +60,8 @@ namespace ServiceDeskFYP.Models
         public virtual ICollection<Alert> Alert_FromUserId { get; set; }
         [InverseProperty("ApplicationUserTo")]
         public virtual ICollection<Alert> Alert_ToUserId { get; set; }
+        [InverseProperty("ApplicationUserDismissedBy")]
+        public virtual ICollection<Alert> Alert_DismissedByUserId { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {

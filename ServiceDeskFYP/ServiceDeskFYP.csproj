@@ -262,7 +262,16 @@
     <Compile Include="Migrations\201802061601211_AddedTestUsers.Designer.cs">
       <DependentUpon>201802061601211_AddedTestUsers.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802141912567_UpdatedAlertTable_FixedDismissedByUserId.cs" />
+    <Compile Include="Migrations\201802141912567_UpdatedAlertTable_FixedDismissedByUserId.Designer.cs">
+      <DependentUpon>201802141912567_UpdatedAlertTable_FixedDismissedByUserId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802141916452_UpdatedAlertTable_FixedDismissedByUserIdFurtherChanges.cs" />
+    <Compile Include="Migrations\201802141916452_UpdatedAlertTable_FixedDismissedByUserIdFurtherChanges.Designer.cs">
+      <DependentUpon>201802141916452_UpdatedAlertTable_FixedDismissedByUserIdFurtherChanges.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\ManagerSubordinateViewModels.cs" />
     <Compile Include="Models\DeskViewModels.cs" />
     <Compile Include="Models\AdminViewModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -371,6 +380,7 @@
     <Content Include="Views\Manager_Centre\Index.cshtml" />
     <Content Include="Views\Manager_Centre\ViewSubordinate.cshtml" />
     <Content Include="Views\Manager_Centre\ViewSubordinateCalls.cshtml" />
+    <Content Include="Views\Manager_Centre\SendAlertToSub.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -436,6 +446,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802061601211_AddedTestUsers.resx">
       <DependentUpon>201802061601211_AddedTestUsers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802141912567_UpdatedAlertTable_FixedDismissedByUserId.resx">
+      <DependentUpon>201802141912567_UpdatedAlertTable_FixedDismissedByUserId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802141916452_UpdatedAlertTable_FixedDismissedByUserIdFurtherChanges.resx">
+      <DependentUpon>201802141916452_UpdatedAlertTable_FixedDismissedByUserIdFurtherChanges.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -9,6 +9,17 @@
 <div>
     <h4>ApplicationUser</h4>
     <hr />
+
+    @if (ViewBag.SuccessMessage != null)
+    {
+        <h5 style="color: blue">@ViewBag.SuccessMessage</h5>
+    }
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <h5 style="color: red">@ViewBag.ErrorMessage</h5>
+    }
+
+
     <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.UserName)
@@ -70,7 +81,8 @@
 </div>
 <p>
     @Html.ActionLink("View Calls", "ViewSubordinateCalls", new { sub_username = Model.UserName }) |
-    @Html.ActionLink("User Report", "Index") |
-    @Html.ActionLink("Send Alert", "Index") |
+    @*@Html.ActionLink("User Report", "Index") |*@
+    User Report |
+    @Html.ActionLink("Send Alert", "SendAlertToSubGET") |
     @Html.ActionLink("Back to List", "Index")
 </p>

@@ -37,13 +37,16 @@ namespace ServiceDeskFYP.Models
         public bool Dismissed { get; set; }
 
         [StringLength(128)]
-        public ApplicationUser DismissedByUserId { get; set; }
+        public string DismissedByUserId { get; set; }
 
         [ForeignKey("FromUserId")]
         public ApplicationUser ApplicationUserFrom { get; set; }
 
         [ForeignKey("ToUserId")]
         public ApplicationUser ApplicationUserTo { get; set; }
+
+        [ForeignKey("DismissedByUserId")]
+        public ApplicationUser ApplicationUserDismissedBy { get; set; }
 
         [ForeignKey("ToGroupId")]
         public Group Group { get; set; }

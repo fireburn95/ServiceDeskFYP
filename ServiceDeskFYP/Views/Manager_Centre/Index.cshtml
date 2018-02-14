@@ -6,6 +6,15 @@
 
 <h2>Index</h2>
 
+@if (ViewBag.SuccessMessage != null)
+{
+    <h5 style="color: blue">@ViewBag.SuccessMessage</h5>
+}
+@if (ViewBag.ErrorMessage != null)
+{
+    <h5 style="color: red">@ViewBag.ErrorMessage</h5>
+}
+
 @if (!Model.Any())
 {
     <h4>You do not have any subordinates</h4>

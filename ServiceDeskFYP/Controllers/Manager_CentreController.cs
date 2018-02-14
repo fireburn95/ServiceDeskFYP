@@ -147,6 +147,101 @@ namespace ServiceDeskFYP.Controllers
             return View(Calls);
         }
 
+        //Send an alert GET
+        [HttpGet]
+        [Route("manager_centre/sub/{sub_username}/alert")]
+        public ActionResult SendAlertToSubGET(string sub_username)
+        {
+            //Handle Messages
+            HandleMessages();
+
+            //Get logged in user id
+            var LoggedInId = User.Identity.GetUserId();
+
+            //Get Subordinate
+            var Subordinate = _context.Users.SingleOrDefault(n => n.UserName.Equals(sub_username));
+
+            //Check if exists
+            if (Subordinate == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, the user you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Check if actually a subordinate
+            var ManagerEmployee = _context.ManagerEmployee.SingleOrDefault(n => n.ManagerUserId.Equals(LoggedInId) && n.SubUserId.Equals(Subordinate.Id));
+            if (ManagerEmployee == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, you are not authorised to access this user";
+                return RedirectToAction("Index");
+            }
+
+            //Populate Username
+            ViewBag.SubordinateUsername = sub_username;
+
+            //Return view
+            return View("SendAlertToSub");
+        }
+
+        //Send an alert POST
+        [HttpPost]
+        [Route("manager_centre/sub/{sub_username}/alert")]
+        public ActionResult SendAlertToSubPOST(SendAlertToSubViewModel model, string sub_username)
+        {
+            //Populate Username
+            ViewBag.SubordinateUsername = sub_username;
+
+            if (ModelState.IsValid)
+            {
+                //Get logged in user id
+                var LoggedInId = User.Identity.GetUserId();
+
+                //Get Subordinate
+                var Subordinate = _context.Users.SingleOrDefault(n => n.UserName.Equals(sub_username));
+
+                //Check if exists
+                if (Subordinate == null)
+                {
+                    TempData["ErrorMessage"] = "Sorry, the user you attempted to access doesn't exist";
+                    return RedirectToAction("Index");
+                }
+
+                //Check if actually a subordinate
+                var ManagerEmployee = _context.ManagerEmployee.SingleOrDefault(n => n.ManagerUserId.Equals(LoggedInId) && n.SubUserId.Equals(Subordinate.Id));
+                if (ManagerEmployee == null)
+                {
+                    TempData["ErrorMessage"] = "Sorry, you are not authorised to access this user";
+                    return RedirectToAction("Index");
+                }
+
+                //Create alert
+                var Alert = new Alert()
+                {
+                    FromUserId = LoggedInId,
+                    ToUserId = Subordinate.Id,
+                    ToGroupId = null,
+                    Text = model.Text,
+                    AssociatedCallRef = null,
+                    AssociatedKnowledgeId = null,
+                    Created = DateTime.Now,
+                    Dismissed = false,
+                    DismissedByUserId = null
+                };
+
+                //Save alert
+                _context.Alert.Add(Alert);
+                _context.SaveChanges();
+
+                //State success
+                TempData["SuccessMessage"] = "Alert sent to " + Subordinate.UserName;
+                return RedirectToAction("ViewSubordinate", new { sub_username = Subordinate.UserName });
+            }
+
+            //Failed validation so return view
+            return View("SendAlertToSub", model);
+        }
+
+
         /*********************************
          * Helpers
          *********************************/
