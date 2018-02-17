@@ -1,0 +1,28 @@
+﻿@model IEnumerable<ServiceDeskFYP.Models.Group>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+@if (!Model.Any())
+{
+    <h4>Sorry, you are not a member of any group</h4>
+}
+else
+{
+    <form method="post" action="">
+        <select name="groupid" class="form-control">
+            @foreach (var item in Model)
+            {
+                <option value="@item.Id">@item.Name</option>
+            }
+        </select>
+
+        <br />
+
+        <input type="submit" value="Select" class="btn btn-default" />
+    </form>
+}
+

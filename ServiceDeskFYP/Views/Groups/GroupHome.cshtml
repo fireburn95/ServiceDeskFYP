@@ -1,0 +1,25 @@
+﻿@model ServiceDeskFYP.Models.GroupMember
+
+@{
+    ViewBag.Title = "GroupHome";
+}
+
+<h2>@Model.Group.Name</h2>
+<h4>@Model.Group.Description</h4>
+<br />
+<h4>Group-Member Tools</h4>
+<ul>
+    <li>View Members</li>
+    <li>View Knowledges</li>
+    <li>View Alerts</li>
+    <li>@Html.ActionLink("View Calls", "Index", "Desk", new { resource = Model.Group_Id }, null)</li>
+</ul>
+@if (Model.Owner)
+{
+    <hr />
+    <h4>Group-Owner Tools</h4>
+    <ul>
+        <li>Manage Members</li>
+        <li>View Group Report</li>
+    </ul>
+}
