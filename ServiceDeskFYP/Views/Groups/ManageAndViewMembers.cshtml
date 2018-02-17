@@ -67,14 +67,14 @@ else
             @if (Model.IsLoggedInUserOwner)
             {
                 <td>
-                    @Html.ActionLink("Remove", "RemoveMemberFromGroup", new { UserId = item.User_Id, GroupId = item.Group_Id }) |
+                    @Html.ActionLink("Remove", "RemoveMemberFromGroup", new { UserId = item.User_Id, groupid = item.Group_Id }) |
                     @if (item.Owner)
                     {
                         @Html.ActionLink("Unset as Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, GroupId = item.Group_Id })
                     }
                     else
                     {
-                        @Html.ActionLink("Set Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, GroupId = item.Group_Id })
+                        @Html.ActionLink("Set Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, groupId = item.Group_Id })
                     }
                 </td>
             }

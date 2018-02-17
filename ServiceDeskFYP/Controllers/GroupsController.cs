@@ -262,6 +262,140 @@ namespace ServiceDeskFYP.Controllers
 
         }
 
+        [Route("groups/{groupid}/members/remove/{userid}")]
+        public ActionResult RemoveMemberFromGroup(string UserId, string groupid)
+        {
+            //Check group id is not null
+            if (String.IsNullOrEmpty(groupid))
+            {
+                TempData["ErrorMessage"] = "Error, no group has been specified";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id is a number then cast to int
+            if (!int.TryParse(groupid, out int GroupIdInt))
+            {
+                TempData["ErrorMessage"] = "Error: Group ID incorrect";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id exists
+            var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
+            if (Group == null)
+            {
+                TempData["ErrorMessage"] = "Error: Group does not exist";
+                return RedirectToAction("Index");
+            }
+
+            //Check logged in user is a member of group
+            var LoggedInId = User.Identity.GetUserId();
+            var GroupMember = _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInId) && n.Group_Id == Group.Id);
+            if (GroupMember == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, you are not a member of the group '" + Group.Name + "'";
+                return RedirectToAction("Index");
+            }
+
+            //Get the Group Member
+            var ToRemove = _context.GroupMember.SingleOrDefault(n => (n.User_Id == UserId) && (n.Group_Id == GroupIdInt));
+
+            //Check combo actually exists
+            if (ToRemove == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, the Group member you attempted to remove does not exist for the given group";
+                return RedirectToAction("ManageAndViewMembers", new { groupid });
+            }
+
+            //Check not removing self
+            if (ToRemove.User_Id.Equals(LoggedInId))
+            {
+                TempData["ErrorMessage"] = "Sorry, you cannot remove yourself";
+                return RedirectToAction("ManageAndViewMembers", new { groupid });
+            }
+
+            //Remove
+            _context.GroupMember.Remove(ToRemove);
+            _context.SaveChanges();
+
+            //Return to same page TODO message
+            //Create temp data session
+            TempData["SuccessMessage"] = "User successfully removed from group";
+
+            //Return to and pass it to the action
+            return RedirectToAction("ManageAndViewMembers", new { groupid });
+        }
+
+        [Route("groups/{groupid}/members/owner/{userid}")]
+        public ActionResult SetUnsetGroupOwner(string UserId, string groupid)
+        {
+            //Check group id is not null
+            if (String.IsNullOrEmpty(groupid))
+            {
+                TempData["ErrorMessage"] = "Error, no group has been specified";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id is a number then cast to int
+            if (!int.TryParse(groupid, out int GroupIdInt))
+            {
+                TempData["ErrorMessage"] = "Error: Group ID incorrect";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id exists
+            var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
+            if (Group == null)
+            {
+                TempData["ErrorMessage"] = "Error: Group does not exist";
+                return RedirectToAction("Index");
+            }
+
+            //Check logged in user is a member of group
+            var LoggedInId = User.Identity.GetUserId();
+            var GroupMember = _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInId) && n.Group_Id == Group.Id);
+            if (GroupMember == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, you are not a member of the group '" + Group.Name + "'";
+                return RedirectToAction("Index");
+            }
+
+
+            //Get the Group Member
+            var LookupUser = _context.GroupMember.SingleOrDefault(n => (n.User_Id == UserId) && (n.Group_Id == GroupIdInt));
+
+            //Check combo actually exists
+            if (LookupUser == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, the Group member you attempted to remove does not exist for the given group";
+                return RedirectToAction("ManageAndViewMembers", new { groupid });
+            }
+
+            //Check not unsetting self
+            if (LookupUser.User_Id.Equals(LoggedInId))
+            {
+                TempData["ErrorMessage"] = "Sorry, you cannot set or unset yourself";
+                return RedirectToAction("ManageAndViewMembers", new { groupid });
+            }
+
+            //If Owner
+            if (LookupUser.Owner == true)
+            {
+                LookupUser.Owner = false;
+            }
+            //Else if not an owner
+            else
+            {
+                LookupUser.Owner = true;
+            }
+
+            //Save to DB
+            _context.SaveChanges();
+
+            //Return to Action
+            TempData["SuccessMessage"] = "User set to owner";
+            return RedirectToAction("ManageAndViewMembers", new { groupid });
+        }
+
 
         /*****************
          * Helpers
