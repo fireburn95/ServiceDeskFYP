@@ -89,6 +89,7 @@ namespace ServiceDeskFYP.Models
         public DateTime CreatedTimestamp { get; set; }
     }
 
+    //Used in admin/groups/members/1
     public class ManageGroupMembersViewModel
     {
         [Key]

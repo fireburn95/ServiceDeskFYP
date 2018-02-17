@@ -108,6 +108,160 @@ namespace ServiceDeskFYP.Controllers
             return View(GroupMember);
         }
 
+        /*****************
+        * Manage Members
+        * ***************/
+
+        [HttpGet]
+        [Route("groups/{groupid}/members")]
+        public ActionResult ManageAndViewMembers(string groupid)
+        {
+            //Handle messages
+            HandleMessages();
+
+            //Check group id is not null
+            if (String.IsNullOrEmpty(groupid))
+            {
+                TempData["ErrorMessage"] = "Error, no group has been specified";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id is a number then cast to int
+            if (!int.TryParse(groupid, out int GroupIdInt))
+            {
+                TempData["ErrorMessage"] = "Error: Group ID incorrect";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id exists
+            var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
+            if (Group == null)
+            {
+                TempData["ErrorMessage"] = "Error: Group does not exist";
+                return RedirectToAction("Index");
+            }
+
+            //Check logged in user is a member of group
+            var LoggedInId = User.Identity.GetUserId();
+            var GroupMember = _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInId) && n.Group_Id == Group.Id);
+            if (GroupMember == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, you are not a member of the group '" + Group.Name + "'";
+                return RedirectToAction("Index");
+            }
+
+            //Get list of Group Members
+            var GroupMembers = _context.GroupMember.Where(n => n.Group_Id == GroupIdInt);
+
+            //Get the Users
+            List<ManageGroupMembersForOwnersViewModel> GroupMembersUserList = new List<ManageGroupMembersForOwnersViewModel>();
+            using(ApplicationDbContext dbcontext = new ApplicationDbContext())
+            {
+                foreach(var member in GroupMembers)
+                {
+                    GroupMembersUserList.Add(new ManageGroupMembersForOwnersViewModel()
+                    {
+                        User_Id = member.User_Id,
+                        Group_Id = GroupIdInt,
+                        GroupName = Group.Name,
+                        Owner = member.Owner,
+                        UserName = dbcontext.Users.SingleOrDefault(n => n.Id.Equals(member.User_Id)).UserName,
+                    });
+                }
+            }
+
+            //Create View Model
+            ViewManageGroupMembersViewModel model = new ViewManageGroupMembersViewModel()
+            {
+                GroupMembers = GroupMembersUserList.AsEnumerable(),
+                IsLoggedInUserOwner = GroupMember.Owner
+            };
+
+            //Pass to view
+            return View(model);
+        }
+
+        [HttpPost]
+        [Route("groups/{groupid}/members")]
+        public ActionResult AddMemberToGroup(string groupid)
+        {
+            //Check group id is not null
+            if (String.IsNullOrEmpty(groupid))
+            {
+                TempData["ErrorMessage"] = "Error, no group has been specified";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id is a number then cast to int
+            if (!int.TryParse(groupid, out int GroupIdInt))
+            {
+                TempData["ErrorMessage"] = "Error: Group ID incorrect";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id exists
+            var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
+            if (Group == null)
+            {
+                TempData["ErrorMessage"] = "Error: Group does not exist";
+                return RedirectToAction("Index");
+            }
+
+            //Check logged in user is a member of group
+            var LoggedInId = User.Identity.GetUserId();
+            var GroupMember = _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInId) && n.Group_Id == Group.Id);
+            if (GroupMember == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, you are not a member of the group '" + Group.Name + "'";
+                return RedirectToAction("Index");
+            }
+
+            //Check if username is empty
+            string UserName = null;
+            if (Request["username"] == null)
+            {
+                TempData["ErrorMessage"] = "No username entered";
+                return RedirectToAction("ManageAndViewMembers", new { groupid });
+            }
+            //Else not empty so save into var
+            else
+            {
+                UserName = Request["username"].ToLower();
+            }
+
+            //Check username exists
+            var AppUser = _context.Users.SingleOrDefault(n => n.UserName.ToLower().Equals(UserName));
+            if (AppUser == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, the user entered doesn't exist";
+                return RedirectToAction("ManageAndViewMembers", new { groupid });
+            }
+
+            //Check if not an employee
+            if (!userManager.IsInRole(AppUser.Id, "Employee"))
+            {
+                TempData["ErrorMessage"] = "This user is not an employee, so cannot be added here";
+                return RedirectToAction("ManageAndViewMembers", new { groupid });
+            }
+
+            //Check if already in Group
+            var GroupMemberAdd = _context.GroupMember.SingleOrDefault(n => (n.User_Id == AppUser.Id) && (n.Group_Id == GroupIdInt));
+            if (GroupMemberAdd != null)
+            {
+                TempData["ErrorMessage"] = "User is already a member of the group";
+                return RedirectToAction("ManageAndViewMembers", new { groupid });
+            }
+
+            //Add to group
+            _context.GroupMember.Add(new GroupMember { Group_Id = GroupIdInt, User_Id = AppUser.Id, Owner = false });
+            _context.SaveChanges();
+
+            //Return Redirect
+            TempData["SuccessMessage"] = "User added to group";
+            return RedirectToAction("ManageAndViewMembers", new { groupid });
+
+        }
+
 
         /*****************
          * Helpers

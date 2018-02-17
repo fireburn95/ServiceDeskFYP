@@ -1,0 +1,85 @@
+﻿@model ServiceDeskFYP.Models.ViewManageGroupMembersViewModel
+
+@{
+    ViewBag.Title = "Members";
+}
+
+@if (Model.IsLoggedInUserOwner)
+{
+    <h2>Manage Members</h2>
+}
+else
+{
+    <h2>View Members</h2>
+}
+
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <h5 style="color:red">@ViewBag.ErrorMessage</h5>
+}
+@if (ViewBag.SuccessMessage != null)
+{
+    <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
+}
+
+
+<p>
+    @if (Model.IsLoggedInUserOwner)
+    {
+        <form method="post" action="">
+            <input type="text" name="username" placeholder="Username..." />
+            <input type="submit" value="Add" />
+        </form>
+    }
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.GroupMembers.First().UserName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.GroupMembers.First().Owner)
+        </th>
+        @if (Model.IsLoggedInUserOwner)
+        {
+            <th></th>
+        }
+
+    </tr>
+
+    @foreach (var item in Model.GroupMembers)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                @if (item.Owner == true)
+                {
+                    <text>Owner</text>
+                }
+                else
+                {
+                    <text>Member</text>
+                }
+            </td>
+            @if (Model.IsLoggedInUserOwner)
+            {
+                <td>
+                    @Html.ActionLink("Remove", "RemoveMemberFromGroup", new { UserId = item.User_Id, GroupId = item.Group_Id }) |
+                    @if (item.Owner)
+                    {
+                        @Html.ActionLink("Unset as Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, GroupId = item.Group_Id })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Set Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, GroupId = item.Group_Id })
+                    }
+                </td>
+            }
+
+        </tr>
+    }
+
+</table>

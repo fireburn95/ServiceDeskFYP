@@ -272,6 +272,7 @@
       <DependentUpon>201802141916452_UpdatedAlertTable_FixedDismissedByUserIdFurtherChanges.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\GroupManagementViewModel.cs" />
     <Compile Include="Models\ManagerSubordinateViewModels.cs" />
     <Compile Include="Models\DeskViewModels.cs" />
     <Compile Include="Models\AdminViewModels.cs" />
@@ -384,6 +385,7 @@
     <Content Include="Views\Manager_Centre\SendAlertToSub.cshtml" />
     <Content Include="Views\Groups\Index.cshtml" />
     <Content Include="Views\Groups\GroupHome.cshtml" />
+    <Content Include="Views\Groups\ManageAndViewMembers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

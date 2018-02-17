@@ -6,10 +6,15 @@
 
 <h2>@Model.Group.Name</h2>
 <h4>@Model.Group.Description</h4>
+
 <br />
+
 <h4>Group-Member Tools</h4>
 <ul>
-    <li>View Members</li>
+    @if (!Model.Owner)
+    {
+        <li>@Html.ActionLink("View Members", "ManageAndViewMembers", new { groupid = Model.Group_Id })</li>
+    }
     <li>View Knowledges</li>
     <li>View Alerts</li>
     <li>@Html.ActionLink("View Calls", "Index", "Desk", new { resource = Model.Group_Id }, null)</li>
@@ -19,7 +24,7 @@
     <hr />
     <h4>Group-Owner Tools</h4>
     <ul>
-        <li>Manage Members</li>
+        <li>@Html.ActionLink("Manage Members", "ManageAndViewMembers", new { groupid = Model.Group_Id })</li>
         <li>View Group Report</li>
     </ul>
 }
