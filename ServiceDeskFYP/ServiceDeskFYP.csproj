@@ -271,6 +271,10 @@
     <Compile Include="Migrations\201802141916452_UpdatedAlertTable_FixedDismissedByUserIdFurtherChanges.Designer.cs">
       <DependentUpon>201802141916452_UpdatedAlertTable_FixedDismissedByUserIdFurtherChanges.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802191747292_UpdatedKnowledgeTable_AddedUpdatedDateTimeAndUpdatedByFields.cs" />
+    <Compile Include="Migrations\201802191747292_UpdatedKnowledgeTable_AddedUpdatedDateTimeAndUpdatedByFields.Designer.cs">
+      <DependentUpon>201802191747292_UpdatedKnowledgeTable_AddedUpdatedDateTimeAndUpdatedByFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\GroupManagementViewModel.cs" />
     <Compile Include="Models\ManagerSubordinateViewModels.cs" />
@@ -386,6 +390,7 @@
     <Content Include="Views\Groups\Index.cshtml" />
     <Content Include="Views\Groups\GroupHome.cshtml" />
     <Content Include="Views\Groups\ManageAndViewMembers.cshtml" />
+    <Content Include="Views\Groups\ViewKnowledges.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -457,6 +462,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802141916452_UpdatedAlertTable_FixedDismissedByUserIdFurtherChanges.resx">
       <DependentUpon>201802141916452_UpdatedAlertTable_FixedDismissedByUserIdFurtherChanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802191747292_UpdatedKnowledgeTable_AddedUpdatedDateTimeAndUpdatedByFields.resx">
+      <DependentUpon>201802191747292_UpdatedKnowledgeTable_AddedUpdatedDateTimeAndUpdatedByFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

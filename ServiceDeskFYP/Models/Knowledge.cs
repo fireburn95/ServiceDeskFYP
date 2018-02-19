@@ -26,8 +26,19 @@ namespace ServiceDeskFYP.Models
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
 
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime Updated { get; set; }
+
+        [Required]
+        [StringLength(128)]
+        public string LastUpdatedByUserId { get; set; }
+
         [ForeignKey("Group_Id")]
         public Group Group { set; get; }
+
+        [ForeignKey("LastUpdatedByUserId")]
+        public ApplicationUser ApplicationUser { set; get; }
 
         public virtual ICollection<Alert> Alert { get; set; }
     }

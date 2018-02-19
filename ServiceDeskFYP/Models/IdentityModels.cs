@@ -52,6 +52,7 @@ namespace ServiceDeskFYP.Models
         public virtual ICollection<Call> Call_ForUserId { get; set; }
         public virtual ICollection<Action> Action { get; set; }
         public virtual ICollection<GroupMember> GroupMember { get; set; }
+        public virtual ICollection<Knowledge> Knowledge { get; set; }
         [InverseProperty("ApplicationUserManager")]
         public virtual ICollection<ManagerEmployee> ManagerEmployee_ManagerUserId { get; set; }
         [InverseProperty("ApplicationUserSub")]

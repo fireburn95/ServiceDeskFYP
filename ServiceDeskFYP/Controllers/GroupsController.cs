@@ -89,7 +89,7 @@ namespace ServiceDeskFYP.Controllers
 
             //Check group id exists
             var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
-            if (Group==null)
+            if (Group == null)
             {
                 TempData["ErrorMessage"] = "Error: Group does not exist";
                 return RedirectToAction("Index");
@@ -155,9 +155,9 @@ namespace ServiceDeskFYP.Controllers
 
             //Get the Users
             List<ManageGroupMembersForOwnersViewModel> GroupMembersUserList = new List<ManageGroupMembersForOwnersViewModel>();
-            using(ApplicationDbContext dbcontext = new ApplicationDbContext())
+            using (ApplicationDbContext dbcontext = new ApplicationDbContext())
             {
-                foreach(var member in GroupMembers)
+                foreach (var member in GroupMembers)
                 {
                     GroupMembersUserList.Add(new ManageGroupMembersForOwnersViewModel()
                     {
@@ -396,6 +396,66 @@ namespace ServiceDeskFYP.Controllers
             return RedirectToAction("ManageAndViewMembers", new { groupid });
         }
 
+        /*****************
+        * Knowledge Base
+        * ***************/
+
+        [Route("groups/{groupid}/kbase/")]
+        public ActionResult ViewKnowledges(string groupid)
+        {
+            //Check group id is not null
+            if (String.IsNullOrEmpty(groupid))
+            {
+                TempData["ErrorMessage"] = "Error, no group has been specified";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id is a number then cast to int
+            if (!int.TryParse(groupid, out int GroupIdInt))
+            {
+                TempData["ErrorMessage"] = "Error: Group ID incorrect";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id exists
+            var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
+            if (Group == null)
+            {
+                TempData["ErrorMessage"] = "Error: Group does not exist";
+                return RedirectToAction("Index");
+            }
+
+            //Check logged in user is a member of group
+            var LoggedInId = User.Identity.GetUserId();
+            var GroupMember = _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInId) && n.Group_Id == Group.Id);
+            if (GroupMember == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, you are not a member of the group '" + Group.Name + "'";
+                return RedirectToAction("Index");
+            }
+
+            //Create the model
+            var model = new ViewKnowledgesPageGroupViewModel()
+            {
+                Knowledges = _context.Knowledge.Where(n => n.Group_Id == GroupIdInt).AsEnumerable(),
+                IsLoggedInUserOwner = GroupMember.Owner,
+            };
+
+            //Pass to view
+            return View(model);
+        }
+
+        /*[Route("groups/{groupid}/kbase/create")]
+        public ActionResult CreateKnowledge()
+        {
+
+        }
+
+        [Route("groups/{groupid}/kbase/{knowledgeid}")]
+        public ActionResult ViewAKnowledge()
+        {
+
+        }*/
 
         /*****************
          * Helpers

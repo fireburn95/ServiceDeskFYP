@@ -37,7 +37,15 @@ namespace ServiceDeskFYP.Models
         public bool IsLoggedInUserOwner { get; set; }
     }
 
+    /*
+     * Used in viewing knowledges
+     */
 
+    public class ViewKnowledgesPageGroupViewModel
+    {
+        public IEnumerable<Knowledge> Knowledges { get; set; }
+        public bool IsLoggedInUserOwner { get; set; }
+    }
 
 
 }
