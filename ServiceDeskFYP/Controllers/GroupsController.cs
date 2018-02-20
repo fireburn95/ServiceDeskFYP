@@ -69,6 +69,7 @@ namespace ServiceDeskFYP.Controllers
         * Group Home
         * ***************/
 
+        //GET Homepage for groups
         [HttpGet]
         [Route("groups/{groupid}")]
         public ActionResult GroupHome(string groupid)
@@ -112,6 +113,7 @@ namespace ServiceDeskFYP.Controllers
         * Manage Members
         * ***************/
 
+        //GET View and Manage Members
         [HttpGet]
         [Route("groups/{groupid}/members")]
         public ActionResult ManageAndViewMembers(string groupid)
@@ -181,6 +183,7 @@ namespace ServiceDeskFYP.Controllers
             return View(model);
         }
 
+        //POST Add member to group
         [HttpPost]
         [Route("groups/{groupid}/members")]
         public ActionResult AddMemberToGroup(string groupid)
@@ -262,6 +265,7 @@ namespace ServiceDeskFYP.Controllers
 
         }
 
+        //GET Remove a member from group
         [Route("groups/{groupid}/members/remove/{userid}")]
         public ActionResult RemoveMemberFromGroup(string UserId, string groupid)
         {
@@ -325,6 +329,7 @@ namespace ServiceDeskFYP.Controllers
             return RedirectToAction("ManageAndViewMembers", new { groupid });
         }
 
+        //GET Set or unset a user as owner
         [Route("groups/{groupid}/members/owner/{userid}")]
         public ActionResult SetUnsetGroupOwner(string UserId, string groupid)
         {
@@ -400,6 +405,8 @@ namespace ServiceDeskFYP.Controllers
         * Knowledge Base
         * ***************/
 
+        //GET View Knowledges of a group
+        [HttpGet]
         [Route("groups/{groupid}/kbase/")]
         public ActionResult ViewKnowledges(string groupid)
         {
@@ -445,14 +452,121 @@ namespace ServiceDeskFYP.Controllers
             return View(model);
         }
 
-        /*[Route("groups/{groupid}/kbase/create")]
-        public ActionResult CreateKnowledge()
+        //GET Create Knowledge for a group
+        [HttpGet]
+        [Route("groups/{groupid}/kbase/create")]
+        public ActionResult CreateKnowledgeGET(string groupid)
+        {
+            //Check group id is not null
+            if (String.IsNullOrEmpty(groupid))
+            {
+                TempData["ErrorMessage"] = "Error, no group has been specified";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id is a number then cast to int
+            if (!int.TryParse(groupid, out int GroupIdInt))
+            {
+                TempData["ErrorMessage"] = "Error: Group ID incorrect";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id exists
+            var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
+            if (Group == null)
+            {
+                TempData["ErrorMessage"] = "Error: Group does not exist";
+                return RedirectToAction("Index");
+            }
+
+            //Check logged in user is a member of group
+            var LoggedInId = User.Identity.GetUserId();
+            var GroupMember = _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInId) && n.Group_Id == Group.Id);
+            if (GroupMember == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, you are not a member of the group '" + Group.Name + "'";
+                return RedirectToAction("Index");
+            }
+
+            //GO to view
+            return View("CreateKnowledge");
+        }
+
+        //POST Create knowledge for a group
+        [HttpPost]
+        [Route("groups/{groupid}/kbase/create")]
+        public ActionResult CreateKnowledgePOST(CreateKnowledgeGroupViewModel model, string groupid)
+        {
+            //If model valid
+            if (ModelState.IsValid)
+            {
+                //Check group id is not null
+                if (String.IsNullOrEmpty(groupid))
+                {
+                    TempData["ErrorMessage"] = "Error, no group has been specified";
+                    return RedirectToAction("Index");
+                }
+
+                //Check group id is a number then cast to int
+                if (!int.TryParse(groupid, out int GroupIdInt))
+                {
+                    TempData["ErrorMessage"] = "Error: Group ID incorrect";
+                    return RedirectToAction("Index");
+                }
+
+                //Check group id exists
+                var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
+                if (Group == null)
+                {
+                    TempData["ErrorMessage"] = "Error: Group does not exist";
+                    return RedirectToAction("Index");
+                }
+
+                //Check logged in user is a member of group
+                var LoggedInId = User.Identity.GetUserId();
+                var GroupMember = _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInId) && n.Group_Id == Group.Id);
+                if (GroupMember == null)
+                {
+                    TempData["ErrorMessage"] = "Sorry, you are not a member of the group '" + Group.Name + "'";
+                    return RedirectToAction("Index");
+                }
+
+                //Create the knowledge
+                var DateTimeNow = DateTime.Now;
+                var Knowledge = new Knowledge()
+                {
+                    Created = DateTimeNow,
+                    Updated = DateTimeNow,
+                    Description = model.Description,
+                    Group_Id = GroupIdInt,
+                    LastUpdatedByUserId = User.Identity.GetUserId(),
+                    Summary = model.Summary
+                };
+
+                //Save the knowledge
+                _context.Knowledge.Add(Knowledge);
+                _context.SaveChanges();
+
+                //Redirect
+                TempData["SuccessMessage"] = "Knowledge Created";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+            //Model not valid
+            return View("CreateKnowledge", model);
+        }
+
+        /*[Route("groups/{groupid}/kbase/{knowledgeid}")]
+        public ActionResult ViewAKnowledge()
+        {
+
+        }*/
+
+        /*public ActionResult UpdateKnowledgeGET()
         {
 
         }
 
-        [Route("groups/{groupid}/kbase/{knowledgeid}")]
-        public ActionResult ViewAKnowledge()
+        public ActionResult UpdateKnowledgePOST()
         {
 
         }*/

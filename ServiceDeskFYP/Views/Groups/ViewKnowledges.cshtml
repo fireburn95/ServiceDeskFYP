@@ -7,7 +7,7 @@
 <h2>ViewKnowledges</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "CreateKnowledgeGET")
 </p>
 <table class="table">
     <tr>
@@ -17,7 +17,6 @@
         <th>
             @Html.DisplayNameFor(model => model.Knowledges.First().Summary)
         </th>
-        <th></th>
     </tr>
 
 @foreach (var item in Model.Knowledges) {
@@ -27,11 +26,6 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Summary)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
         </td>
     </tr>
 }
