@@ -6,7 +6,14 @@
 
 <h2>@Model.Group.Name</h2>
 <h4>@Model.Group.Description</h4>
-
+@if (ViewBag.ErrorMessage != null)
+{
+    <h5 style="color:red">@ViewBag.ErrorMessage</h5>
+}
+@if (ViewBag.SuccessMessage != null)
+{
+    <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
+}
 <br />
 
 <h4>Group-Member Tools</h4>

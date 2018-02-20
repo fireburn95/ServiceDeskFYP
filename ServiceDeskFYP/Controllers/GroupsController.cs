@@ -74,6 +74,9 @@ namespace ServiceDeskFYP.Controllers
         [Route("groups/{groupid}")]
         public ActionResult GroupHome(string groupid)
         {
+            //Handle messages
+            HandleMessages();
+
             //Check group id is not null
             if (String.IsNullOrEmpty(groupid))
             {
@@ -410,6 +413,9 @@ namespace ServiceDeskFYP.Controllers
         [Route("groups/{groupid}/kbase/")]
         public ActionResult ViewKnowledges(string groupid)
         {
+            //Handle messages
+            HandleMessages();
+
             //Check group id is not null
             if (String.IsNullOrEmpty(groupid))
             {
@@ -593,7 +599,7 @@ namespace ServiceDeskFYP.Controllers
             }
 
             //Check knowledge id is not null
-            if (String.IsNullOrEmpty(groupid))
+            if (String.IsNullOrEmpty(knowledgeid))
             {
                 TempData["ErrorMessage"] = "An error has occured regarding the Knowledge ID";
                 return RedirectToAction("ViewKnowledges", new { groupid });
@@ -678,7 +684,7 @@ namespace ServiceDeskFYP.Controllers
             }
 
             //Check knowledge id is not null
-            if (String.IsNullOrEmpty(groupid))
+            if (String.IsNullOrEmpty(knowledgeid))
             {
                 TempData["ErrorMessage"] = "An error has occured regarding the Knowledge ID";
                 return RedirectToAction("ViewKnowledges", new { groupid });
@@ -759,7 +765,7 @@ namespace ServiceDeskFYP.Controllers
                 }
 
                 //Check knowledge id is not null
-                if (String.IsNullOrEmpty(groupid))
+                if (String.IsNullOrEmpty(knowledgeid))
                 {
                     TempData["ErrorMessage"] = "An error has occured regarding the Knowledge ID";
                     return RedirectToAction("ViewKnowledges", new { groupid });
@@ -806,6 +812,88 @@ namespace ServiceDeskFYP.Controllers
             return View("UpdateKnowledge", model);
         }
 
+        [HttpGet]
+        [Route("groups/{groupid}/kbase/remove/{knowledgeid}")]
+        public ActionResult RemoveKnowledge(string groupid, string knowledgeid)
+        {
+            //Check group id is not null
+            if (String.IsNullOrEmpty(groupid))
+            {
+                TempData["ErrorMessage"] = "Error, no group has been specified";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id is a number then cast to int
+            if (!int.TryParse(groupid, out int GroupIdInt))
+            {
+                TempData["ErrorMessage"] = "Error: Group ID incorrect";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id exists
+            var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
+            if (Group == null)
+            {
+                TempData["ErrorMessage"] = "Error: Group does not exist";
+                return RedirectToAction("Index");
+            }
+
+            //Check logged in user is a member of group
+            var LoggedInId = User.Identity.GetUserId();
+            var GroupMember = _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInId) && n.Group_Id == Group.Id);
+            if (GroupMember == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, you are not a member of the group '" + Group.Name + "'";
+                return RedirectToAction("Index");
+            }
+
+            //Check knowledge id is not null
+            if (String.IsNullOrEmpty(knowledgeid))
+            {
+                TempData["ErrorMessage"] = "An error has occured regarding the Knowledge ID";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+
+            //Check knowledge id is a number then cast to int
+            if (!int.TryParse(knowledgeid, out int KnowledgeIdInt))
+            {
+                TempData["ErrorMessage"] = "An error has occured regarding the Knowledge ID";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+
+            //Get the knowledge
+            var Knowledge = _context.Knowledge.SingleOrDefault(n => n.Id == KnowledgeIdInt);
+
+            //Check if Knowledge exists
+            if (Knowledge == null)
+            {
+                TempData["ErrorMessage"] = "Error: That Knowledge doesn't exist";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+
+            //Check if knowledge is in group
+            if (Knowledge.Group_Id != GroupIdInt)
+            {
+                TempData["ErrorMessage"] = "Error: That Knowledge is not part of this group";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+
+            //Check if owner
+            if (!GroupMember.Owner)
+            {
+                TempData["ErrorMessage"] = "Error: Only an owner can remove knowledges from this group";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+
+            //Remove from table
+            _context.Knowledge.Remove(Knowledge);
+            _context.SaveChanges();
+
+            //Return to list
+            TempData["SuccessMessage"] = "Knowledge removed";
+            return RedirectToAction("ViewKnowledges", new { groupid });
+        }
+
         /*****************
          * Helpers
          * ***************/
@@ -824,6 +912,11 @@ namespace ServiceDeskFYP.Controllers
             {
                 ViewBag.SuccessMessage = TempData["SuccessMessage"];
             }
+
+            //Remove Tempdata TODO do for all others
+            TempData.Remove("ErrorMessage");
+            TempData.Remove("SuccessMessage");
+
         }
     }
 }
