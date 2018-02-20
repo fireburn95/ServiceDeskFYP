@@ -1,6 +1,8 @@
 ﻿@model ServiceDeskFYP.Models.ViewKnowledgesPageGroupViewModel
 
 @{
+    /**/
+
     ViewBag.Title = "ViewKnowledges";
 }
 
@@ -9,25 +11,40 @@
 <p>
     @Html.ActionLink("Create New", "CreateKnowledgeGET")
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Knowledges.First().Updated)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Knowledges.First().Summary)
-        </th>
-    </tr>
 
-@foreach (var item in Model.Knowledges) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Updated)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Summary)
-        </td>
-    </tr>
+@if (Model.Knowledges.Any())
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Knowledges.First().Updated)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Knowledges.First().Summary)
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model.Knowledges)
+            {
+                <tr onclick="window.location='/groups/@item.Group_Id/kbase/view/@item.Id';">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Updated)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Summary)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+else
+{
+    <h4>Sorry, there are no knowledges in this group</h4>
 }
 
-</table>
+

@@ -49,8 +49,8 @@ namespace ServiceDeskFYP.Models
 
     /*
      * Used in Creating knowledges
-     */     
-     public class CreateKnowledgeGroupViewModel
+     */
+    public class CreateKnowledgeGroupViewModel
     {
         [Key]
         public int Id { get; set; }
@@ -62,6 +62,46 @@ namespace ServiceDeskFYP.Models
         [Required]
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
+    }
+
+    /*
+    * Used in Viewing knowledges
+    */
+    public class ViewKnowledgeGroupViewModel
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime Created { get; set; }
+
+        public int Group_Id { get; set; }
+
+        [Display(Name = "For Group")]
+        public string GroupName { get; set; }
+
+        [Required]
+        [StringLength(150)]
+        public string Summary { get; set; }
+
+        [Required]
+        [DataType(DataType.MultilineText)]
+        public string Description { get; set; }
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Last Updated")]
+        public DateTime Updated { get; set; }
+
+        [Required]
+        [StringLength(128)]
+        public string LastUpdatedByUserId { get; set; }
+
+        [Display(Name ="Updated by")]
+        public string LastUpdatedByUserName { get; set; }
+
+        public bool IsLoggedInUserOwner { get; set; }
     }
 
 }
