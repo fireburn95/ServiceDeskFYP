@@ -558,6 +558,9 @@ namespace ServiceDeskFYP.Controllers
         [Route("groups/{groupid}/kbase/view/{knowledgeid}")]
         public ActionResult ViewAKnowledge(string groupid, string knowledgeid)
         {
+            //Handle Messages
+            HandleMessages();
+
             //Check group id is not null
             if (String.IsNullOrEmpty(groupid))
             {
@@ -639,15 +642,169 @@ namespace ServiceDeskFYP.Controllers
             return View(model);
         }
 
-        /*public ActionResult UpdateKnowledgeGET()
+        [HttpGet]
+        [Route("groups/{groupid}/kbase/update/{knowledgeid}")]
+        public ActionResult UpdateKnowledgeGET(string groupid, string knowledgeid)
         {
+            //Check group id is not null
+            if (String.IsNullOrEmpty(groupid))
+            {
+                TempData["ErrorMessage"] = "Error, no group has been specified";
+                return RedirectToAction("Index");
+            }
 
+            //Check group id is a number then cast to int
+            if (!int.TryParse(groupid, out int GroupIdInt))
+            {
+                TempData["ErrorMessage"] = "Error: Group ID incorrect";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id exists
+            var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
+            if (Group == null)
+            {
+                TempData["ErrorMessage"] = "Error: Group does not exist";
+                return RedirectToAction("Index");
+            }
+
+            //Check logged in user is a member of group
+            var LoggedInId = User.Identity.GetUserId();
+            var GroupMember = _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInId) && n.Group_Id == Group.Id);
+            if (GroupMember == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, you are not a member of the group '" + Group.Name + "'";
+                return RedirectToAction("Index");
+            }
+
+            //Check knowledge id is not null
+            if (String.IsNullOrEmpty(groupid))
+            {
+                TempData["ErrorMessage"] = "An error has occured regarding the Knowledge ID";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+
+            //Check knowledge id is a number then cast to int
+            if (!int.TryParse(knowledgeid, out int KnowledgeIdInt))
+            {
+                TempData["ErrorMessage"] = "An error has occured regarding the Knowledge ID";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+
+            //Get the knowledge
+            var Knowledge = _context.Knowledge.SingleOrDefault(n => n.Id == KnowledgeIdInt);
+
+            //Check if Knowledge exists
+            if (Knowledge == null)
+            {
+                TempData["ErrorMessage"] = "Error: That Knowledge doesn't exist";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+
+            //Check if knowledge is in group
+            if (Knowledge.Group_Id != GroupIdInt)
+            {
+                TempData["ErrorMessage"] = "Error: That Knowledge is not part of this group";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+
+            //Create the view model
+            var model = new UpdateKnowledgeGroupViewModel()
+            {
+                Id = Knowledge.Id,
+                Summary = Knowledge.Summary,
+                Description = Knowledge.Description
+            };
+
+            //Pass to view
+            return View("UpdateKnowledge", model);
         }
 
-        public ActionResult UpdateKnowledgePOST()
+        [HttpPost]
+        [Route("groups/{groupid}/kbase/update/{knowledgeid}")]
+        public ActionResult UpdateKnowledgePOST(string groupid, string knowledgeid, UpdateKnowledgeGroupViewModel model)
         {
+            //If model valid
+            if (ModelState.IsValid)
+            {
+                //Check group id is not null
+                if (String.IsNullOrEmpty(groupid))
+                {
+                    TempData["ErrorMessage"] = "Error, no group has been specified";
+                    return RedirectToAction("Index");
+                }
 
-        }*/
+                //Check group id is a number then cast to int
+                if (!int.TryParse(groupid, out int GroupIdInt))
+                {
+                    TempData["ErrorMessage"] = "Error: Group ID incorrect";
+                    return RedirectToAction("Index");
+                }
+
+                //Check group id exists
+                var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
+                if (Group == null)
+                {
+                    TempData["ErrorMessage"] = "Error: Group does not exist";
+                    return RedirectToAction("Index");
+                }
+
+                //Check logged in user is a member of group
+                var LoggedInId = User.Identity.GetUserId();
+                var GroupMember = _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInId) && n.Group_Id == Group.Id);
+                if (GroupMember == null)
+                {
+                    TempData["ErrorMessage"] = "Sorry, you are not a member of the group '" + Group.Name + "'";
+                    return RedirectToAction("Index");
+                }
+
+                //Check knowledge id is not null
+                if (String.IsNullOrEmpty(groupid))
+                {
+                    TempData["ErrorMessage"] = "An error has occured regarding the Knowledge ID";
+                    return RedirectToAction("ViewKnowledges", new { groupid });
+                }
+
+                //Check knowledge id is a number then cast to int
+                if (!int.TryParse(knowledgeid, out int KnowledgeIdInt))
+                {
+                    TempData["ErrorMessage"] = "An error has occured regarding the Knowledge ID";
+                    return RedirectToAction("ViewKnowledges", new { groupid });
+                }
+
+                //Get the knowledge
+                var Knowledge = _context.Knowledge.SingleOrDefault(n => n.Id == KnowledgeIdInt);
+
+                //Check if Knowledge exists
+                if (Knowledge == null)
+                {
+                    TempData["ErrorMessage"] = "Error: That Knowledge doesn't exist";
+                    return RedirectToAction("ViewKnowledges", new { groupid });
+                }
+
+                //Check if knowledge is in group
+                if (Knowledge.Group_Id != GroupIdInt)
+                {
+                    TempData["ErrorMessage"] = "Error: That Knowledge is not part of this group";
+                    return RedirectToAction("ViewKnowledges", new { groupid });
+                }
+
+                //Update Knowledge
+                Knowledge.Summary = model.Summary;
+                Knowledge.Description = model.Description;
+                Knowledge.LastUpdatedByUserId = LoggedInId;
+                Knowledge.Updated = DateTime.Now;
+
+                //Save
+                _context.SaveChanges();
+
+                //Return to knowledge details
+                TempData["SuccessMessage"] = "Knowledge Updated";
+                return RedirectToAction("ViewAKnowledge", new { groupid, knowledgeid });
+            }
+            //Failed validation
+            return View("UpdateKnowledge", model);
+        }
 
         /*****************
          * Helpers

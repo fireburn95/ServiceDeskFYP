@@ -104,6 +104,23 @@ namespace ServiceDeskFYP.Models
         public bool IsLoggedInUserOwner { get; set; }
     }
 
+    /*
+     * Used in Updating knowledges
+     */
+    public class UpdateKnowledgeGroupViewModel
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        [StringLength(150)]
+        public string Summary { get; set; }
+
+        [Required]
+        [DataType(DataType.MultilineText)]
+        public string Description { get; set; }
+    }
+
 }
 
 

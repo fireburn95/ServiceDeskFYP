@@ -393,6 +393,7 @@
     <Content Include="Views\Groups\ViewKnowledges.cshtml" />
     <Content Include="Views\Groups\CreateKnowledge.cshtml" />
     <Content Include="Views\Groups\ViewAKnowledge.cshtml" />
+    <Content Include="Views\Groups\UpdateKnowledge.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
