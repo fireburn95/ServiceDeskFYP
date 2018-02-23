@@ -61,7 +61,7 @@ namespace ServiceDeskFYP.Controllers
                             ExpiredDate = item.SLAResetTime.Value.AddMinutes(mins);
 
                             //Check if Date is past now
-                            if (ExpiredDate > DateTime.Now) exceededslacalls++;
+                            if (ExpiredDate < DateTime.Now) exceededslacalls++;
                         }
                         else if (item.SlaLevel.Equals("Medium"))
                         {
@@ -72,7 +72,7 @@ namespace ServiceDeskFYP.Controllers
                             ExpiredDate = item.SLAResetTime.Value.AddMinutes(mins);
 
                             //Check if Date is past now
-                            if (ExpiredDate > DateTime.Now) exceededslacalls++;
+                            if (ExpiredDate < DateTime.Now) exceededslacalls++;
                         }
                         else if (item.SlaLevel.Equals("High"))
                         {
@@ -83,13 +83,13 @@ namespace ServiceDeskFYP.Controllers
                             ExpiredDate = item.SLAResetTime.Value.AddMinutes(mins);
 
                             //Check if Date is past now
-                            if (ExpiredDate > DateTime.Now) exceededslacalls++;
+                            if (ExpiredDate < DateTime.Now) exceededslacalls++;
                         }
                     }
                 }
 
                 //Get required by dates of calls
-                var requireddatescount = _context.Call.Where(n => (n.ResourceUserId.Equals(LoggedInUserID)) && (n.Closed == false)).Select(n => n.Required_By).Where(n => n.Value > DateTime.Now).Count();
+                var requireddatescount = _context.Call.Where(n => (n.ResourceUserId.Equals(LoggedInUserID)) && (n.Closed == false) && (n.Required_By < DateTime.Now)).Count();
 
                 //Get dismissed alerts
                 IQueryable<Alert> Alerts;
@@ -189,7 +189,7 @@ namespace ServiceDeskFYP.Controllers
                 var GroupMemberOwner = GroupMember.Owner;
 
                 //Get all open calls
-                var OpenCalls = _context.Call.Where(n => (n.ResourceGroupId.Equals(GroupId)) && (n.Closed==false));
+                var OpenCalls = _context.Call.Where(n => (n.ResourceGroupId == GroupId) && (n.Closed==false));
 
                 //Get exceeded SLA calls
                 int mins, exceededslacalls = 0;
@@ -207,7 +207,7 @@ namespace ServiceDeskFYP.Controllers
                             ExpiredDate = item.SLAResetTime.Value.AddMinutes(mins);
 
                             //Check if Date is past now
-                            if (ExpiredDate > DateTime.Now) exceededslacalls++;
+                            if (ExpiredDate < DateTime.Now) exceededslacalls++;
                         }
                         else if (item.SlaLevel.Equals("Medium"))
                         {
@@ -218,7 +218,7 @@ namespace ServiceDeskFYP.Controllers
                             ExpiredDate = item.SLAResetTime.Value.AddMinutes(mins);
 
                             //Check if Date is past now
-                            if (ExpiredDate > DateTime.Now) exceededslacalls++;
+                            if (ExpiredDate < DateTime.Now) exceededslacalls++;
                         }
                         else if (item.SlaLevel.Equals("High"))
                         {
@@ -229,26 +229,26 @@ namespace ServiceDeskFYP.Controllers
                             ExpiredDate = item.SLAResetTime.Value.AddMinutes(mins);
 
                             //Check if Date is past now
-                            if (ExpiredDate > DateTime.Now) exceededslacalls++;
+                            if (ExpiredDate < DateTime.Now) exceededslacalls++;
                         }
                     }
                 }
 
                 //Get required by dates of calls
-                var requireddatescount = _context.Call.Where(n => (n.ResourceUserId.Equals(LoggedInUserID)) && (n.Closed==false)).Select(n => n.Required_By).Where(n => n.Value > DateTime.Now).Count();
+                var requireddatescount = _context.Call.Where(n => (n.ResourceUserId.Equals(LoggedInUserID)) && (n.Closed==false) && (n.Required_By < DateTime.Now)).Count();
 
                 //Get dismissed alerts
                 IQueryable<Alert> Alerts;
                 bool isDismissed;
                 if (!String.IsNullOrEmpty(dismissed) && dismissed.Equals("true"))
                 {
-                    Alerts = _context.Alert.Where(n => (n.ToUserId.Equals(LoggedInUserID)) && (n.DismissedWhen != null));
+                    Alerts = _context.Alert.Where(n => (n.ToGroupId == GroupId) && (n.DismissedWhen != null));
                     isDismissed = true;
                 }
                 //Get Non dismissed alerts
                 else
                 {
-                    Alerts = _context.Alert.Where(n => (n.ToUserId.Equals(LoggedInUserID)) && (n.DismissedWhen == null));
+                    Alerts = _context.Alert.Where(n => (n.ToGroupId == GroupId) && (n.DismissedWhen == null));
                     isDismissed = false;
                 }
 
@@ -261,7 +261,7 @@ namespace ServiceDeskFYP.Controllers
                     foreach (var item in Alerts)
                     {
                         FromUser = dbcontext.Users.SingleOrDefault(n => n.Id.Equals(item.FromUserId));
-                        ToGroup = dbcontext.Group.SingleOrDefault(n => n.Id.Equals(item.ToGroupId));
+                        ToGroup = dbcontext.Group.SingleOrDefault(n => n.Id == item.ToGroupId);
                         DismissedByUser = dbcontext.Users.SingleOrDefault(n => n.Id.Equals(item.DismissedByUserId));
 
                         AlertsVM.Add(new ViewAlertsTemplateViewModel()

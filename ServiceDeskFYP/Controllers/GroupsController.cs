@@ -917,5 +917,26 @@ namespace ServiceDeskFYP.Controllers
 
             //Remove Tempdata TODO do for all others
         }
+
+        [Route("groups/findaknowledge/{knowledgeid}")]
+        public ActionResult FindKnowledgeURL(int knowledgeid)
+        {
+            //Get the knowledge
+            var Knowledge = _context.Knowledge.SingleOrDefault(n => n.Id == knowledgeid);
+
+            //Check it exists
+            if(Knowledge == null)
+            {
+                return new HttpNotFoundResult();
+            }
+
+            //Get the group
+            var GroupId = Knowledge.Group_Id;
+
+            //GO to action
+            return RedirectToAction("ViewAKnowledge", new { groupid = GroupId + "", knowledgeid });
+
+
+        }
     }
 }

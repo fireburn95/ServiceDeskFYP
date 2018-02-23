@@ -4,96 +4,51 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>Alerts</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            Username
-        </th>
-        <th>
-            To User Id
-        </th>
-        <th>
-            To Username
-        </th>
-        <th>
-            To group ID
-        </th>
-        <th>
-            to Group name
-        </th>
-        <th>
-            message
-        </th>
-        <th>
-            Associated Call Ref
-        </th>
-        <th>
-            Associated knowledge ID
-        </th>
-        <th>
-            Created
-        </th>
-        <th>
-            Dismissed when
-        </th>
-        <th>
-            Dismissed by id
-        </th>
-        <th>
-            DismissedUsername
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model.Alerts) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.FromUserName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ToUserId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ToUserName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ToGroupId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ToGroupName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Text)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.AssociatedCallRef)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.AssociatedKnowledgeId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Created)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.DismissedWhen)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.DismissedByUserId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.DismissedByUserName)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
+<!--DISPLAY STATISTICS-->
+@if (Model.ExceededSLACalls != 0)
+{
+    <p class="alert-danger">You have @Model.ExceededSLACalls Calls past SLA</p>
+}
+@if (Model.PastRequiredDate != 0)
+{
+    <p class="alert-danger">You have @Model.PastRequiredDate Calls which have exceeded their required-date</p>
 }
 
-</table>
+
+
+<!--END OF DISPLAY STATISTICS-->
+
+
+@foreach (var item in Model.Alerts)
+{
+    <p>
+        @if (item.FromUserId != null)
+        {
+            <text>From: @item.FromUserName</text> <br />
+        }
+        @item.Text
+        <br />
+        @if (item.AssociatedCallRef != null)
+        {
+            @Html.ActionLink("Go to", "ViewCall", "Desk", new { Reference = item.AssociatedCallRef }, null)
+        }
+        @if (item.AssociatedKnowledgeId != null)
+        {
+            @Html.ActionLink("Go to", "FindKnowledgeURL", "Groups", new { knowledgeid = item.AssociatedKnowledgeId }, null)
+        }
+        @if (item.FromUserId != null)
+        {
+            <text>Reply</text>
+        }
+        @if (item.Dismissed == false)
+        {
+            <text>Dismiss</text>
+        }
+        else
+        {
+            <text>Restate</text>
+        }
+    </p>
+}
