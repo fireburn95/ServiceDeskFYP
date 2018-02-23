@@ -872,7 +872,6 @@ namespace ServiceDeskFYP.Controllers
                         Text = model.Notify.Message,
                         AssociatedCallRef = Reference,
                         Created = DateTime.Now,
-                        Dismissed = false,
                         DismissedByUserId = null,
                     };
                     _context.Alert.Add(Alert);
@@ -895,7 +894,7 @@ namespace ServiceDeskFYP.Controllers
                         Text = model.Notify.Message,
                         AssociatedCallRef = Reference,
                         Created = DateTime.Now,
-                        Dismissed = false,
+                        DismissedWhen = null,
                         DismissedByUserId = null,
                     };
                     _context.Alert.Add(Alert);

@@ -224,8 +224,8 @@ namespace ServiceDeskFYP.Controllers
                     AssociatedCallRef = null,
                     AssociatedKnowledgeId = null,
                     Created = DateTime.Now,
-                    Dismissed = false,
-                    DismissedByUserId = null
+                    DismissedByUserId = null,
+                    DismissedWhen = null
                 };
 
                 //Save alert

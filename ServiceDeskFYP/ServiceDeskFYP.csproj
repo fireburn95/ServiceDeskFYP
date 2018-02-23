@@ -191,6 +191,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\AlertsController.cs" />
     <Compile Include="Controllers\DeskController.cs" />
     <Compile Include="Controllers\GroupsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -275,7 +276,16 @@
     <Compile Include="Migrations\201802191747292_UpdatedKnowledgeTable_AddedUpdatedDateTimeAndUpdatedByFields.Designer.cs">
       <DependentUpon>201802191747292_UpdatedKnowledgeTable_AddedUpdatedDateTimeAndUpdatedByFields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802222248463_UpdatedAlertTable_AddedDismissedWhen.cs" />
+    <Compile Include="Migrations\201802222248463_UpdatedAlertTable_AddedDismissedWhen.Designer.cs">
+      <DependentUpon>201802222248463_UpdatedAlertTable_AddedDismissedWhen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802231428270_UpdatedAlertTable_RemovedDismissedColumn.cs" />
+    <Compile Include="Migrations\201802231428270_UpdatedAlertTable_RemovedDismissedColumn.Designer.cs">
+      <DependentUpon>201802231428270_UpdatedAlertTable_RemovedDismissedColumn.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\AlertsViewModel.cs" />
     <Compile Include="Models\GroupManagementViewModel.cs" />
     <Compile Include="Models\ManagerSubordinateViewModels.cs" />
     <Compile Include="Models\DeskViewModels.cs" />
@@ -394,6 +404,7 @@
     <Content Include="Views\Groups\CreateKnowledge.cshtml" />
     <Content Include="Views\Groups\ViewAKnowledge.cshtml" />
     <Content Include="Views\Groups\UpdateKnowledge.cshtml" />
+    <Content Include="Views\Alerts\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -468,6 +479,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802191747292_UpdatedKnowledgeTable_AddedUpdatedDateTimeAndUpdatedByFields.resx">
       <DependentUpon>201802191747292_UpdatedKnowledgeTable_AddedUpdatedDateTimeAndUpdatedByFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802222248463_UpdatedAlertTable_AddedDismissedWhen.resx">
+      <DependentUpon>201802222248463_UpdatedAlertTable_AddedDismissedWhen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802231428270_UpdatedAlertTable_RemovedDismissedColumn.resx">
+      <DependentUpon>201802231428270_UpdatedAlertTable_RemovedDismissedColumn.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

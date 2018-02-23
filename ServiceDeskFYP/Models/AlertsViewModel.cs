@@ -2,12 +2,29 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
 
 namespace ServiceDeskFYP.Models
 {
-    public class Alert
+
+    //Used in /alerts
+    public class ViewAlertsPageViewModel
+    {
+        public string GroupId { get; set; }
+
+        public int ExceededSLACalls { get; set; }
+
+        public int PastRequiredDate { get; set; }
+
+        public IEnumerable<ViewAlertsTemplateViewModel> Alerts { get; set; }
+
+        public bool? IsLoggedInUserGroupOwner { get; set; }
+
+        public bool IsGroup { get; set; }
+
+        public bool IsDismissed { get; set; }
+    }
+
+    public class ViewAlertsTemplateViewModel
     {
         [Key]
         public int Id { get; set; }
@@ -15,10 +32,16 @@ namespace ServiceDeskFYP.Models
         [StringLength(128)]
         public string FromUserId { get; set; }
 
+        public string FromUserName { get; set; }
+
         [StringLength(128)]
         public string ToUserId { get; set; }
 
+        public string ToUserName { get; set; }
+
         public int? ToGroupId { get; set; }
+
+        public string ToGroupName { get; set; }
 
         [StringLength(500)]
         [Required]
@@ -38,22 +61,11 @@ namespace ServiceDeskFYP.Models
         [StringLength(128)]
         public string DismissedByUserId { get; set; }
 
-        [ForeignKey("FromUserId")]
-        public ApplicationUser ApplicationUserFrom { get; set; }
+        public string DismissedByUserName { get; set; }
 
-        [ForeignKey("ToUserId")]
-        public ApplicationUser ApplicationUserTo { get; set; }
-
-        [ForeignKey("DismissedByUserId")]
-        public ApplicationUser ApplicationUserDismissedBy { get; set; }
-
-        [ForeignKey("ToGroupId")]
-        public Group Group { get; set; }
-
-        [ForeignKey("AssociatedCallRef")]
-        public Call Call { get; set; }
-
-        [ForeignKey("AssociatedKnowledgeId")]
-        public Knowledge Knowledge { get; set; }
+        public bool Dismissed { get; set; }
     }
+
 }
+
+

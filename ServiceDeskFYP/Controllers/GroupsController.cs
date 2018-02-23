@@ -905,18 +905,17 @@ namespace ServiceDeskFYP.Controllers
             if (TempData["ErrorMessage"] != null)
             {
                 ViewBag.ErrorMessage = TempData["ErrorMessage"];
+                TempData.Remove("ErrorMessage");
             }
 
             //Check for a message from another action
             if (TempData["SuccessMessage"] != null)
             {
                 ViewBag.SuccessMessage = TempData["SuccessMessage"];
+                TempData.Remove("SuccessMessage");
             }
 
             //Remove Tempdata TODO do for all others
-            TempData.Remove("ErrorMessage");
-            TempData.Remove("SuccessMessage");
-
         }
     }
 }
