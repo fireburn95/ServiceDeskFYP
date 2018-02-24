@@ -15,6 +15,8 @@ namespace ServiceDeskFYP.Models
         [StringLength(128)]
         public string FromUserId { get; set; }
 
+        public int? FromGroupId { get; set; }
+
         [StringLength(128)]
         public string ToUserId { get; set; }
 
@@ -48,7 +50,10 @@ namespace ServiceDeskFYP.Models
         public ApplicationUser ApplicationUserDismissedBy { get; set; }
 
         [ForeignKey("ToGroupId")]
-        public Group Group { get; set; }
+        public Group GroupTo { get; set; }
+
+        [ForeignKey("FromGroupId")]
+        public Group GroupFrom { get; set; }
 
         [ForeignKey("AssociatedCallRef")]
         public Call Call { get; set; }

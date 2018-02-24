@@ -6,7 +6,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ServiceDeskFYP.Models
 {
 
-    //Used in /alerts
+    /*
+     * The following are used by alerts/ 
+     */
     public class ViewAlertsPageViewModel
     {
         public string GroupId { get; set; }
@@ -33,6 +35,10 @@ namespace ServiceDeskFYP.Models
         public string FromUserId { get; set; }
 
         public string FromUserName { get; set; }
+
+        public int? FromGroupId { get; set; }
+
+        public string FromGroupName { get; set; }
 
         [StringLength(128)]
         public string ToUserId { get; set; }
@@ -64,6 +70,28 @@ namespace ServiceDeskFYP.Models
         public string DismissedByUserName { get; set; }
 
         public bool Dismissed { get; set; }
+    }
+
+    /*
+     * The following are used by alerts/reply/{alertid}
+     */
+
+    public class ReplyAlertViewModel
+    {
+        public string ReplyingToMessage { get; set; }
+
+        public string ReplyToGroupName { get; set; }
+
+        public string ReplyToUserName { get; set; }
+
+        public string FromUserName { get; set; }
+
+        public string FromGroupName { get; set; }
+
+        [StringLength(500)]
+        [Required]
+        [DataType(DataType.MultilineText)]
+        public string Text { get; set; }
     }
 
 }

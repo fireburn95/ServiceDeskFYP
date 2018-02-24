@@ -284,6 +284,10 @@
     <Compile Include="Migrations\201802231428270_UpdatedAlertTable_RemovedDismissedColumn.Designer.cs">
       <DependentUpon>201802231428270_UpdatedAlertTable_RemovedDismissedColumn.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802240019277_UpdatedAlertTable_AddedFromGroupIdField.cs" />
+    <Compile Include="Migrations\201802240019277_UpdatedAlertTable_AddedFromGroupIdField.Designer.cs">
+      <DependentUpon>201802240019277_UpdatedAlertTable_AddedFromGroupIdField.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AlertsViewModel.cs" />
     <Compile Include="Models\GroupManagementViewModel.cs" />
@@ -405,6 +409,7 @@
     <Content Include="Views\Groups\ViewAKnowledge.cshtml" />
     <Content Include="Views\Groups\UpdateKnowledge.cshtml" />
     <Content Include="Views\Alerts\Index.cshtml" />
+    <Content Include="Views\Alerts\ReplyToAlert.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -485,6 +490,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802231428270_UpdatedAlertTable_RemovedDismissedColumn.resx">
       <DependentUpon>201802231428270_UpdatedAlertTable_RemovedDismissedColumn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802240019277_UpdatedAlertTable_AddedFromGroupIdField.resx">
+      <DependentUpon>201802240019277_UpdatedAlertTable_AddedFromGroupIdField.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

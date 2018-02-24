@@ -4,6 +4,7 @@ using ServiceDeskFYP.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -407,7 +408,7 @@ namespace ServiceDeskFYP.Controllers
                 Closed = Call.Closed,
                 Hidden = Call.Hidden,
                 LockedToUserId = Call.LockedToUserId,
-                LockedToUsername = Call.LockedToUserId!=null?_context.Users.SingleOrDefault(n => n.Id.Equals(Call.LockedToUserId)).UserName:null,
+                LockedToUsername = Call.LockedToUserId != null ? _context.Users.SingleOrDefault(n => n.Id.Equals(Call.LockedToUserId)).UserName : null,
                 Email = Call.Email,
                 FirstName = Call.FirstName,
                 Lastname = Call.Lastname,
@@ -896,9 +897,12 @@ namespace ServiceDeskFYP.Controllers
                         Created = DateTime.Now,
                         DismissedWhen = null,
                         DismissedByUserId = null,
+
                     };
+
                     _context.Alert.Add(Alert);
                     _context.SaveChanges();
+
                     TempData["SuccessMessage"] = model.Notify.GroupName + " notified";
 
                 }
@@ -1312,10 +1316,10 @@ namespace ServiceDeskFYP.Controllers
                 else if (User.IsInRole(LoggedInUser))
                     permissions = true;
                 //Else if it's a group call, and it's the group owner
-                else if 
+                else if
                 (
                     Call.ResourceGroupId != null &&
-                    _context.GroupMember.Where(n => n.User_Id.Equals(LoggedInUser) && n.Group_Id==Call.ResourceGroupId).Any() &&
+                    _context.GroupMember.Where(n => n.User_Id.Equals(LoggedInUser) && n.Group_Id == Call.ResourceGroupId).Any() &&
                     _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInUser) && n.Group_Id == Call.ResourceGroupId).Owner == true
                 )
                     permissions = true;
@@ -1426,7 +1430,7 @@ namespace ServiceDeskFYP.Controllers
             var Call = dbcontext.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
 
             //Check if locked to someone else
-            return Call.LockedToUserId!=null && !Call.LockedToUserId.Equals(User.Identity.GetUserId());
+            return Call.LockedToUserId != null && !Call.LockedToUserId.Equals(User.Identity.GetUserId());
         }
 
         //Get non-disabled employees as IEnumerable

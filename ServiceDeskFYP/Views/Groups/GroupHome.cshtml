@@ -23,7 +23,7 @@
         <li>@Html.ActionLink("View Members", "ManageAndViewMembers", new { groupid = Model.Group_Id })</li>
     }
     <li>@Html.ActionLink("Knowledge Base", "ViewKnowledges", new { groupid = Model.Group_Id })</li>
-    <li>View Alerts</li>
+    <li>@Html.ActionLink("View Alerts", "Index", "Alerts", new { resource = Model.Group_Id }, null)</li>
     <li>@Html.ActionLink("View Calls", "Index", "Desk", new { resource = Model.Group_Id }, null)</li>
 </ul>
 @if (Model.Owner)

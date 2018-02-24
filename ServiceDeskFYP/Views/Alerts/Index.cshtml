@@ -6,6 +6,16 @@
 
 <h2>Alerts</h2>
 
+<!--HANDLE ERRORS-->
+@if (ViewBag.ErrorMessage != null)
+{
+    <h5 style="color:red">@ViewBag.ErrorMessage</h5>
+}
+@if (ViewBag.SuccessMessage != null)
+{
+    <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
+}
+
 <!--DISPLAY STATISTICS-->
 @if (Model.ExceededSLACalls != 0)
 {
@@ -24,9 +34,17 @@
 @foreach (var item in Model.Alerts)
 {
     <p>
-        @if (item.FromUserId != null)
+        @if (item.FromUserId != null && item.FromGroupId != null)
+        {
+            <text>From: @item.FromUserName via @item.FromGroupName</text> <br />
+        }
+        else if (item.FromUserId != null)
         {
             <text>From: @item.FromUserName</text> <br />
+        }
+        else if (item.FromGroupId != null)
+        {
+            <text>From: @item.FromGroupName</text> <br />
         }
         @item.Text
         <br />
@@ -38,9 +56,9 @@
         {
             @Html.ActionLink("Go to", "FindKnowledgeURL", "Groups", new { knowledgeid = item.AssociatedKnowledgeId }, null)
         }
-        @if (item.FromUserId != null)
+        @if (item.FromUserId != null && item.Dismissed == false)
         {
-            <text>Reply</text>
+            @Html.ActionLink("Reply", "ReplyToAlertGET", new { alertid = item.Id }, null)
         }
         @if (item.Dismissed == false)
         {
