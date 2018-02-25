@@ -419,6 +419,7 @@ namespace ServiceDeskFYP.Models
     {
         public string Username { get; set; }
         public string GroupName { get; set; }
+        [Required]
         [DataType(DataType.MultilineText)]
         public string Message { get; set; }
     }

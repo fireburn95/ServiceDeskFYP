@@ -62,11 +62,11 @@
         }
         @if (item.Dismissed == false)
         {
-            <text>Dismiss</text>
+            @Html.ActionLink("Dismiss", "DismissUndismissAlert", new { alertid = item.Id }, new { onclick = "return confirm('Please confirm you want to remove alert...');" })
         }
         else
         {
-            <text>Restate</text>
+            @Html.ActionLink("Reinstate", "DismissUndismissAlert", new { alertid = item.Id }, null)
         }
     </p>
 }

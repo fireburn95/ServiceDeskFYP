@@ -11,7 +11,7 @@ using System.Web.Mvc;
 using System.Web.Security;
 
 //TODO Lock Calls
-
+//DEBUG LINE System.Diagnostics.Debug.WriteLine("HELLO");
 namespace ServiceDeskFYP.Controllers
 {
     [Authorize(Roles = "Employee")]
