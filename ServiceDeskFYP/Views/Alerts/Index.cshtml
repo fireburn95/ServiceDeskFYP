@@ -25,7 +25,6 @@
 {
     <p class="alert-danger">You have @Model.PastRequiredDate Calls which have exceeded their required-date</p>
 }
-
 <!--END OF DISPLAY STATISTICS-->
 
 <p>
@@ -40,8 +39,26 @@
 
 </p>
 
+<div class="container">
+    @foreach(var item in Model.Alerts)
+    {
+        <div class="row">
+            <div class="media">
+                <div class="media">
+                    <img src="~/Content/person.jpeg" class="media-object" alt="Person" />
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+
+
 @foreach (var item in Model.Alerts)
 {
+    
     <p>
         @if (item.FromUserId != null && item.FromGroupId != null)
         {
