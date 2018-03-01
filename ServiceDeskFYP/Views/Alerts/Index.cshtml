@@ -1,6 +1,8 @@
 ﻿@model ServiceDeskFYP.Models.ViewAlertsPageViewModel
 
 @{
+    /**/
+
     ViewBag.Title = "Index";
 }
 
@@ -30,7 +32,7 @@
 <p>
     @if (!Model.IsDismissed)
     {
-        @Html.ActionLink("Dismissed", "index", new { resource = Model.GroupId, dismissed = "true" })
+        @Html.ActionLink("Switch to Dismissed", "index", new { resource = Model.GroupId, dismissed = "true" })
     }
     else
     {
@@ -39,61 +41,65 @@
 
 </p>
 
+
 <div class="container">
-    @foreach(var item in Model.Alerts)
+    @foreach (var item in Model.Alerts)
     {
+        <hr />
         <div class="row">
-            <div class="media">
-                <div class="media">
-                    <img src="~/Content/person.jpeg" class="media-object" alt="Person" />
-                </div>
+            <div class="col-xs-1 col-sm-1">
+                @if (item.FromGroupId != null)
+                {
+                    <img class="mr-3" src="~/Content/group.jpg" height="60" width="60" alt="Sample photo">
+
+                }
+                else
+                {
+                    <img class="mr-3" src="~/Content/person.jpeg" height="60" width="60" alt="Sample photo">
+
+                }
+            </div>
+            <div class="col-xs-11 col-sm-11">
+                <p>
+                    @if (item.FromUserId != null && item.FromGroupId != null)
+                    {
+                        <h4>@item.FromUserName via @item.FromGroupName <small>@item.Created</small></h4>
+                    }
+                    else if (item.FromUserId != null)
+                    {
+                        <h4>@item.FromUserName <small>@item.Created</small></h4>
+                    }
+                    else if (item.FromGroupId != null)
+                    {
+                        <h4>@item.FromGroupName <small>@item.Created</small></h4>
+                    }
+                    @item.Text
+                    <br />
+                    @if (item.AssociatedCallRef != null)
+                    {
+                        @Html.ActionLink("Go to", "ViewCall", "Desk", new { Reference = item.AssociatedCallRef }, null)
+                        <text>&nbsp;</text>
+                    }
+                    @if (item.AssociatedKnowledgeId != null)
+                    {
+                        @Html.ActionLink("Go to", "FindKnowledgeURL", "Groups", new { knowledgeid = item.AssociatedKnowledgeId }, null)
+                        <text>&nbsp;</text>
+                    }
+                    @if (item.FromUserId != null && item.Dismissed == false)
+                    {
+                        @Html.ActionLink("Reply", "ReplyToAlertGET", new { alertid = item.Id }, null)
+                        <text>&nbsp;</text>
+                    }
+                    @if (item.Dismissed == false)
+                    {
+                        @Html.ActionLink("Dismiss", "DismissUndismissAlert", new { alertid = item.Id }, new { onclick = "return confirm('Please confirm you want to remove alert...');" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Reinstate", "DismissUndismissAlert", new { alertid = item.Id }, null)
+                    }
+                </p>
             </div>
         </div>
     }
 </div>
-
-
-
-
-
-@foreach (var item in Model.Alerts)
-{
-    
-    <p>
-        @if (item.FromUserId != null && item.FromGroupId != null)
-        {
-            <text>From: @item.FromUserName via @item.FromGroupName</text> <br />
-        }
-        else if (item.FromUserId != null)
-        {
-            <text>From: @item.FromUserName</text> <br />
-        }
-        else if (item.FromGroupId != null)
-        {
-            <text>From: @item.FromGroupName</text> <br />
-        }
-        Sent: @item.Created<br />
-        @item.Text
-        <br />
-        @if (item.AssociatedCallRef != null)
-        {
-            @Html.ActionLink("Go to", "ViewCall", "Desk", new { Reference = item.AssociatedCallRef }, null)
-        }
-        @if (item.AssociatedKnowledgeId != null)
-        {
-            @Html.ActionLink("Go to", "FindKnowledgeURL", "Groups", new { knowledgeid = item.AssociatedKnowledgeId }, null)
-        }
-        @if (item.FromUserId != null && item.Dismissed == false)
-        {
-            @Html.ActionLink("Reply", "ReplyToAlertGET", new { alertid = item.Id }, null)
-        }
-        @if (item.Dismissed == false)
-        {
-            @Html.ActionLink("Dismiss", "DismissUndismissAlert", new { alertid = item.Id }, new { onclick = "return confirm('Please confirm you want to remove alert...');" })
-        }
-        else
-        {
-            @Html.ActionLink("Reinstate", "DismissUndismissAlert", new { alertid = item.Id }, null)
-        }
-    </p>
-}
