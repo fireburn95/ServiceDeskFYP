@@ -138,7 +138,7 @@ namespace ServiceDeskFYP.Controllers
                             Created = item.Created,
                             Text = item.Text,
                             AssociatedCallRef = item.AssociatedCallRef,
-                            AssociatedKnowledgeId = item.AssociatedKnowledgeId
+                            AssociatedKnowledgeId = item.AssociatedKnowledgeId,
                         });
                     }
                 }
@@ -149,7 +149,7 @@ namespace ServiceDeskFYP.Controllers
                     GroupId = null,
                     ExceededSLACalls = exceededslacalls,
                     PastRequiredDate = requireddatescount,
-                    Alerts = AlertsVM.AsEnumerable(),
+                    Alerts = AlertsVM.OrderByDescending(n => n.Created).AsEnumerable(),
                     IsLoggedInUserGroupOwner = null,
                     IsDismissed = isDismissed,
                     IsGroup = false
@@ -296,10 +296,10 @@ namespace ServiceDeskFYP.Controllers
                 //Create the view model
                 var model = new ViewAlertsPageViewModel()
                 {
-                    GroupId = null,
+                    GroupId = GroupId,
                     ExceededSLACalls = exceededslacalls,
                     PastRequiredDate = requireddatescount,
-                    Alerts = AlertsVM.AsEnumerable(),
+                    Alerts = AlertsVM.OrderByDescending(n => n.Created).AsEnumerable(),
                     IsLoggedInUserGroupOwner = GroupMemberOwner,
                     IsDismissed = isDismissed,
                     IsGroup = true
@@ -307,6 +307,88 @@ namespace ServiceDeskFYP.Controllers
 
                 //Pass to view
                 return View(model);
+            }
+        }
+
+        public ActionResult DismissUndismissAlert(string alertid)
+        {
+            //Check Alert is not null
+            if (string.IsNullOrEmpty(alertid))
+            {
+                TempData["ErrorMessage"] = "An error has occured";
+                return RedirectToAction("Index");
+            }
+
+            //Check Alert is an int
+            if (!int.TryParse(alertid, out int AlertIdInt))
+            {
+                TempData["ErrorMessage"] = "Error: Alert ID is incorrect";
+                return RedirectToAction("Index");
+            }
+
+            //Check Alert exists
+            var Alert = _context.Alert.SingleOrDefault(n => n.Id == AlertIdInt);
+            if (Alert == null)
+            {
+                TempData["ErrorMessage"] = "Error: The alert you are replying to doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //If alert being replied to belongs to user and not group
+            if (Alert.ToUserId != null && Alert.ToGroupId == null)
+            {
+                //Check Alert belongs to user
+                if (Alert.ToUserId != User.Identity.GetUserId())
+                {
+                    TempData["ErrorMessage"] = "Error: This alert you attempted to reply to does not belong to you";
+                    return RedirectToAction("Index");
+                }
+
+                //Change Alert Dismissed Property
+                var isDismissed = Alert.DismissedWhen == null ? "" : "true";
+                if (Alert.DismissedWhen == null)
+                {
+                    Alert.DismissedWhen = DateTime.Now;
+                    Alert.DismissedByUserId = User.Identity.GetUserId();
+                }
+                else
+                {
+                    Alert.DismissedWhen = null;
+                    Alert.DismissedByUserId = null;
+                }
+                _context.SaveChanges();
+
+                //Return to view
+                return RedirectToAction("Index", new { dismissed = isDismissed });
+            }
+            //If alert being replied to belongs to group
+            else
+            {
+                //Check logged in User is member of group
+                var LoggedInUserId = User.Identity.GetUserId();
+                var GroupMember = _context.GroupMember.SingleOrDefault(n => (n.Group_Id == Alert.ToGroupId) && (n.User_Id.Equals(LoggedInUserId)));
+                if (GroupMember == null)
+                {
+                    TempData["ErrorMessage"] = "Error: You are not a member of the group to which this alert is associated to";
+                    return RedirectToAction("Index");
+                }
+
+                //Change Alert Dismissed Property
+                var isDismissed = Alert.DismissedWhen == null ? "" : "true";
+                if (Alert.DismissedWhen == null)
+                {
+                    Alert.DismissedWhen = DateTime.Now;
+                    Alert.DismissedByUserId = User.Identity.GetUserId();
+                }
+                else
+                {
+                    Alert.DismissedWhen = null;
+                    Alert.DismissedByUserId = null;
+                }
+                _context.SaveChanges();
+
+                //Return to view
+                return RedirectToAction("Index", new { resource = GroupMember.Group_Id, dismissed = isDismissed });
             }
         }
 
@@ -466,8 +548,8 @@ namespace ServiceDeskFYP.Controllers
                         ToUserId = Alert.FromUserId,
                         ToGroupId = Alert.FromGroupId,
                         Text = model.Text,
-                        AssociatedCallRef = null,
-                        AssociatedKnowledgeId = null,
+                        AssociatedCallRef = Alert.AssociatedCallRef,
+                        AssociatedKnowledgeId = Alert.AssociatedKnowledgeId,
                         Created = DateTime.Now,
                         DismissedWhen = null,
                         DismissedByUserId = null
@@ -501,8 +583,8 @@ namespace ServiceDeskFYP.Controllers
                         ToUserId = Alert.FromUserId,
                         ToGroupId = Alert.FromGroupId,
                         Text = model.Text,
-                        AssociatedCallRef = null,
-                        AssociatedKnowledgeId = null,
+                        AssociatedCallRef = Alert.AssociatedCallRef,
+                        AssociatedKnowledgeId = Alert.AssociatedKnowledgeId,
                         Created = DateTime.Now,
                         DismissedWhen = null,
                         DismissedByUserId = null
@@ -520,87 +602,6 @@ namespace ServiceDeskFYP.Controllers
             return View("ReplyToAlert", model);
         }
 
-        public ActionResult DismissUndismissAlert(string alertid)
-        {
-            //Check Alert is not null
-            if (string.IsNullOrEmpty(alertid))
-            {
-                TempData["ErrorMessage"] = "An error has occured";
-                return RedirectToAction("Index");
-            }
-
-            //Check Alert is an int
-            if (!int.TryParse(alertid, out int AlertIdInt))
-            {
-                TempData["ErrorMessage"] = "Error: Alert ID is incorrect";
-                return RedirectToAction("Index");
-            }
-
-            //Check Alert exists
-            var Alert = _context.Alert.SingleOrDefault(n => n.Id == AlertIdInt);
-            if (Alert == null)
-            {
-                TempData["ErrorMessage"] = "Error: The alert you are replying to doesn't exist";
-                return RedirectToAction("Index");
-            }
-
-            //If alert being replied to belongs to user and not group
-            if (Alert.ToUserId != null && Alert.ToGroupId == null)
-            {
-                //Check Alert belongs to user
-                if (Alert.ToUserId != User.Identity.GetUserId())
-                {
-                    TempData["ErrorMessage"] = "Error: This alert you attempted to reply to does not belong to you";
-                    return RedirectToAction("Index");
-                }
-
-                //Change Alert Dismissed Property
-                var isDismissed = Alert.DismissedWhen == null ? "" : "true";
-                if (Alert.DismissedWhen==null)
-                {
-                    Alert.DismissedWhen = DateTime.Now;
-                    Alert.DismissedByUserId = User.Identity.GetUserId();
-                }
-                else
-                {
-                    Alert.DismissedWhen = null;
-                    Alert.DismissedByUserId = null;
-                }
-                _context.SaveChanges();
-
-                //Return to view
-                return RedirectToAction("Index", new { dismissed = isDismissed });
-            }
-            //If alert being replied to belongs to group
-            else
-            {
-                //Check logged in User is member of group
-                var LoggedInUserId = User.Identity.GetUserId();
-                var GroupMember = _context.GroupMember.SingleOrDefault(n => (n.Group_Id == Alert.ToGroupId) && (n.User_Id.Equals(LoggedInUserId)));
-                if (GroupMember == null)
-                {
-                    TempData["ErrorMessage"] = "Error: You are not a member of the group to which this alert is associated to";
-                    return RedirectToAction("Index");
-                }
-
-                //Change Alert Dismissed Property
-                var isDismissed = Alert.DismissedWhen == null ? "" : "true";
-                if (Alert.DismissedWhen == null)
-                {
-                    Alert.DismissedWhen = DateTime.Now;
-                    Alert.DismissedByUserId = User.Identity.GetUserId();
-                }
-                else
-                {
-                    Alert.DismissedWhen = null;
-                    Alert.DismissedByUserId = null;
-                }
-                _context.SaveChanges();
-
-                //Return to view
-                return RedirectToAction("Index", new { resource = GroupMember.Group_Id, dismissed = isDismissed });
-            }
-        }
 
         /*******************
          *     HELPERS

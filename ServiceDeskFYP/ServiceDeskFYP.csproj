@@ -315,6 +315,9 @@
     <Content Include="Content\CallCategories.txt" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\banner3.jpeg" />
+    <Content Include="Content\banner2.jpeg" />
+    <Content Include="Content\banner1.jpeg" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />

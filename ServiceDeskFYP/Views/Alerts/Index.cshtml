@@ -26,10 +26,19 @@
     <p class="alert-danger">You have @Model.PastRequiredDate Calls which have exceeded their required-date</p>
 }
 
-
-
 <!--END OF DISPLAY STATISTICS-->
 
+<p>
+    @if (!Model.IsDismissed)
+    {
+        @Html.ActionLink("Dismissed", "index", new { resource = Model.GroupId, dismissed = "true" })
+    }
+    else
+    {
+        @Html.ActionLink("Non-Dismissed", "index", new { resource = Model.GroupId, dismissed = "" })
+    }
+
+</p>
 
 @foreach (var item in Model.Alerts)
 {
@@ -46,6 +55,7 @@
         {
             <text>From: @item.FromGroupName</text> <br />
         }
+        Sent: @item.Created<br />
         @item.Text
         <br />
         @if (item.AssociatedCallRef != null)

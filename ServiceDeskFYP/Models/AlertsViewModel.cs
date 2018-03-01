@@ -11,7 +11,7 @@ namespace ServiceDeskFYP.Models
      */
     public class ViewAlertsPageViewModel
     {
-        public string GroupId { get; set; }
+        public int? GroupId { get; set; }
 
         public int ExceededSLACalls { get; set; }
 
