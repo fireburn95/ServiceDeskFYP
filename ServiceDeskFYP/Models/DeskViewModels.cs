@@ -112,6 +112,12 @@ namespace ServiceDeskFYP.Models
         [StringLength(20)]
         [Display(Name = "Surname")]
         public string Lastname { get; set; }
+
+        public bool Urgent { get; set; }
+
+        public DateTime? SLAResetTime { get; set; }
+
+        public int SlaId { get; set; }
     }
 
     public class GroupsSelectViewModel

@@ -36,7 +36,7 @@ namespace ServiceDeskFYP.Controllers
          * ***************/
 
         // GET: Desk
-        public ActionResult Index(string resource = null, string search = null, string sortcategory = null, string sortdirection = null, string closed = null)
+        public ActionResult Index(string resource = null, string search = null, string sortcategory = null, string sortdirection = null, string closed = null, string urgent = null)
         {
             //Handle Messages
             HandleMessages();
@@ -93,6 +93,66 @@ namespace ServiceDeskFYP.Controllers
                 //Get the calls of the group
                 Calls = _context.Call.Where(n => n.ResourceGroupId == ResourceGroupId).AsEnumerable();
             }
+
+            //Check whether urgent calls TODO
+
+            if (!string.IsNullOrEmpty(urgent) && urgent.Equals("true"))
+            {
+                List<Call> SlaExceededCalls = new List<Call>();
+                //Getting SLA Exceeded calls
+                using (ApplicationDbContext dbcontext = new ApplicationDbContext())
+                {
+                    int mins;
+                    DateTime ExpiredDate;
+                    foreach (Call item in Calls)
+                    {
+                        if (item.SlaLevel.Equals("Low"))
+                        {
+                            //Get the Mins
+                            mins = dbcontext.SLAPolicy.SingleOrDefault(n => (n.Id == item.SlaId)).LowMins;
+
+                            //Add to SLA Date
+                            ExpiredDate = item.SLAResetTime.Value.AddMinutes(mins);
+
+                            //Check if Date is past now
+                            if (ExpiredDate < DateTime.Now)
+                                SlaExceededCalls.Add(item);
+                        }
+                        else if (item.SlaLevel.Equals("Medium"))
+                        {
+                            //Get the Mins
+                            mins = dbcontext.SLAPolicy.SingleOrDefault(n => (n.Id == item.SlaId)).MedMins;
+
+                            //Add to SLA Date
+                            ExpiredDate = item.SLAResetTime.Value.AddMinutes(mins);
+
+                            //Check if Date is past now
+                            if (ExpiredDate < DateTime.Now)
+                                SlaExceededCalls.Add(item);
+                        }
+                        else if (item.SlaLevel.Equals("High"))
+                        {
+                            //Get the Mins
+                            mins = dbcontext.SLAPolicy.SingleOrDefault(n => (n.Id == item.SlaId)).HighMins;
+
+                            //Add to SLA Date
+                            ExpiredDate = item.SLAResetTime.Value.AddMinutes(mins);
+
+                            //Check if Date is past now
+                            if (ExpiredDate < DateTime.Now)
+                                SlaExceededCalls.Add(item);
+                        }
+                    }
+
+                }
+
+                //Exceeded required calls
+                var ExceededRequiredCalls = Calls.Where(n => n.Required_By < DateTime.Now);
+
+                //Add together and remove any duplicates
+                Calls = SlaExceededCalls.Concat(ExceededRequiredCalls).Distinct();
+            }
+
 
             //Check whether CLOSED calls
             if (!string.IsNullOrEmpty(closed) && closed.Equals("true"))
@@ -189,10 +249,69 @@ namespace ServiceDeskFYP.Controllers
                     Summary = item.Summary,
                     Closed = item.Closed,
                     FirstName = item.FirstName,
-                    Lastname = item.Lastname
+                    Lastname = item.Lastname,
+                    SlaId = item.SlaId,
+                    SLAResetTime = item.SLAResetTime,
                 });
             }
+
+            //Mark Calls as urgent
+            using (ApplicationDbContext dbcontext = new ApplicationDbContext())
+            {
+                int mins;
+                DateTime ExpiredDate;
+                foreach (var item in VCVM)
+                {
+                    //Check required by date
+                    if (item.Required_By < DateTime.Now)
+                    {
+                        item.Urgent = true;
+                    }
+                    else
+                    {
+                        //Check SLA exceeded
+                        if (item.SlaLevel.Equals("Low"))
+                        {
+                            //Get the Mins
+                            mins = dbcontext.SLAPolicy.SingleOrDefault(n => (n.Id == item.SlaId)).LowMins;
+
+                            //Add to SLA Date
+                            ExpiredDate = item.SLAResetTime.Value.AddMinutes(mins);
+
+                            //Check if Date is past now
+                            if (ExpiredDate < DateTime.Now)
+                                item.Urgent = true;
+                        }
+                        else if (item.SlaLevel.Equals("Medium"))
+                        {
+                            //Get the Mins
+                            mins = dbcontext.SLAPolicy.SingleOrDefault(n => (n.Id == item.SlaId)).MedMins;
+
+                            //Add to SLA Date
+                            ExpiredDate = item.SLAResetTime.Value.AddMinutes(mins);
+
+                            //Check if Date is past now
+                            if (ExpiredDate < DateTime.Now)
+                                item.Urgent = true;
+                        }
+                        else if (item.SlaLevel.Equals("High"))
+                        {
+                            //Get the Mins
+                            mins = dbcontext.SLAPolicy.SingleOrDefault(n => (n.Id == item.SlaId)).HighMins;
+
+                            //Add to SLA Date
+                            ExpiredDate = item.SLAResetTime.Value.AddMinutes(mins);
+
+                            //Check if Date is past now
+                            if (ExpiredDate < DateTime.Now)
+                                item.Urgent = true;
+                        }
+                    }
+
+                }
+            }
             model.VCVMList = VCVM.AsEnumerable();
+
 
 
 

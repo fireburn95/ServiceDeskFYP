@@ -104,7 +104,7 @@
     </form>
 </div>
 
-<table class="table table-hover">
+<table class="table table-bordered table-hover">
     <thead>
         <tr>
             <th>
@@ -134,7 +134,7 @@
     <tbody>
         @foreach (var item in Model.VCVMList)
         {
-            <tr onclick="window.location='/desk/call/@item.Reference';">
+            <tr class="@if (item.Urgent) { <text>danger</text> }" onclick="window.location='/desk/call/@item.Reference';">
                 <td>
                     @Html.DisplayFor(modelItem => item.Reference)
                 </td>
