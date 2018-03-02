@@ -1,9 +1,10 @@
 ﻿@model ServiceDeskFYP.Models.ViewAlertsPageViewModel
 
 @{
-    /**/
-
     ViewBag.Title = "Index";
+
+    var ExceededSLATerm = Model.ExceededSLACalls > 1 ? "calls" : "call";
+    var PastRequiredTerm = Model.PastRequiredDate > 1 ? "calls" : "call";
 }
 
 <h2>Alerts</h2>
@@ -19,14 +20,32 @@
 }
 
 <!--DISPLAY STATISTICS-->
-@if (Model.ExceededSLACalls != 0)
+@if ((Model.ExceededSLACalls != 0) && (Model.PastRequiredDate != 0))
 {
-    <p class="alert-danger">You have @Model.ExceededSLACalls Calls past SLA</p>
+    <a href="/desk?resource=@Model.GroupId&urgent=true">
+        <p class="alert-danger">
+            You have <u><strong>@Model.ExceededSLACalls</strong></u> @ExceededSLATerm past SLA
+            & <u><strong>@Model.PastRequiredDate</strong></u> @PastRequiredTerm which has been exceeded
+        </p>
+    </a>
+
 }
-@if (Model.PastRequiredDate != 0)
+else
 {
-    <p class="alert-danger">You have @Model.PastRequiredDate Calls which have exceeded their required-date</p>
+    if (Model.PastRequiredDate != 0)
+    {
+        <a href="/desk?resource=@Model.GroupId&urgent=true">
+            <p class="alert-danger">You have @Model.PastRequiredDate @PastRequiredTerm which have exceeded their required-date</p>
+        </a>
+    }
+    if (Model.ExceededSLACalls != 0)
+    {
+        <a href="/desk?resource=@Model.GroupId&urgent=true">
+            <p class="alert-danger">You have @Model.ExceededSLACalls @ExceededSLATerm past SLA</p>
+        </a>
+    }
 }
+
 <!--END OF DISPLAY STATISTICS-->
 
 <p>

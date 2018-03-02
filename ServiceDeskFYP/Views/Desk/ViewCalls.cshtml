@@ -7,6 +7,7 @@
     var sortcategory = Request.Params["sortcategory"];
     var sortdirection = Request.Params["sortdirection"];
     var closed = Request.Params["closed"];
+    var urgent = Request.Params["urgent"];
 }
 
 
@@ -72,6 +73,8 @@
         {<input type="hidden" name="sortdirection" value=@sortdirection />}
         @if (!String.IsNullOrEmpty(closed))
         {<input type="hidden" name="closed" value=@closed />}
+        @if (!String.IsNullOrEmpty(urgent))
+        {<input type="hidden" name="urgent" value=@urgent />}
         <input type="submit" value="Search" />
     </form>
 </div>
@@ -100,9 +103,13 @@
         {<input type="hidden" name="search" value=@search />}
         @if (!String.IsNullOrEmpty(closed))
         {<input type="hidden" name="closed" value=@closed />}
+        @if (!String.IsNullOrEmpty(urgent))
+        {<input type="hidden" name="urgent" value=@urgent />}
         <input type="submit" value="Sort" />
     </form>
 </div>
+
+<br />
 
 <table class="table table-bordered table-hover">
     <thead>
@@ -134,7 +141,7 @@
     <tbody>
         @foreach (var item in Model.VCVMList)
         {
-            <tr class="@if (item.Urgent) { <text>danger</text> }" onclick="window.location='/desk/call/@item.Reference';">
+            <tr class="@if (item.Urgent && (!item.Closed)) { <text>danger</text> }" onclick="window.location='/desk/call/@item.Reference';">
                 <td>
                     @Html.DisplayFor(modelItem => item.Reference)
                 </td>
@@ -152,7 +159,6 @@
                     {
                         @Convert.ToDateTime(item.Required_By).ToShortDateString()
                     }
-
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Summary)
