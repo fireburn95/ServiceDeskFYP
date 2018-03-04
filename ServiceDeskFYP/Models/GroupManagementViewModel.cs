@@ -121,6 +121,25 @@ namespace ServiceDeskFYP.Models
         public string Description { get; set; }
     }
 
+    /*
+     * Used in Sending notifications
+     */
+    public class NotifyKnowledgeViewModelPage
+    {
+        public NotifyKnowledgeViewModel Notify { get; set; }
+        public IEnumerable<ApplicationUser> UserList { get; set; }
+        public IEnumerable<Group> GroupList { get; set; }
+    }
+
+    public class NotifyKnowledgeViewModel
+    {
+        public string Username { get; set; }
+        public string GroupName { get; set; }
+        [Required]
+        [DataType(DataType.MultilineText)]
+        public string Message { get; set; }
+    }
+
 }
 
 

@@ -894,6 +894,227 @@ namespace ServiceDeskFYP.Controllers
             return RedirectToAction("ViewKnowledges", new { groupid });
         }
 
+        [HttpGet]
+        [Route("groups/{groupid}/kbase/notify/{knowledgeid}")]
+        public ActionResult NotifyKnowledgeGET(string groupid, string knowledgeid)
+        {
+            //Check group id is not null
+            if (String.IsNullOrEmpty(groupid))
+            {
+                TempData["ErrorMessage"] = "Error, no group has been specified";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id is a number then cast to int
+            if (!int.TryParse(groupid, out int GroupIdInt))
+            {
+                TempData["ErrorMessage"] = "Error: Group ID incorrect";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id exists
+            var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
+            if (Group == null)
+            {
+                TempData["ErrorMessage"] = "Error: Group does not exist";
+                return RedirectToAction("Index");
+            }
+
+            //Check logged in user is a member of group
+            var LoggedInId = User.Identity.GetUserId();
+            var GroupMember = _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInId) && n.Group_Id == Group.Id);
+            if (GroupMember == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, you are not a member of the group '" + Group.Name + "'";
+                return RedirectToAction("Index");
+            }
+
+            //Check knowledge id is not null
+            if (String.IsNullOrEmpty(knowledgeid))
+            {
+                TempData["ErrorMessage"] = "An error has occured regarding the Knowledge ID";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+
+            //Check knowledge id is a number then cast to int
+            if (!int.TryParse(knowledgeid, out int KnowledgeIdInt))
+            {
+                TempData["ErrorMessage"] = "An error has occured regarding the Knowledge ID";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+
+            //Get the knowledge
+            var Knowledge = _context.Knowledge.SingleOrDefault(n => n.Id == KnowledgeIdInt);
+
+            //Check if Knowledge exists
+            if (Knowledge == null)
+            {
+                TempData["ErrorMessage"] = "Error: That Knowledge doesn't exist";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+
+            //Check if knowledge is in group
+            if (Knowledge.Group_Id != GroupIdInt)
+            {
+                TempData["ErrorMessage"] = "Error: That Knowledge is not part of this group";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+
+            //Create View Model
+            var model = new NotifyKnowledgeViewModelPage()
+            {
+                GroupList = GetGroups(),
+                UserList = GetNonDisabledEmployees()
+            };
+
+            //Return to view
+            return View("NotifyKnowledge", model);
+        }
+
+        [HttpPost]
+        [Route("groups/{groupid}/kbase/notify/{knowledgeid}")]
+        public ActionResult NotifyKnowledgePOST(string groupid, string knowledgeid, NotifyKnowledgeViewModelPage model)
+        {
+            //Populate View Model
+            model.GroupList = GetGroups();
+            model.UserList = GetNonDisabledEmployees();
+
+            if (ModelState.IsValid)
+            {
+                //Check group id is not null
+                if (String.IsNullOrEmpty(groupid))
+                {
+                    TempData["ErrorMessage"] = "Error, no group has been specified";
+                    return RedirectToAction("Index");
+                }
+
+                //Check group id is a number then cast to int
+                if (!int.TryParse(groupid, out int GroupIdInt))
+                {
+                    TempData["ErrorMessage"] = "Error: Group ID incorrect";
+                    return RedirectToAction("Index");
+                }
+
+                //Check group id exists
+                var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
+                if (Group == null)
+                {
+                    TempData["ErrorMessage"] = "Error: Group does not exist";
+                    return RedirectToAction("Index");
+                }
+
+                //Check logged in user is a member of group
+                var LoggedInId = User.Identity.GetUserId();
+                var GroupMember = _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInId) && n.Group_Id == Group.Id);
+                if (GroupMember == null)
+                {
+                    TempData["ErrorMessage"] = "Sorry, you are not a member of the group '" + Group.Name + "'";
+                    return RedirectToAction("Index");
+                }
+
+                //Check knowledge id is not null
+                if (String.IsNullOrEmpty(knowledgeid))
+                {
+                    TempData["ErrorMessage"] = "An error has occured regarding the Knowledge ID";
+                    return RedirectToAction("ViewKnowledges", new { groupid });
+                }
+
+                //Check knowledge id is a number then cast to int
+                if (!int.TryParse(knowledgeid, out int KnowledgeIdInt))
+                {
+                    TempData["ErrorMessage"] = "An error has occured regarding the Knowledge ID";
+                    return RedirectToAction("ViewKnowledges", new { groupid });
+                }
+
+                //Get the knowledge
+                var Knowledge = _context.Knowledge.SingleOrDefault(n => n.Id == KnowledgeIdInt);
+
+                //Check if Knowledge exists
+                if (Knowledge == null)
+                {
+                    TempData["ErrorMessage"] = "Error: That Knowledge doesn't exist";
+                    return RedirectToAction("ViewKnowledges", new { groupid });
+                }
+
+                //Check if knowledge is in group
+                if (Knowledge.Group_Id != GroupIdInt)
+                {
+                    TempData["ErrorMessage"] = "Error: That Knowledge is not part of this group";
+                    return RedirectToAction("ViewKnowledges", new { groupid });
+                }
+
+                //Check if both fields set
+                if ((!string.IsNullOrEmpty(model.Notify.Username)) && (!string.IsNullOrEmpty(model.Notify.GroupName)))
+                {
+                    ViewBag.ErrorMessage = "Please only select one resource";
+                    return View("NotifyKnowledge", model);
+                }
+
+                //Check if both fields empty
+                if ((string.IsNullOrEmpty(model.Notify.Username)) && (string.IsNullOrEmpty(model.Notify.GroupName)))
+                {
+                    ViewBag.ErrorMessage = "Please select a resource";
+                    return View("NotifyKnowledge", model);
+                }
+
+                //If User is set
+                if (!string.IsNullOrEmpty(model.Notify.Username))
+                {
+                    //Get the user ID
+                    var ResourceUserId = _context.Users.SingleOrDefault(n => n.UserName.Equals(model.Notify.Username)).Id;
+
+                    //Create Alert
+                    var Alert = new Alert
+                    {
+                        FromUserId = User.Identity.GetUserId(),
+                        ToUserId = ResourceUserId,
+                        ToGroupId = null,
+                        Text = model.Notify.Message,
+                        AssociatedKnowledgeId = KnowledgeIdInt,
+                        Created = DateTime.Now,
+                        DismissedByUserId = null,
+                    };
+                    _context.Alert.Add(Alert);
+                    _context.SaveChanges();
+                    TempData["SuccessMessage"] = model.Notify.Username + " notified";
+
+                }
+                //Else Group is set
+                else
+                {
+                    //Get the group ID
+                    var ResourceGroupId = _context.Group.SingleOrDefault(n => n.Name.Equals(model.Notify.GroupName)).Id;
+
+                    //Create Alert
+                    var Alert = new Alert
+                    {
+                        FromUserId = User.Identity.GetUserId(),
+                        ToUserId = null,
+                        ToGroupId = ResourceGroupId,
+                        Text = model.Notify.Message,
+                        AssociatedKnowledgeId = KnowledgeIdInt,
+                        Created = DateTime.Now,
+                        DismissedWhen = null,
+                        DismissedByUserId = null,
+
+                    };
+
+                    _context.Alert.Add(Alert);
+                    _context.SaveChanges();
+
+                    TempData["SuccessMessage"] = model.Notify.GroupName + " notified";
+
+                }
+
+                //Return to Knowledge
+                return RedirectToAction("ViewAKnowledge", new { groupid, knowledgeid });
+            }
+            //Error so return to view
+            return View("NotifyKnowledge", model);
+
+
+        }
+
         /*****************
          * Helpers
          * ***************/
@@ -937,6 +1158,25 @@ namespace ServiceDeskFYP.Controllers
             return RedirectToAction("ViewAKnowledge", new { groupid = GroupId + "", knowledgeid });
 
 
+        }
+
+        //Get non-disabled employees as IEnumerable
+        public IEnumerable<ApplicationUser> GetNonDisabledEmployees()
+        {
+            //Get the role ID for the Employee
+            var roleId = roleManager.FindByName("Employee").Id;
+
+            //Check the Users in the Roles table with the matching ID using LINQ
+            var Employees = _context.Users.Where(n => n.Roles.Select(r => r.RoleId).Contains(roleId)).AsEnumerable();
+
+            //Filter out disabled users and return
+            return Employees.Where(n => n.Disabled == false);
+        }
+
+        //Get groups as IEnumberable
+        public IEnumerable<Group> GetGroups()
+        {
+            return _context.Group.AsEnumerable();
         }
     }
 }
