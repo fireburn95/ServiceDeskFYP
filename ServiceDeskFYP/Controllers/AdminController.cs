@@ -168,6 +168,7 @@ namespace ServiceDeskFYP.Controllers
                 if (result.Succeeded)
                 {
                     //Add as an employee
+                    Helpers.LogEvent("Admin Action","User has created the new employee '" + UserModel.UserName + "'");
                     userManager.AddToRole(UserModel.Id, "Employee");
                     return RedirectToAction("Employees");
                 }
@@ -221,11 +222,13 @@ namespace ServiceDeskFYP.Controllers
             //If admin
             if (userManager.IsInRole(PassedId, "Admin"))
             {
+                Helpers.LogEvent("Admin Action", "User has removed ' " + UserClass.UserName + "'s ' administrative privileges");
                 userManager.RemoveFromRole(PassedId, "Admin");
             }
             //Else if not admin
             else
             {
+                Helpers.LogEvent("Admin Action", "User has set ' " + UserClass.UserName + "' as an admin");
                 userManager.AddToRole(PassedId, "Admin");
             }
 
@@ -273,11 +276,13 @@ namespace ServiceDeskFYP.Controllers
             //If Disabled
             if (UserClass.Disabled)
             {
+                Helpers.LogEvent("Admin Action", "User has re-enabled ' " + UserClass.UserName + "'s ' employee account");
                 UserClass.Disabled = false;
             }
             //Else if not Disabled
             else
             {
+                Helpers.LogEvent("Admin Action", "User has disabled ' " + UserClass.UserName + "'s ' employee account");
                 UserClass.Disabled = true;
             }
 
@@ -385,18 +390,22 @@ namespace ServiceDeskFYP.Controllers
                 return RedirectToAction("ManageSubordinates", new { UserId });
             }
 
-            //Check if self
-            if (username.Equals(User.Identity.GetUserName()))
+            //Check if adding self
+            if (UserId.Equals(user.Id))
             {
-                TempData["ErrorMessage"] = "You cannot add yourself";
+                TempData["ErrorMessage"] = "You cannot set a user to manage himself";
                 return RedirectToAction("ManageSubordinates", new { UserId });
             }
+
+            //Get the manager
+            var ManagerUser = _context.Users.SingleOrDefault(n => n.Id.Equals(UserId));
 
             //Add to ManagerEmployee
             _context.ManagerEmployee.Add(new ManagerEmployee { ManagerUserId = UserId, SubUserId = user.Id });
             _context.SaveChanges();
 
             //Return Redirect
+            Helpers.LogEvent("Admin Action", "User has added '" + user.UserName + "' as a subordinate to '" + ManagerUser.UserName + "'");
             TempData["SuccessMessage"] = "User is now a subordinate";
             return RedirectToAction("ManageSubordinates", new { UserId });
         }
@@ -417,12 +426,19 @@ namespace ServiceDeskFYP.Controllers
                 return RedirectToAction("ManageSubordinates", new { UserId = managerId });
             }
 
+            //Get the subordinate
+            var subuser = _context.Users.SingleOrDefault(n => n.Id.Equals(subId));
+
+            //Get the manager
+            var manageruser = _context.Users.SingleOrDefault(n => n.Id.Equals(managerId));
+
             //Remove
             _context.ManagerEmployee.Remove(ManagerEmployee);
             _context.SaveChanges();
 
             //Create temp data session
             TempData["SuccessMessage"] = "Subordinate removed";
+            Helpers.LogEvent("Admin Action", "User has removed '" + subuser.UserName + "' as a subordinate to '" + manageruser.UserName + "'");
 
             //Return to and pass it to the action
             return RedirectToAction("ManageSubordinates", new { UserId = managerId });
@@ -481,6 +497,7 @@ namespace ServiceDeskFYP.Controllers
                 }
 
                 //Add to DB Group
+                Helpers.LogEvent("Admin Action", "User has created the group '" + model.Name + "'");
                 _context.Group.Add(model);
                 _context.SaveChanges();
 
@@ -545,6 +562,7 @@ namespace ServiceDeskFYP.Controllers
                 _context2.SaveChanges();
 
                 //Return to Groups page
+                Helpers.LogEvent("Admin Action", "User has edited the group '" + model.Name + "'");
                 TempData["SuccessMessage"] = "Thank you, " + model.Name + " has been updated";
                 return RedirectToAction("Groups");
             }
@@ -658,7 +676,11 @@ namespace ServiceDeskFYP.Controllers
                 return RedirectToAction("ManageGroupMembers", new { GroupId });
             }
 
+            //Get group
+            var Group = _context.Group.SingleOrDefault(n => n.Id == GroupId);
+
             //Add to group
+            Helpers.LogEvent("Admin Action", "User has added '" + User.UserName + "' to group '" + Group.Name + "'");
             _context.GroupMember.Add(new GroupMember { Group_Id = GroupId, User_Id = User.Id, Owner = false });
             _context.SaveChanges();
 
@@ -683,6 +705,12 @@ namespace ServiceDeskFYP.Controllers
                 return RedirectToAction("Groups");
             }
 
+            //Get user
+            var user = _context.Users.SingleOrDefault(n => n.Id.Equals(UserId));
+
+            //Get group
+            var group = _context.Group.SingleOrDefault(n => n.Id == GroupId);
+
             //Remove
             _context.GroupMember.Remove(GroupMember);
             _context.SaveChanges();
@@ -690,6 +718,7 @@ namespace ServiceDeskFYP.Controllers
             //Return to same page TODO message
             //Create temp data session
             TempData["SuccessMessage"] = "User successfully removed from group";
+            Helpers.LogEvent("Admin Action", "User has removed '" + user.UserName + "' from group '" + group.Name + "'");
 
             //Return to and pass it to the action
             return RedirectToAction("ManageGroupMembers", new { GroupId });
@@ -710,14 +739,22 @@ namespace ServiceDeskFYP.Controllers
                 return RedirectToAction("Groups");
             }
 
+            //Get user
+            var user = _context.Users.SingleOrDefault(n => n.Id.Equals(UserId));
+
+            //Get group
+            var group = _context.Group.SingleOrDefault(n => n.Id == GroupId);
+
             //If Owner
             if (GroupMember.Owner == true)
             {
+                Helpers.LogEvent("Admin Action", "User has unset '" + user.UserName + "' as an owner from group '" + group.Name + "'");
                 GroupMember.Owner = false;
             }
             //Else if not an owner
             else
             {
+                Helpers.LogEvent("Admin Action", "User has set '" + user.UserName + "' as an owner to group '" + group.Name + "'");
                 GroupMember.Owner = true;
             }
 
@@ -860,11 +897,13 @@ namespace ServiceDeskFYP.Controllers
             //If Disabled
             if (UserClass.Disabled)
             {
+                Helpers.LogEvent("Admin Action", "User has re-enabled the client '" + UserClass.UserName + "'");
                 UserClass.Disabled = false;
             }
             //Else if not Disabled
             else
             {
+                Helpers.LogEvent("Admin Action", "User has disabled the client '" + UserClass.UserName + "'");
                 UserClass.Disabled = true;
             }
 
@@ -990,6 +1029,7 @@ namespace ServiceDeskFYP.Controllers
                 _context.SaveChanges();
 
                 //Return to view with a message
+                Helpers.LogEvent("Admin Action", "User has edited the client '" + model.UserName + "'");
                 TempData["SuccessMessage"] = "User successfully updated";
                 return RedirectToAction("ViewAClient", new { UserId = model.Id });
             }
@@ -1081,6 +1121,7 @@ namespace ServiceDeskFYP.Controllers
                 ApplicationDbContext _context2 = new ApplicationDbContext();
                 _context2.SLAPolicy.Add(model);
                 _context2.SaveChanges();
+                Helpers.LogEvent("Admin Action", "User has created the SLA Policy '" + model.Name + "'");
 
                 //Return to view SLA's
                 return RedirectToAction("Sla");
@@ -1161,6 +1202,7 @@ namespace ServiceDeskFYP.Controllers
                 SLA.MedMins = model.MedMins;
                 SLA.HighMins = model.HighMins;
                 _context.SaveChanges();
+                Helpers.LogEvent("Admin Action", "User has edited the SLA Policy '" + model.Name + "'");
 
                 //Return to view SLA's
                 return RedirectToAction("Sla");
@@ -1276,6 +1318,7 @@ namespace ServiceDeskFYP.Controllers
 
             //Return
             ViewBag.SuccessMessage = "Changes made";
+            Helpers.LogEvent("Admin Action", "User has updated the categories");
             return View("Categories", data);
         }
 

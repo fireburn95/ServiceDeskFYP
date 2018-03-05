@@ -259,6 +259,7 @@ namespace ServiceDeskFYP.Controllers
             }
 
             //Add to group
+            Helpers.LogEvent("Group Action", "User has added '" + AppUser.UserName + "' to the group '" + Group.Name + "'");
             _context.GroupMember.Add(new GroupMember { Group_Id = GroupIdInt, User_Id = AppUser.Id, Owner = false });
             _context.SaveChanges();
 
@@ -320,6 +321,9 @@ namespace ServiceDeskFYP.Controllers
                 return RedirectToAction("ManageAndViewMembers", new { groupid });
             }
 
+            //Get the Member user
+            var user = _context.Users.SingleOrDefault(n => n.Id.Equals(UserId));
+
             //Remove
             _context.GroupMember.Remove(ToRemove);
             _context.SaveChanges();
@@ -327,6 +331,7 @@ namespace ServiceDeskFYP.Controllers
             //Return to same page TODO message
             //Create temp data session
             TempData["SuccessMessage"] = "User successfully removed from group";
+            Helpers.LogEvent("Group Action", "User has removed '" + user.UserName + "' from the group '" + Group.Name + "'");
 
             //Return to and pass it to the action
             return RedirectToAction("ManageAndViewMembers", new { groupid });
@@ -385,14 +390,19 @@ namespace ServiceDeskFYP.Controllers
                 return RedirectToAction("ManageAndViewMembers", new { groupid });
             }
 
+            //Get user
+            var user = _context.Users.SingleOrDefault(n => n.Id.Equals(UserId));
+
             //If Owner
             if (LookupUser.Owner == true)
             {
+                Helpers.LogEvent("Group Action", "User has unset '" + user.UserName + "' as an owner of the group '" + Group.Name + "'");
                 LookupUser.Owner = false;
             }
             //Else if not an owner
             else
             {
+                Helpers.LogEvent("Group Action", "User has set '" + user.UserName + "' as an owner of the group '" + Group.Name + "'");
                 LookupUser.Owner = true;
             }
 
@@ -552,6 +562,7 @@ namespace ServiceDeskFYP.Controllers
                 //Save the knowledge
                 _context.Knowledge.Add(Knowledge);
                 _context.SaveChanges();
+                Helpers.LogEvent("Group Action", "User has created a knowledge for the group '" + Group.Name + "'");
 
                 //Redirect
                 TempData["SuccessMessage"] = "Knowledge Created";
@@ -809,6 +820,7 @@ namespace ServiceDeskFYP.Controllers
 
                 //Save
                 _context.SaveChanges();
+                Helpers.LogEvent("Group Action", "User has updated a knowledge (" + Knowledge.Id + ") for the group '" + Group.Name + "'");
 
                 //Return to knowledge details
                 TempData["SuccessMessage"] = "Knowledge Updated";
@@ -895,6 +907,7 @@ namespace ServiceDeskFYP.Controllers
             //Remove from table
             _context.Knowledge.Remove(Knowledge);
             _context.SaveChanges();
+            Helpers.LogEvent("Group Action", "User has removed a knowledge (" + Knowledge.Id + ") from the group '" + Group.Name + "'");
 
             //Return to list
             TempData["SuccessMessage"] = "Knowledge removed";

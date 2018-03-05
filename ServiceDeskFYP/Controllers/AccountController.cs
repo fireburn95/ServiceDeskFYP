@@ -177,6 +177,12 @@ namespace ServiceDeskFYP.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    //Get the user
+                    var UserCreated = _context.Users.SingleOrDefault(n => n.UserName.Equals(user.UserName));
+
+                    //Log
+                    Helpers.LogEvent("Account Registered", "User has succesfully registered his/her account", UserCreated.Id);
+
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
                     //Assign User to Role 'Client'
