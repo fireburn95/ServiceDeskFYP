@@ -561,6 +561,7 @@ namespace ServiceDeskFYP.Controllers
             return View("CreateKnowledge", model);
         }
 
+        //GET View a knowledge
         [Route("groups/{groupid}/kbase/view/{knowledgeid}")]
         public ActionResult ViewAKnowledge(string groupid, string knowledgeid)
         {
@@ -648,10 +649,14 @@ namespace ServiceDeskFYP.Controllers
             return View(model);
         }
 
+        //GET Update Knowledge
         [HttpGet]
         [Route("groups/{groupid}/kbase/update/{knowledgeid}")]
         public ActionResult UpdateKnowledgeGET(string groupid, string knowledgeid)
         {
+            //Handle Messages
+            HandleMessages();
+
             //Check group id is not null
             if (String.IsNullOrEmpty(groupid))
             {
@@ -726,6 +731,7 @@ namespace ServiceDeskFYP.Controllers
             return View("UpdateKnowledge", model);
         }
 
+        //POST Update Knowledge
         [HttpPost]
         [Route("groups/{groupid}/kbase/update/{knowledgeid}")]
         public ActionResult UpdateKnowledgePOST(string groupid, string knowledgeid, UpdateKnowledgeGroupViewModel model)
@@ -812,6 +818,7 @@ namespace ServiceDeskFYP.Controllers
             return View("UpdateKnowledge", model);
         }
 
+        //GET Remove Knowledge
         [HttpGet]
         [Route("groups/{groupid}/kbase/remove/{knowledgeid}")]
         public ActionResult RemoveKnowledge(string groupid, string knowledgeid)
@@ -894,10 +901,14 @@ namespace ServiceDeskFYP.Controllers
             return RedirectToAction("ViewKnowledges", new { groupid });
         }
 
+        //GET Notify Knowledge
         [HttpGet]
         [Route("groups/{groupid}/kbase/notify/{knowledgeid}")]
         public ActionResult NotifyKnowledgeGET(string groupid, string knowledgeid)
         {
+            //Handle Messages
+            HandleMessages();
+
             //Check group id is not null
             if (String.IsNullOrEmpty(groupid))
             {
@@ -971,6 +982,7 @@ namespace ServiceDeskFYP.Controllers
             return View("NotifyKnowledge", model);
         }
 
+        //POST Notify Knowledge
         [HttpPost]
         [Route("groups/{groupid}/kbase/notify/{knowledgeid}")]
         public ActionResult NotifyKnowledgePOST(string groupid, string knowledgeid, NotifyKnowledgeViewModelPage model)

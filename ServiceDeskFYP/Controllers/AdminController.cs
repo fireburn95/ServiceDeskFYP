@@ -145,8 +145,8 @@ namespace ServiceDeskFYP.Controllers
             if (ModelState.IsValid)
             {
                 //Capitalising names correctly
-                model.FirstName = ValidationHelpers.FirstLetterTOUpper(model.FirstName.ToLower());
-                model.LastName = ValidationHelpers.FirstLetterTOUpper(model.LastName.ToLower());
+                model.FirstName = Helpers.FirstLetterTOUpper(model.FirstName.ToLower());
+                model.LastName = Helpers.FirstLetterTOUpper(model.LastName.ToLower());
 
                 //Create User model
                 var UserModel = new ApplicationUser
@@ -974,8 +974,8 @@ namespace ServiceDeskFYP.Controllers
                 }
 
                 //Validation on fields
-                model.FirstName = ValidationHelpers.FirstLetterTOUpper(model.FirstName.ToLower());
-                model.LastName = ValidationHelpers.FirstLetterTOUpper(model.LastName.ToLower());
+                model.FirstName = Helpers.FirstLetterTOUpper(model.FirstName.ToLower());
+                model.LastName = Helpers.FirstLetterTOUpper(model.LastName.ToLower());
 
                 //Update the model
                 Client.UserName = model.UserName;

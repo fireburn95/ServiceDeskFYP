@@ -51,6 +51,7 @@ namespace ServiceDeskFYP.Models
         [InverseProperty("ApplicationUserForId")]
         public virtual ICollection<Call> Call_ForUserId { get; set; }
         public virtual ICollection<Action> Action { get; set; }
+        public virtual ICollection<Log> Log { get; set; }
         public virtual ICollection<GroupMember> GroupMember { get; set; }
         public virtual ICollection<Knowledge> Knowledge { get; set; }
         [InverseProperty("ApplicationUserManager")]

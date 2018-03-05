@@ -290,6 +290,10 @@
     <Compile Include="Migrations\201802240019277_UpdatedAlertTable_AddedFromGroupIdField.Designer.cs">
       <DependentUpon>201802240019277_UpdatedAlertTable_AddedFromGroupIdField.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201803051223170_UpdatedLogTable_AddedIpAndUserFields.cs" />
+    <Compile Include="Migrations\201803051223170_UpdatedLogTable_AddedIpAndUserFields.Designer.cs">
+      <DependentUpon>201803051223170_UpdatedLogTable_AddedIpAndUserFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AlertsViewModel.cs" />
     <Compile Include="Models\GroupManagementViewModel.cs" />
@@ -302,7 +306,7 @@
     <Compile Include="Models\Call.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\GroupMember.cs" />
-    <Compile Include="Models\Validation.cs" />
+    <Compile Include="Models\Helpers.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Knowledge.cs" />
     <Compile Include="Models\Log.cs" />
@@ -478,6 +482,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802240019277_UpdatedAlertTable_AddedFromGroupIdField.resx">
       <DependentUpon>201802240019277_UpdatedAlertTable_AddedFromGroupIdField.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803051223170_UpdatedLogTable_AddedIpAndUserFields.resx">
+      <DependentUpon>201803051223170_UpdatedLogTable_AddedIpAndUserFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

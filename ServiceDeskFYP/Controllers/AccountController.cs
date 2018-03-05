@@ -76,9 +76,11 @@ namespace ServiceDeskFYP.Controllers
                 return View(model);
             }
 
-            //Check if user is disabled
+            //Get the user
             var UserModel = _context.Users.SingleOrDefault(n => n.UserName.Equals(model.UserName));
-            if (UserModel.Disabled)
+
+            //Check if exists and disabled
+            if (UserModel != null && UserModel.Disabled)
             {
                 ViewBag.DisabledMessage = "Sorry, your access to this website has been disabled";
                 return View(model);
@@ -90,6 +92,7 @@ namespace ServiceDeskFYP.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    Helpers.LogEvent("Log In", "User has logged in successfully", UserModel.Id);
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -97,6 +100,7 @@ namespace ServiceDeskFYP.Controllers
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 case SignInStatus.Failure:
                 default:
+                    Helpers.LogEvent("Failed Log In", "An attempt to log in to '" + model.UserName + "' has failed");
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(model);
             }
@@ -163,8 +167,8 @@ namespace ServiceDeskFYP.Controllers
             if (ModelState.IsValid)
             {
                 //Capitalising names correctly
-                model.FirstName = ValidationHelpers.FirstLetterTOUpper(model.FirstName.ToLower());
-                model.LastName = ValidationHelpers.FirstLetterTOUpper(model.LastName.ToLower());
+                model.FirstName = Helpers.FirstLetterTOUpper(model.FirstName.ToLower());
+                model.LastName = Helpers.FirstLetterTOUpper(model.LastName.ToLower());
 
                 //Create User model
                 var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, CreatedTimestamp = DateTime.Now };
