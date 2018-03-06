@@ -444,6 +444,151 @@ namespace ServiceDeskFYP.Controllers
             return RedirectToAction("ManageSubordinates", new { UserId = managerId });
         }
 
+        //Edit an employee GET
+        [HttpGet]
+        [Route("admin/employees/edit/{UserId}")]
+        public ActionResult EditEmployeeGET(string UserId)
+        {
+            //Check for a Success message from another action
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            }
+
+            //Check for an error message from another action
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+            }
+
+            //Get the employee
+            var Employee = _context.Users.FirstOrDefault(n => n.Id == UserId);
+
+            //Check if doesn't exist
+            if (Employee == null)
+            {
+                //Create temp session message
+                TempData["ErrorMessage"] = "Sorry, the user you have attempted to access does not exist";
+
+                //Redirect to Employee list
+                return RedirectToAction("Employees");
+            }
+
+            //Check if employee is self
+            if (Employee.Id.Equals(User.Identity.GetUserId()))
+            {
+                TempData["ErrorMessage"] = "Sorry, you cannot edit yourself via admin tools";
+                return RedirectToAction("ViewAnEmployee", new { UserId });
+            }
+
+            //Convert to View Model
+            var model = new EditAnEmployeeViewModel
+            {
+                Id = Employee.Id,
+                UserName = Employee.UserName,
+                Email = Employee.Email,
+                FirstName = Employee.FirstName,
+                LastName = Employee.LastName,
+                Extension = Employee.Extension,
+                Department = Employee.Department,
+                Organisation = Employee.Organisation,
+                OrganisationAlias = Employee.OrganisationAlias,
+                PhoneNumber = Employee.PhoneNumber
+            };
+
+            //Pass view to model
+            return View("EditEmployee", model);
+        }
+
+        //Edit a client POST
+        [HttpPost]
+        [Route("admin/employees/edit/{UserId}")]
+        public ActionResult EditEmployeePOST(string UserId, EditAnEmployeeViewModel model)
+        {
+            //If model passes validation
+            if (ModelState.IsValid)
+            {
+                //Check user does not exist
+                var Employee = _context.Users.SingleOrDefault(n => n.Id.Equals(model.Id));
+                if (Employee == null)
+                {
+                    //Error message
+                    ViewBag.ErrorMessage = "Sorry, an error has occured, user does not exist";
+
+                    //Return to view
+                    return View("EditEmployee", model);
+                }
+
+                //Check if employee is self
+                if (Employee.Id.Equals(User.Identity.GetUserId()))
+                {
+                    TempData["ErrorMessage"] = "Sorry, you cannot edit yourself via admin tools";
+                    return RedirectToAction("ViewAnEmployee", new { UserId });
+                }
+
+                //Check for duplicate username
+                ApplicationDbContext _context2 = new ApplicationDbContext();
+                var checkUsername = _context2.Users.SingleOrDefault(n => n.UserName == model.UserName);
+                if (checkUsername != null)
+                {
+                    if (checkUsername.Id != model.Id)
+                    {
+                        //Duplicate so error
+                        ViewBag.ErrorMessage = "Sorry, that username already exists";
+
+                        return View("EditEmployee", model);
+                    }
+                }
+
+                //Check for duplicate emails
+                ApplicationDbContext _context3 = new ApplicationDbContext();
+                var checkEmail = _context2.Users.SingleOrDefault(n => n.Email == model.Email);
+                if (checkEmail != null)
+                {
+                    if (checkEmail.Id != model.Id)
+                    {
+                        //Duplicate so error
+                        ViewBag.ErrorMessage = "Sorry, that email already exists";
+
+                        return View("EditEmployee", model);
+                    }
+                }
+
+                //Validation on fields
+                model.FirstName = Helpers.FirstLetterTOUpper(model.FirstName.ToLower());
+                model.LastName = Helpers.FirstLetterTOUpper(model.LastName.ToLower());
+
+                //Check if password set
+                if (!string.IsNullOrEmpty(model.NewPassword))
+                {
+                    //Hash and update the password
+                    Employee.PasswordHash = userManager.PasswordHasher.HashPassword(model.NewPassword);
+
+                }
+
+                //Update the model
+                Employee.UserName = model.UserName;
+                Employee.Email = model.Email;
+                Employee.FirstName = model.FirstName;
+                Employee.LastName = model.LastName;
+                Employee.PhoneNumber = model.PhoneNumber;
+                Employee.Extension = model.Extension;
+                Employee.OrganisationAlias = model.OrganisationAlias;
+                Employee.Organisation = model.Organisation;
+                Employee.Department = model.Department;
+                _context.SaveChanges();
+
+                //Return to view with a message
+                Helpers.LogEvent("Admin Action", "User has edited the employee '" + model.UserName + "'");
+                TempData["SuccessMessage"] = "User successfully updated";
+                return RedirectToAction("ViewAnEmployee", new { UserId = model.Id });
+            }
+
+            //An error has occured/failed validation, return to view
+            return View("EditEmployee", model);
+
+        }
+
         /**************************
          *     Manage Groups      *
          * ***********************/

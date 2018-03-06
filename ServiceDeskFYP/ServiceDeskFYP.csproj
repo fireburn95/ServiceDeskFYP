@@ -416,6 +416,7 @@
     <None Include="packages.config" />
     <Content Include="Views\Groups\NotifyKnowledge.cshtml" />
     <Content Include="Views\Account\EditProfile.cshtml" />
+    <Content Include="Views\Admin\EditEmployee.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201801081319301_InitialCreate.resx">

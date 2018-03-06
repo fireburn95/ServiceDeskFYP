@@ -82,7 +82,7 @@
         @Html.ActionLink("Unset as Admin", "SetUnsetAdmin", new { PassedId = Model.Id })
     }
 
-    |
+    | @Html.ActionLink("Edit", "EditEmployeeGET", new { PassedId = Model.Id }) |
 
     @if (!Model.Disabled)
     {
