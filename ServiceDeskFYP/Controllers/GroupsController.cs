@@ -421,7 +421,7 @@ namespace ServiceDeskFYP.Controllers
         //GET View Knowledges of a group
         [HttpGet]
         [Route("groups/{groupid}/kbase/")]
-        public ActionResult ViewKnowledges(string groupid)
+        public ActionResult ViewKnowledges(string groupid, string search = null)
         {
             //Handle messages
             HandleMessages();
@@ -457,10 +457,20 @@ namespace ServiceDeskFYP.Controllers
                 return RedirectToAction("Index");
             }
 
+            //Get the knowledges
+            var Knowledges = _context.Knowledge.Where(n => n.Group_Id == GroupIdInt);
+
+            //Handle 'search'
+            if (!string.IsNullOrEmpty(search))
+            {
+                Knowledges = Knowledges.Where(n => n.Summary.ToLower().Contains(search.ToLower()) ||
+                                      n.Description.ToLower().Contains(search.ToLower()));
+            }
+
             //Create the model
             var model = new ViewKnowledgesPageGroupViewModel()
             {
-                Knowledges = _context.Knowledge.Where(n => n.Group_Id == GroupIdInt).AsEnumerable(),
+                Knowledges = Knowledges.AsEnumerable(),
                 IsLoggedInUserOwner = GroupMember.Owner,
             };
 

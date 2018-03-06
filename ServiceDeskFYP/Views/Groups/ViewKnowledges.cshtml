@@ -9,7 +9,14 @@
 <h2>ViewKnowledges</h2>
 
 <p>
-    @Html.ActionLink("Create New", "CreateKnowledgeGET")
+    @Html.ActionLink("Create Knowledge", "CreateKnowledgeGET") |
+    @Html.ActionLink("Clear", "ViewKnowledges", new { search = string.Empty })
+
+    <!--Search field-->
+    <form method="get" action="">
+        <input type="text" name="search" placeholder="Search..." />
+        <input type="submit" value="Search" />
+    </form>
 </p>
 
 @if (ViewBag.ErrorMessage != null)
