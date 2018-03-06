@@ -454,6 +454,106 @@ namespace ServiceDeskFYP.Controllers
             base.Dispose(disposing);
         }
 
+        [HttpGet]
+        [Route("account/edit")]
+        public ActionResult EditProfileGET()
+        {
+            //Handle messages
+            HandleMessages();
+
+            //Get logged in users ID
+            var LoggedInUserId = User.Identity.GetUserId();
+
+            //Get User
+            var user = _context.Users.SingleOrDefault(n => n.Id.Equals(LoggedInUserId));
+
+            //Convert to view model
+            var model = new EditUserViewModel()
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Organisation = user.Organisation,
+                OrganisationAlias = user.OrganisationAlias,
+                Department = user.Department,
+                Extension = user.Extension,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            return View("EditProfile", model);
+        }
+
+        [HttpPost]
+        [Route("account/edit")]
+        public ActionResult EditProfilePOST(EditUserViewModel model)
+        {
+            //If model passes validation
+            if (ModelState.IsValid)
+            {
+                //Get logged in user
+                var LoggedInUserId = User.Identity.GetUserId();
+
+                //Get passwords
+                var OldPassword = model.OldPassword;
+                var NewPassword = model.Password;
+                var ConfPassword = model.ConfirmPassword;
+
+                //Clear passwords from model
+                model.OldPassword = null;
+                model.Password = null;
+                model.ConfirmPassword = null;
+
+                //Capitalise names correctly
+                model.FirstName = Helpers.FirstLetterTOUpper(model.FirstName.ToLower());
+                model.LastName = Helpers.FirstLetterTOUpper(model.LastName.ToLower());
+
+                //Get the user
+                var user = _context.Users.SingleOrDefault(n => n.Id.Equals(LoggedInUserId));
+
+                //If password set
+                if (!string.IsNullOrEmpty(NewPassword) && !string.IsNullOrEmpty(ConfPassword) && NewPassword.Equals(ConfPassword))
+                {
+                    //If old password not set
+                    if (OldPassword == null)
+                    {
+                        ModelState.AddModelError("", "Please enter your old password if you wish to change your password");
+                        return View("EditProfile", model);
+                    }
+
+                    //Change password
+                    var result = UserManager.ChangePassword(LoggedInUserId, OldPassword, NewPassword);
+
+                    //If failed to change, add errors to model
+                    if (!result.Succeeded)
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError("", error);
+                        }
+                        return View("EditProfile", model);
+                    }
+                }
+
+                //Update User and save and log
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.PhoneNumber = model.PhoneNumber;
+                user.Extension = model.Extension;
+                user.OrganisationAlias = model.OrganisationAlias;
+                user.Organisation = model.Organisation;
+                user.Department = model.Department;
+                _context.SaveChanges();
+                Helpers.LogEvent("Action", "User has edited his/her profile");
+
+                //Return to view
+                ViewBag.SuccessMessage = "Changes succesfully made";
+                return View("EditProfile", model);
+
+            }
+            //If fails validation
+            return View("EditProfile", model);
+        }
+
         #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
@@ -510,6 +610,26 @@ namespace ServiceDeskFYP.Controllers
                 }
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
+        }
+
+        //Error and success messages
+        public void HandleMessages()
+        {
+            //Check for an error message from another action
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+                TempData.Remove("ErrorMessage");
+            }
+
+            //Check for a message from another action
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+                TempData.Remove("SuccessMessage");
+            }
+
+            //Remove Tempdata TODO do for all others
         }
         #endregion
     }

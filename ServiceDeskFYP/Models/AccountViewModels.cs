@@ -127,4 +127,53 @@ namespace ServiceDeskFYP.Models
         [Display(Name = "Email")]
         public string Email { get; set; }
     }
+
+    public class EditUserViewModel
+    {
+        [Key]
+        public string Id { get; set; }
+
+        [Required]
+        [RegularExpression(@"^[A-z]+$", ErrorMessage = "Only alphabetical characters allowed in first name")]
+        [StringLength(20, MinimumLength = 2, ErrorMessage = "{0} must be between {2} and {1} characters")]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [RegularExpression(@"^[A-z]+$", ErrorMessage = "Only alphabetical characters allowed in surname")]
+        [StringLength(20, MinimumLength = 2, ErrorMessage = "{0} must be between {2} and {1} characters")]
+        [Display(Name = "Surname")]
+        public string LastName { get; set; }
+
+        [DataType(DataType.PhoneNumber)]
+        [Display(Name = "Phone Number")]
+        public string PhoneNumber { get; set; }
+
+        [StringLength(10)]
+        public string Extension { get; set; }
+
+        [StringLength(15)]
+        [Display(Name = "Organisation Alias")]
+        public string OrganisationAlias { get; set; }
+
+        [StringLength(25)]
+        public string Organisation { get; set; }
+
+        [StringLength(20)]
+        public string Department { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Old password")]
+        public string OldPassword { get; set; }
+
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "New Password")]
+        public string Password { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; }
+    }
 }
