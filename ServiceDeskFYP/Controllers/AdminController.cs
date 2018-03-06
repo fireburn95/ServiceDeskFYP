@@ -1016,6 +1016,14 @@ namespace ServiceDeskFYP.Controllers
                 model.FirstName = Helpers.FirstLetterTOUpper(model.FirstName.ToLower());
                 model.LastName = Helpers.FirstLetterTOUpper(model.LastName.ToLower());
 
+                //Check if password set
+                if (!string.IsNullOrEmpty(model.NewPassword))
+                {
+                    //Hash and update the password
+                    Client.PasswordHash = userManager.PasswordHasher.HashPassword(model.NewPassword);
+
+                }
+
                 //Update the model
                 Client.UserName = model.UserName;
                 Client.Email = model.Email;
