@@ -1,7 +1,7 @@
 ﻿@model ServiceDeskFYP.Models.ViewAnEmployeeViewModel
 
 @{
-    ViewBag.Title = "ViewAnEmployee";
+    ViewBag.Title = "View " + Model.UserName;
 }
 
 <h2>@Model.FirstName @Model.LastName</h2>
@@ -97,15 +97,11 @@
         @Html.ActionLink("Re-enable", "DisableEnable", new { PassedId = Model.Id })
     }
 
-    | @Html.ActionLink("Manage Subordinates", "ManageSubordinates") |
+    | 
+    
+    @Html.ActionLink("Manage Subordinates", "ManageSubordinates") |
 
-    @if ((ViewBag.Referrer != null) && (ViewBag.Referrer != Request.Url.AbsoluteUri))
-    {
-        <a href="@ViewBag.Referrer">Back to List</a>
-    }
-    else
-    {
-        @Html.ActionLink("Back to List", "Employees")
-    }
+    @Html.ActionLink("Back to List", "Employees")
+
 
 </p>

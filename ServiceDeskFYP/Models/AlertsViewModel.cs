@@ -80,6 +80,8 @@ namespace ServiceDeskFYP.Models
 
     public class ReplyAlertViewModel
     {
+        public string Resource { get; set; }
+
         public string ReplyingToMessage { get; set; }
 
         public string ReplyToGroupName { get; set; }

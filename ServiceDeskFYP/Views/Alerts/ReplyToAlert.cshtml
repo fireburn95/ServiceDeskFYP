@@ -15,7 +15,7 @@
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
 
-        @if ((!String.IsNullOrEmpty(Model.FromUserName)) && (Model.FromGroupName==null))
+        @if ((!String.IsNullOrEmpty(Model.FromUserName)) && (Model.FromGroupName == null))
         {
             <text>From: </text>@Model.FromUserName
         }
@@ -28,7 +28,7 @@
         <br /><br />
 
 
-        @if (!String.IsNullOrEmpty(Model.ReplyToUserName) && Model.ReplyToGroupName==null)
+        @if (!String.IsNullOrEmpty(Model.ReplyToUserName) && Model.ReplyToGroupName == null)
         {
             <text>Replying to: </text>@Model.ReplyToUserName
         }
@@ -62,5 +62,5 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Return to Alerts", "Index", new { resource = Model.Resource })
 </div>

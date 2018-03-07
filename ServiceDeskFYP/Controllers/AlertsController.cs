@@ -454,6 +454,7 @@ namespace ServiceDeskFYP.Controllers
                         FromUserName = User.Identity.GetUserName(),
                         ReplyToGroupName = ToGroup?.Name,
                         ReplyToUserName = ToUser?.UserName,
+                        Resource = null
                     };
                 }
 
@@ -487,6 +488,7 @@ namespace ServiceDeskFYP.Controllers
                         FromUserName = User.Identity.GetUserName(),
                         ReplyToGroupName = ToGroup?.Name,
                         ReplyToUserName = ToUser?.UserName,
+                        Resource = FromGroup.Id.ToString()
                     };
                 }
 
