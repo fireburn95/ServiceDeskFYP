@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<ServiceDeskFYP.Models.ApplicationUser>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Manager Centre";
 }
 
-<h2>Index</h2>
+<h2>Subordinates</h2>
 
 @if (ViewBag.SuccessMessage != null)
 {
@@ -25,7 +25,8 @@ else
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.UserName)
+                    @*@Html.DisplayNameFor(model => model.UserName)*@
+                    Username
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Email)

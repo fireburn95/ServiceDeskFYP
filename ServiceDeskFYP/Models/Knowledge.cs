@@ -28,6 +28,7 @@ namespace ServiceDeskFYP.Models
 
         [Required]
         [DataType(DataType.DateTime)]
+        [Display(Name = "Last Updated")]
         public DateTime Updated { get; set; }
 
         [Required]

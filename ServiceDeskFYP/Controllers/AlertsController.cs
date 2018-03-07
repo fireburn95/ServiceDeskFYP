@@ -147,12 +147,13 @@ namespace ServiceDeskFYP.Controllers
                 var model = new ViewAlertsPageViewModel()
                 {
                     GroupId = null,
+                    GroupName = null,
                     ExceededSLACalls = exceededslacalls,
                     PastRequiredDate = requireddatescount,
                     Alerts = AlertsVM.OrderByDescending(n => n.Created).AsEnumerable(),
                     IsLoggedInUserGroupOwner = null,
                     IsDismissed = isDismissed,
-                    IsGroup = false
+                    IsGroup = false,
                 };
 
                 //Pass to view
@@ -297,6 +298,7 @@ namespace ServiceDeskFYP.Controllers
                 var model = new ViewAlertsPageViewModel()
                 {
                     GroupId = GroupId,
+                    GroupName = Group.Name,
                     ExceededSLACalls = exceededslacalls,
                     PastRequiredDate = requireddatescount,
                     Alerts = AlertsVM.OrderByDescending(n => n.Created).AsEnumerable(),

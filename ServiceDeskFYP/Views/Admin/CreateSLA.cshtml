@@ -1,17 +1,16 @@
 ﻿@model ServiceDeskFYP.Models.SLAPolicy
 
 @{
-    ViewBag.Title = "CreateSLA";
+    ViewBag.Title = "Create SLA";
 }
 
-<h2>CreateSLA</h2>
+<h2>Create SLA Policy</h2>
 
 @using (Html.BeginForm()) 
 {
     @Html.AntiForgeryToken()
     
 <div class="form-horizontal">
-    <h4>SLAPolicy</h4>
     <hr />
 
     @if (ViewBag.ErrorMessage != null)

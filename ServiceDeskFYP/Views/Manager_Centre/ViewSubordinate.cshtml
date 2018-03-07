@@ -1,13 +1,12 @@
 ﻿@model ServiceDeskFYP.Models.ApplicationUser
 
 @{
-    ViewBag.Title = "ViewSubordinate";
+    ViewBag.Title = "View Subordinate";
 }
 
-<h2>ViewSubordinate</h2>
+<h2>View Subordinate</h2>
 
 <div>
-    <h4>ApplicationUser</h4>
     <hr />
 
     @if (ViewBag.SuccessMessage != null)
@@ -22,7 +21,8 @@
 
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.UserName)
+            @*@Html.DisplayNameFor(model => model.UserName)*@
+            Username
         </dt>
 
         <dd>
@@ -54,7 +54,8 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.PhoneNumber)
+            @*@Html.DisplayNameFor(model => model.PhoneNumber)*@
+            Phone Number
         </dt>
 
         <dd>

@@ -1,13 +1,33 @@
 ﻿@model ServiceDeskFYP.Models.ViewAlertsPageViewModel
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Alerts";
 
     var ExceededSLATerm = Model.ExceededSLACalls > 1 ? "calls" : "call";
     var PastRequiredTerm = Model.PastRequiredDate > 1 ? "calls" : "call";
+
+    string header = "";
+    if (string.IsNullOrEmpty(Model.GroupName))
+    {
+        header = "Your ";
+    }
+    if (Model.IsDismissed)
+    {
+        header = header + "Dismissed Alerts";
+    }
+    else
+    {
+        header = header + "Alerts";
+    }
+    if (!string.IsNullOrEmpty(Model.GroupName))
+    {
+        header = header + " of " + Model.GroupName;
+    }
 }
 
-<h2>Alerts</h2>
+
+
+<h2>@header</h2>
 
 <!--HANDLE ERRORS-->
 @if (ViewBag.ErrorMessage != null)

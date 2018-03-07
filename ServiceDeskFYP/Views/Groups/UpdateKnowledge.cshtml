@@ -1,17 +1,17 @@
 ﻿@model ServiceDeskFYP.Models.UpdateKnowledgeGroupViewModel
 
 @{
-    ViewBag.Title = "UpdateKnowledge";
+    ViewBag.Title = "Update Knowledge";
 }
 
-<h2>UpdateKnowledge</h2>
+<h2>Update Knowledge</h2>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>UpdateKnowledgeGroupViewModel</h4>
+        <h4>@Model.OriginalKnowledgeSummary</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.Id)
@@ -31,6 +31,8 @@
                 @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
             </div>
         </div>
+
+        @Html.HiddenFor(model => model.OriginalKnowledgeSummary)
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">

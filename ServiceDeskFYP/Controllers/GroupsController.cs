@@ -745,7 +745,8 @@ namespace ServiceDeskFYP.Controllers
             {
                 Id = Knowledge.Id,
                 Summary = Knowledge.Summary,
-                Description = Knowledge.Description
+                Description = Knowledge.Description,
+                OriginalKnowledgeSummary = Knowledge.Summary
             };
 
             //Pass to view
@@ -998,7 +999,8 @@ namespace ServiceDeskFYP.Controllers
             var model = new NotifyKnowledgeViewModelPage()
             {
                 GroupList = GetGroups(),
-                UserList = GetNonDisabledEmployees()
+                UserList = GetNonDisabledEmployees(),
+                KnowledgeSummary = Knowledge.Summary
             };
 
             //Return to view

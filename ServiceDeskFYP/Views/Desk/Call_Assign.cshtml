@@ -1,17 +1,17 @@
 ﻿@model ServiceDeskFYP.Models.AssignResourcePageViewModel
 
 @{
-    ViewBag.Title = "Call_Assign";
+    ViewBag.Title = "Assign Call";
 }
 
-<h2>Call_Assign</h2>
+<h2>Assign Call</h2>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
-        <h4>SelectResourceViewModel</h4>
+        <h4>@Model.CallSummary</h4>
         <hr />
 
         @if (ViewBag.ErrorMessage != null)
@@ -40,9 +40,11 @@
             </div>
         </div>
 
+        @Html.HiddenFor(model => model.CallSummary)
+
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Assign" class="btn btn-default" />
             </div>
         </div>
     </div>

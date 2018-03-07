@@ -1,17 +1,16 @@
 ﻿@model ServiceDeskFYP.Models.EditUserViewModel
 
 @{
-    ViewBag.Title = "EditProfile";
+    ViewBag.Title = "Edit Profile";
 }
 
-<h2>EditProfile</h2>
+<h2>Edit Profile</h2>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
     
 <div class="form-horizontal">
-    <h4>EditUserViewModel</h4>
     <hr />
 
     @if (ViewBag.ErrorMessage != null)

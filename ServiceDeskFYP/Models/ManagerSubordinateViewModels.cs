@@ -8,6 +8,8 @@ namespace ServiceDeskFYP.Models
     //Used in manager_centre/sub/{username}/alert
     public class SendAlertToSubViewModel
     {
+        public string ToUsername { get; set; }
+
         [StringLength(500)]
         [Required]
         [DataType(DataType.MultilineText)]

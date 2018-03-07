@@ -92,6 +92,8 @@ namespace ServiceDeskFYP.Controllers
 
                 //Get the calls of the group
                 Calls = _context.Call.Where(n => n.ResourceGroupId == ResourceGroupId).AsEnumerable();
+
+                model.GroupName = _context.Group.SingleOrDefault(n => n.Id == ResourceGroupId).Name;
             }
 
             //Check whether urgent calls TODO
@@ -640,6 +642,9 @@ namespace ServiceDeskFYP.Controllers
             //Create Model
             CreateActionPageViewModel model = new CreateActionPageViewModel();
 
+            //Populate Call Summary
+            model.CallSummary = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).Summary;
+
             //Populate Action Types select box
             string[] categories = System.IO.File.ReadAllLines(Server.MapPath(@"~/Content/ActionTypes.txt"));
             model.ActionTypes = categories.Where(n => !string.IsNullOrEmpty(n)).ToArray().AsEnumerable();
@@ -761,7 +766,8 @@ namespace ServiceDeskFYP.Controllers
             AssignResourcePageViewModel model = new AssignResourcePageViewModel()
             {
                 UserList = GetNonDisabledEmployees(),
-                GroupList = GetGroups()
+                GroupList = GetGroups(),
+                CallSummary = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).Summary,
             };
 
             //Pass into view
@@ -936,7 +942,8 @@ namespace ServiceDeskFYP.Controllers
             NotifyPageViewModel model = new NotifyPageViewModel()
             {
                 UserList = GetNonDisabledEmployees(),
-                GroupList = GetGroups()
+                GroupList = GetGroups(),
+                CallSummary = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).Summary,
             };
 
             //Pass into view
@@ -1077,11 +1084,9 @@ namespace ServiceDeskFYP.Controllers
             //Create View Model
             ResetSLAPageViewModel model = new ResetSLAPageViewModel
             {
-                //Populate SLA Policies in model
                 SLAPolicies = _context.SLAPolicy.AsEnumerable(),
-
-                //Populate SLA Levels in model
-                SLALevels = new List<String> { "Low", "Medium", "High", "Task", "On-Going" }
+                SLALevels = new List<String> { "Low", "Medium", "High", "Task", "On-Going" },
+                CallSummary = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).Summary
             };
 
             //Return to view
@@ -1245,6 +1250,9 @@ namespace ServiceDeskFYP.Controllers
         [Route("desk/call/{Reference}/edit")]
         public ActionResult EditCallGET(string Reference)
         {
+            //Handle Messages
+            HandleMessages();
+
             //Check reference exists
             if (!CheckReferenceExists(Reference))
             {
@@ -1306,6 +1314,9 @@ namespace ServiceDeskFYP.Controllers
                 Regarding_Ref = Call.Regarding_Ref,
                 EditComments = null
             };
+
+            //Set Summary
+            model.CallSummary = Call.Summary;
 
             //Pass to view
             return View("Call_EditCall", model);

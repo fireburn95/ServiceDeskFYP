@@ -500,7 +500,7 @@ namespace ServiceDeskFYP.Controllers
             return View("EditEmployee", model);
         }
 
-        //Edit a client POST
+        //Edit an employee POST
         [HttpPost]
         [Route("admin/employees/edit/{UserId}")]
         public ActionResult EditEmployeePOST(string UserId, EditAnEmployeeViewModel model)

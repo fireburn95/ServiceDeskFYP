@@ -27,6 +27,7 @@ namespace ServiceDeskFYP.Models
         public string Category { get; set; }
 
         [DataType(DataType.DateTime)]
+        [Display(Name = "Required By")]
         public DateTime? Required_By { get; set; }
 
         [Required]
@@ -69,6 +70,7 @@ namespace ServiceDeskFYP.Models
         public string Department { get; set; }
 
         [StringLength(30)]
+        [Display(Name = "Regarding Reference")]
         public string Regarding_Ref { get; set; }
     }
 
@@ -85,6 +87,7 @@ namespace ServiceDeskFYP.Models
 
         [Required]
         [StringLength(10)]
+        [Display(Name = "Sla Level")]
         public string SlaLevel { get; set; }
 
         [Required]
@@ -96,6 +99,7 @@ namespace ServiceDeskFYP.Models
         public DateTime Created { get; set; }
 
         [DataType(DataType.DateTime)]
+        [Display(Name = "Required By")]
         public DateTime? Required_By { get; set; }
 
         [Required]
@@ -128,6 +132,7 @@ namespace ServiceDeskFYP.Models
 
     public class DeskPageViewModel
     {
+        public string GroupName { get; set; }
         public IEnumerable<ViewCallsViewModel> VCVMList { get; set; }
         public IEnumerable<GroupsSelectViewModel> GSVM { get; set; }
     }
@@ -264,6 +269,7 @@ namespace ServiceDeskFYP.Models
         public string Type { get; set; }
 
         [StringLength(200)]
+        [Display(Name = "Details")]
         public string TypeDetails { get; set; }
 
         [DataType(DataType.MultilineText)]
@@ -303,6 +309,7 @@ namespace ServiceDeskFYP.Models
 
     public class CreateActionPageViewModel
     {
+        public string CallSummary { get; set; }
         public CreateActionViewModel CreateAction { get; set; }
         public IEnumerable<String> ActionTypes { get; set; }
     }
@@ -314,11 +321,13 @@ namespace ServiceDeskFYP.Models
     public class SelectResourceViewModel
     {
         public string Username { get; set; }
+        [Display(Name = "Group")]
         public string GroupName { get; set; }
     }
 
     public class AssignResourcePageViewModel
     {
+        public string CallSummary { get; set; }
         public SelectResourceViewModel SelectResource { get; set; }
         public IEnumerable<ApplicationUser> UserList { get; set; }
         public IEnumerable<Group> GroupList { get; set; }
@@ -331,15 +340,18 @@ namespace ServiceDeskFYP.Models
     public class ResetSLAForm
     {
         [Required]
+        [Display(Name = "Policy")]
         public string SLAPolicyName { get; set; }
 
         [Required]
+        [Display(Name = "Level")]
         public string SLALevel { get; set; }
     }
 
 
     public class ResetSLAPageViewModel
     {
+        public string CallSummary { get; set; }
         public ResetSLAForm SLAForm { get; set; }
         public IEnumerable<SLAPolicy> SLAPolicies { get; set; }
         public IEnumerable<String> SLALevels { get; set; }
@@ -361,6 +373,7 @@ namespace ServiceDeskFYP.Models
         public string Category { get; set; }
 
         [DataType(DataType.DateTime)]
+        [Display(Name = "Required By")]
         public DateTime? Required_By { get; set; }
 
         [Required]
@@ -403,6 +416,7 @@ namespace ServiceDeskFYP.Models
         public string Department { get; set; }
 
         [StringLength(30)]
+        [Display(Name = "Regarding Reference")]
         public string Regarding_Ref { get; set; }
 
         [Required(ErrorMessage = "Please specify the purpose for the changes made")]
@@ -413,6 +427,7 @@ namespace ServiceDeskFYP.Models
 
     public class EditCallPageViewModel
     {
+        public string CallSummary { get; set; }
         public IEnumerable<String> Categories { get; set; }
         public EditCallViewModel EditCall { get; set; }
     }
@@ -424,6 +439,7 @@ namespace ServiceDeskFYP.Models
     public class NotifyViewModel
     {
         public string Username { get; set; }
+        [Display(Name = "Group")]
         public string GroupName { get; set; }
         [Required]
         [DataType(DataType.MultilineText)]
@@ -432,6 +448,7 @@ namespace ServiceDeskFYP.Models
 
     public class NotifyPageViewModel
     {
+        public string CallSummary { get; set; }
         public NotifyViewModel Notify { get; set; }
         public IEnumerable<ApplicationUser> UserList { get; set; }
         public IEnumerable<Group> GroupList { get; set; }

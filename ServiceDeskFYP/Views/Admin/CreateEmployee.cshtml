@@ -1,17 +1,16 @@
 ﻿@model ServiceDeskFYP.Models.CreateEmployeeViewModel
 
 @{
-    ViewBag.Title = "CreateEmployee";
+    ViewBag.Title = "Create Employee";
 }
 
-<h2>CreateEmployee</h2>
+<h2>Create Employee</h2>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
-        <h4>CreateEmployeeViewModel</h4>
         <hr />
 
         @if (ViewBag.ErrorMessage != null)

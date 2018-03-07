@@ -13,6 +13,8 @@ namespace ServiceDeskFYP.Models
     {
         public int? GroupId { get; set; }
 
+        public string GroupName { get; set; }
+
         public int ExceededSLACalls { get; set; }
 
         public int PastRequiredDate { get; set; }

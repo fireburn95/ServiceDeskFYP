@@ -1,13 +1,13 @@
 ﻿@model ServiceDeskFYP.Models.ViewAClientViewModel
 
 @{
-    ViewBag.Title = "ViewAClient";
+    ViewBag.Title = "View Client";
 }
 
-<h2>ViewAClient</h2>
+<h2>@Model.UserName's Details</h2>
 
 <div>
-    <h4>ViewAClientViewModel</h4>
+    <h4>@Model.Email</h4>
     <hr />
 
     @if (ViewBag.ErrorMessage != null)

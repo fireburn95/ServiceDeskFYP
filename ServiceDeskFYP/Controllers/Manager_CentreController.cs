@@ -179,8 +179,14 @@ namespace ServiceDeskFYP.Controllers
             //Populate Username
             ViewBag.SubordinateUsername = sub_username;
 
+            //Populate data
+            SendAlertToSubViewModel model = new SendAlertToSubViewModel()
+            {
+                ToUsername = Subordinate.UserName
+            };
+
             //Return view
-            return View("SendAlertToSub");
+            return View("SendAlertToSub", model);
         }
 
         //Send an alert POST

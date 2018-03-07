@@ -109,6 +109,8 @@ namespace ServiceDeskFYP.Models
      */
     public class UpdateKnowledgeGroupViewModel
     {
+        public string OriginalKnowledgeSummary { get; set; }
+
         [Key]
         public int Id { get; set; }
 
@@ -126,6 +128,7 @@ namespace ServiceDeskFYP.Models
      */
     public class NotifyKnowledgeViewModelPage
     {
+        public string KnowledgeSummary { get; set; }
         public NotifyKnowledgeViewModel Notify { get; set; }
         public IEnumerable<ApplicationUser> UserList { get; set; }
         public IEnumerable<Group> GroupList { get; set; }
@@ -134,6 +137,7 @@ namespace ServiceDeskFYP.Models
     public class NotifyKnowledgeViewModel
     {
         public string Username { get; set; }
+        [Display(Name = "Group")]
         public string GroupName { get; set; }
         [Required]
         [DataType(DataType.MultilineText)]

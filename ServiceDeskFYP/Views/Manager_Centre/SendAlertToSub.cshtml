@@ -1,17 +1,16 @@
 ﻿@model ServiceDeskFYP.Models.SendAlertToSubViewModel
 
 @{
-    ViewBag.Title = "SendAlertToSub";
+    ViewBag.Title = "Send Alert";
 }
 
-<h2>SendAlertToSub</h2>
+<h2>Send Alert to @Model.ToUsername</h2>
 
 @using (Html.BeginForm()) 
 {
     @Html.AntiForgeryToken()
     
 <div class="form-horizontal">
-    <h4>SendAlertToSubViewModel</h4>
     <hr />
 
     @if (ViewBag.SuccessMessage != null)
@@ -39,6 +38,8 @@
             @Html.ValidationMessageFor(model => model.Text, "", new { @class = "text-danger" })
         </div>
     </div>
+
+    @Html.HiddenFor(model => model.ToUsername)
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">

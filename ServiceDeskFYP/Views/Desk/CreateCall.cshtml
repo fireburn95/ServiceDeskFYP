@@ -1,18 +1,17 @@
 ﻿@model ServiceDeskFYP.Models.CreateCallViewModel
 
 @{
-    ViewBag.Title = "CreateCall";
+    ViewBag.Title = "New Call";
 
 }
 
-<h2>CreateCall</h2>
+<h2>New Call</h2>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
-        <h4>CreateCallViewModel</h4>
         <hr />
 
         @if (ViewBag.ErrorMessage != null)

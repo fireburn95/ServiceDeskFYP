@@ -22,6 +22,7 @@ namespace ServiceDeskFYP.Models
 
         [Required]
         [StringLength(10)]
+        [Display(Name = "Level")]
         public string SlaLevel { get; set; }
 
         [Required]
@@ -30,9 +31,11 @@ namespace ServiceDeskFYP.Models
 
         [Required]
         [DataType(DataType.DateTime)]
+        [Display(Name = "Opened")]
         public DateTime Created { get; set; }
 
         [DataType(DataType.DateTime)]
+        [Display(Name = "Required By")]
         public DateTime? Required_By { get; set; }
 
         [DataType(DataType.DateTime)]

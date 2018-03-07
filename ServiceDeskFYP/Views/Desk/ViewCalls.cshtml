@@ -1,18 +1,37 @@
 ﻿@model ServiceDeskFYP.Models.DeskPageViewModel
 
 @{
-    ViewBag.Title = "ViewCalls";
+    ViewBag.Title = "View Calls";
     var resource = Request.Params["resource"];
     var search = Request.Params["search"];
     var sortcategory = Request.Params["sortcategory"];
     var sortdirection = Request.Params["sortdirection"];
     var closed = Request.Params["closed"];
     var urgent = Request.Params["urgent"];
+
+    string header = "View";
+    if (!string.IsNullOrEmpty(urgent) && urgent.Equals("true"))
+    {
+        header = header + " Urgent";
+    }
+    if (!string.IsNullOrEmpty(closed) && closed.Equals("true"))
+    {
+        header = header + " Closed";
+    }
+    header = header + " Calls Belonging To ";
+    if (String.IsNullOrEmpty(resource))
+    {
+        header = header + " You";
+    }
+    else
+    {
+        header = header + " " + Model.GroupName;
+    }
 }
 
 
+<h2>@header</h2>
 
-<h2>ViewCalls</h2>
 
 @if (ViewBag.ErrorMessage != null)
 {

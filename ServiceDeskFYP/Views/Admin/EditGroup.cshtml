@@ -1,17 +1,16 @@
 ﻿@model ServiceDeskFYP.Models.Group
 
 @{
-    ViewBag.Title = "EditGroup";
+    ViewBag.Title = "Edit Group";
 }
 
-<h2>EditGroup</h2>
+<h2>Edit Group</h2>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
-        <h4>Group</h4>
         <hr />
         @if (ViewBag.ErrorMessage!=null)
         {

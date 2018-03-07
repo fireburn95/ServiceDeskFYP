@@ -1,18 +1,28 @@
 ﻿@model ServiceDeskFYP.Models.EditCallPageViewModel
 
 @{
-    ViewBag.Title = "Call_EditCall";
+    ViewBag.Title = "Edit Call";
 }
 
-<h2>Call_EditCall</h2>
+<h2>Edit Call</h2>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
-        <h4>EditCallViewModel</h4>
+        <h4>@Model.CallSummary</h4>
         <hr />
+
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <h5 style="color:red">@ViewBag.ErrorMessage</h5>
+        }
+        @if (ViewBag.SuccessMessage != null)
+        {
+            <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
+        }
+
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.EditCall.Reference)
 
@@ -137,6 +147,8 @@
                 @Html.ValidationMessageFor(model => model.EditCall.EditComments, "", new { @class = "text-danger" })
             </div>
         </div>
+
+        @Html.HiddenFor(model => model.CallSummary)
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
