@@ -42,11 +42,8 @@ namespace ServiceDeskFYP.Controllers
         //If search GET param set, then filters list
         public ActionResult Employees()
         {
-            //Check for an error message from another action
-            if (TempData["ErrorMessage"] != null)
-            {
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
-            }
+            //Handle Messages
+            HandleMessages();
 
             //Get the role ID for the Employee
             var roleId = roleManager.FindByName("Employee").Id;
@@ -80,11 +77,8 @@ namespace ServiceDeskFYP.Controllers
         [Route("admin/employees/{UserId}")]
         public ActionResult ViewAnEmployee(string UserId)
         {
-            //Check for an error message from another action
-            if (TempData["ErrorMessage"] != null)
-            {
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
-            }
+            //Handle Messages
+            HandleMessages();
 
             //If last visited page is available, store into viewbag
             if (Request.UrlReferrer != null)
@@ -133,6 +127,8 @@ namespace ServiceDeskFYP.Controllers
         [Route("admin/employees/create")]
         public ActionResult CreateEmployeeGET()
         {
+            HandleMessages();
+
             return View("CreateEmployee");
         }
 
@@ -300,17 +296,8 @@ namespace ServiceDeskFYP.Controllers
         [Route("admin/employees/{UserId}/subordinates")]
         public ActionResult ManageSubordinates(string UserId)
         {
-            //Check for an error message from another action
-            if (TempData["ErrorMessage"] != null)
-            {
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
-            }
-
-            //Check for a success message from another action
-            if (TempData["SuccessMessage"] != null)
-            {
-                ViewBag.SuccessMessage = TempData["SuccessMessage"];
-            }
+            //Handle Messages
+            HandleMessages();
 
             //Get the employee
             var Employee = _context.Users.FirstOrDefault(n => n.Id == UserId);
@@ -449,17 +436,8 @@ namespace ServiceDeskFYP.Controllers
         [Route("admin/employees/edit/{UserId}")]
         public ActionResult EditEmployeeGET(string UserId)
         {
-            //Check for a Success message from another action
-            if (TempData["SuccessMessage"] != null)
-            {
-                ViewBag.SuccessMessage = TempData["SuccessMessage"];
-            }
-
-            //Check for an error message from another action
-            if (TempData["ErrorMessage"] != null)
-            {
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
-            }
+            //Handle Messages
+            HandleMessages();
 
             //Get the employee
             var Employee = _context.Users.FirstOrDefault(n => n.Id == UserId);
@@ -596,17 +574,8 @@ namespace ServiceDeskFYP.Controllers
         //View Groups
         public ActionResult Groups()
         {
-            //Handle errors from other action methods
-            if (TempData["ErrorMessage"] != null)
-            {
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
-            }
-
-            //Handle success message from other action methods
-            if (TempData["SuccessMessage"] != null)
-            {
-                ViewBag.SuccessMessage = TempData["SuccessMessage"];
-            }
+            //Handle Messages
+            HandleMessages();
 
             //Get all groups
             var Groups = _context.Group;
@@ -620,6 +589,8 @@ namespace ServiceDeskFYP.Controllers
         [Route("admin/groups/create")]
         public ActionResult CreateGroupGET()
         {
+            HandleMessages();
+
             return View("CreateGroup");
         }
 
@@ -661,6 +632,9 @@ namespace ServiceDeskFYP.Controllers
         [Route("admin/groups/edit/{GroupId}")]
         public ActionResult EditGroupGET(int GroupId)
         {
+            //Handle messages
+            HandleMessages();
+
             //Get the group
             var Group = _context.Group.SingleOrDefault(n => n.Id == GroupId);
 
@@ -721,22 +695,11 @@ namespace ServiceDeskFYP.Controllers
         [Route("admin/groups/members/{GroupId}")]
         public ActionResult ManageGroupMembers(int GroupId)
         {
+            //Handle messages
+            HandleMessages();
+
             //Get the group
             var Group = _context.Group.SingleOrDefault(n => n.Id == GroupId);
-
-            //Handle Message from another action
-            if (TempData["SuccessMessage"] != null)
-            {
-                //Pass the message to ViewBag
-                ViewBag.SuccessMessage = TempData["SuccessMessage"];
-            }
-
-            //Handle Error Message from another action
-            if (TempData["ErrorMessage"] != null)
-            {
-                //Pass the message to ViewBag
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
-            }
 
             //Check if doesnt exist
             if (Group == null)
@@ -918,17 +881,8 @@ namespace ServiceDeskFYP.Controllers
         //Manage Clients homepage
         public ActionResult Clients()
         {
-            //Check for a Success message from another action
-            if (TempData["SuccessMessage"] != null)
-            {
-                ViewBag.SuccessMessage = TempData["SuccessMessage"];
-            }
-
-            //Check for an error message from another action
-            if (TempData["ErrorMessage"] != null)
-            {
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
-            }
+            //Handle messages
+            HandleMessages();
 
             //Get the role ID for the Clients
             var roleId = roleManager.FindByName("Client").Id;
@@ -963,17 +917,8 @@ namespace ServiceDeskFYP.Controllers
         [Route("admin/clients/{UserId}")]
         public ActionResult ViewAClient(string UserId)
         {
-            //Check for a Success message from another action
-            if (TempData["SuccessMessage"] != null)
-            {
-                ViewBag.SuccessMessage = TempData["SuccessMessage"];
-            }
-
-            //Check for an error message from another action
-            if (TempData["ErrorMessage"] != null)
-            {
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
-            }
+            //Handle Messages
+            HandleMessages();
 
             //If last visited page is available, store into viewbag
             if (Request.UrlReferrer != null)
@@ -1066,17 +1011,8 @@ namespace ServiceDeskFYP.Controllers
         [Route("admin/clients/edit/{UserId}")]
         public ActionResult EditClientGET(string UserId)
         {
-            //Check for a Success message from another action
-            if (TempData["SuccessMessage"] != null)
-            {
-                ViewBag.SuccessMessage = TempData["SuccessMessage"];
-            }
-
-            //Check for an error message from another action
-            if (TempData["ErrorMessage"] != null)
-            {
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
-            }
+            //Handle Messages
+            HandleMessages();
 
             //Get the Client
             var Client = _context.Users.FirstOrDefault(n => n.Id == UserId);
@@ -1199,17 +1135,8 @@ namespace ServiceDeskFYP.Controllers
         //SLA homepage
         public ActionResult Sla()
         {
-            //Check for a Success message from another action
-            if (TempData["SuccessMessage"] != null)
-            {
-                ViewBag.SuccessMessage = TempData["SuccessMessage"];
-            }
-
-            //Check for an error message from another action
-            if (TempData["ErrorMessage"] != null)
-            {
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
-            }
+            //Handle Messages
+            HandleMessages();
 
             //Get the SLA's
             var SLAs = _context.SLAPolicy;
@@ -1223,17 +1150,8 @@ namespace ServiceDeskFYP.Controllers
         [Route("admin/sla/create")]
         public ActionResult CreateSLAGET()
         {
-            //Check for a Success message from another action
-            if (TempData["SuccessMessage"] != null)
-            {
-                ViewBag.SuccessMessage = TempData["SuccessMessage"];
-            }
-
-            //Check for an error message from another action
-            if (TempData["ErrorMessage"] != null)
-            {
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
-            }
+            //Handle Messages
+            HandleMessages();
 
             return View("CreateSLA");
         }
@@ -1289,17 +1207,8 @@ namespace ServiceDeskFYP.Controllers
         [Route("admin/sla/edit/{SlaId}")]
         public ActionResult EditSLAGET(int SlaId)
         {
-            //Check for a Success message from another action
-            if (TempData["SuccessMessage"] != null)
-            {
-                ViewBag.SuccessMessage = TempData["SuccessMessage"];
-            }
-
-            //Check for an error message from another action
-            if (TempData["ErrorMessage"] != null)
-            {
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
-            }
+            //Handle messages
+            HandleMessages();
 
             //Check if SLA exists
             var SLA = _context.SLAPolicy.SingleOrDefault(n => n.Id == SlaId);
@@ -1473,6 +1382,27 @@ namespace ServiceDeskFYP.Controllers
             ViewBag.SuccessMessage = "Changes made";
             Helpers.LogEvent("Admin Action", "User has updated the categories");
             return View("Categories", data);
+        }
+
+
+        /*
+         * HELPERS
+         */
+
+        //Error and success messages
+        public void HandleMessages()
+        {
+            //Check for an error message from another action
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+            }
+
+            //Check for a message from another action
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            }
         }
 
 

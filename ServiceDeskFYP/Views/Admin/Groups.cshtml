@@ -11,11 +11,11 @@
 </p>
 @if (ViewBag.ErrorMessage != null)
 {
-    <h5>@ViewBag.ErrorMessage</h5>
+    <h5 style="color:red">@ViewBag.ErrorMessage</h5>
 }
 @if (ViewBag.SuccessMessage != null)
 {
-    <h5>@ViewBag.SuccessMessage</h5>
+    <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
 }
 <table class="table">
     <tr>
@@ -47,7 +47,8 @@
             </td>
             <td>
                 @Html.ActionLink("Edit", "groups/edit", new { id = item.Id }) |
-                @Html.ActionLink("Add/Remove Members", "Groups/Members", new { id = item.Id }) <!--|
+                @Html.ActionLink("Add/Remove Members", "Groups/Members", new { id = item.Id })
+                <!--|
                 @Html.ActionLink("Delete", "Delete", new { id = item.Id })-->
             </td>
         </tr>

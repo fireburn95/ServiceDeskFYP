@@ -11,7 +11,11 @@
     <hr />
     @if (ViewBag.ErrorMessage != null)
     {
-        <h5 style="color: red">@ViewBag.ErrorMessage</h5>
+        <h5 style="color:red">@ViewBag.ErrorMessage</h5>
+    }
+    @if (ViewBag.SuccessMessage != null)
+    {
+        <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
     }
     <dl class="dl-horizontal">
         <dt>

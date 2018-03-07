@@ -9,6 +9,15 @@
 <h3>Call Categories</h3>
 <h5>Add a new category on each line</h5>
 
+@if (ViewBag.ErrorMessage != null)
+{
+    <h5 style="color:red">@ViewBag.ErrorMessage</h5>
+}
+@if (ViewBag.SuccessMessage != null)
+{
+    <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
+}
+
 <form method="post" action="">
     <textarea name="categories" class="form-control">
 @if (Model != null)
