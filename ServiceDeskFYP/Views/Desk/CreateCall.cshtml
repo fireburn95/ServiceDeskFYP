@@ -60,7 +60,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Required_By, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <input type="date" name="Required_By" id="Required_By" class="form-control" value="                @if ((Model != null) && (Model.Required_By != null)){@Model.Required_By.Value.ToString("yyyy-MM-dd")}" />
+                <input type="date" name="Required_By" id="Required_By" class="form-control" value="@if ((Model != null) && (Model.Required_By != null)){@Model.Required_By.Value.ToString("yyyy-MM-dd")}" />
             </div>
         </div>
 
