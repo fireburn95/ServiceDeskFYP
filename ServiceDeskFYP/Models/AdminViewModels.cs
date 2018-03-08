@@ -293,7 +293,29 @@ namespace ServiceDeskFYP.Models
         public string ManagerId { get; set; }
     }
 
+    //Used in admin/logs
+    public class ViewLogsViewModel
+    {
+        [Key]
+        public int Id { get; set; }
 
+        public string Type { get; set; }
+
+        public string Detail { get; set; }
+
+        [Display(Name = "Dated")]
+        public DateTime Datetime { get; set; }
+
+        [Display(Name = "Public IP")]
+        public string PublicIP { get; set; }
+
+        [Display(Name = "Local IP")]
+        public string LocalIP { get; set; }
+
+        public string UserId { get; set; }
+
+        public string Username { get; set; }
+    }
 }
 
 

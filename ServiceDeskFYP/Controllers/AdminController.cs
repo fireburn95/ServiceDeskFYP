@@ -1384,10 +1384,61 @@ namespace ServiceDeskFYP.Controllers
             return View("Categories", data);
         }
 
+        /**************************
+         *     Manage Logs        *
+         * ***********************/
 
-        /*
-         * HELPERS
-         */
+        //View Logs GET
+        public ActionResult Logs(int page = 1)
+        {
+            //Handle messages
+            HandleMessages();
+
+            //Specify row count
+            int rowcount = 15;
+
+            //Handle negative page numbers
+            if (page < 1)
+            {
+                page = 1;
+            }
+
+            //Get all the logs and limit
+            var Logs = _context.Log.OrderByDescending(n => n.Datetime).Skip((page - 1) * rowcount).Take(rowcount).AsEnumerable();
+
+            //Get a list of the types
+            var Types = Logs.Select(n => n.Type).Distinct();
+
+            //Set to view model
+            var model = new List<ViewLogsViewModel>();
+            using(ApplicationDbContext dbcontext = new ApplicationDbContext())
+            {
+                ApplicationUser user = null;
+                foreach(var item in Logs)
+                {
+                    user = dbcontext.Users.SingleOrDefault(n => n.Id.Equals(item.UserId));
+                    model.Add(new ViewLogsViewModel
+                    {
+                        Id = item.Id,
+                        Datetime = item.Datetime,
+                        UserId = item.UserId,
+                        Username = user?.UserName,
+                        LocalIP = item.LocalIP,
+                        PublicIP = item.PublicIP,
+                        Type = item.Type,
+                        Detail = item.Detail
+                    });
+                }
+            }
+
+            //Return view
+            return View(model);
+        }
+
+
+        /**************************
+         *     Helpers            *
+         * ***********************/
 
         //Error and success messages
         public void HandleMessages()
