@@ -164,7 +164,7 @@ namespace ServiceDeskFYP.Controllers
                 if (result.Succeeded)
                 {
                     //Add as an employee
-                    Helpers.LogEvent("Admin Action","User has created the new employee '" + UserModel.UserName + "'");
+                    Helpers.LogEvent("Admin Action", "User has created the new employee '" + UserModel.UserName + "'");
                     userManager.AddToRole(UserModel.Id, "Employee");
                     return RedirectToAction("Employees");
                 }
@@ -1389,7 +1389,7 @@ namespace ServiceDeskFYP.Controllers
          * ***********************/
 
         //View Logs GET
-        public ActionResult Logs(int page = 1, string type = null)
+        public ActionResult Logs(int page = 1, string type = null, string user = null)
         {
             //Handle messages
             HandleMessages();
@@ -1415,23 +1415,20 @@ namespace ServiceDeskFYP.Controllers
                 Logs = Logs.Where(n => n.Type.Equals(type)).AsEnumerable();
             }
 
-            //Limit
-            Logs = Logs.Skip((page - 1) * rowcount).Take(rowcount).AsEnumerable();
-
             //List of logs
             var LogsListForVM = new List<ViewLogsViewModel>();
-            using(ApplicationDbContext dbcontext = new ApplicationDbContext())
+            using (ApplicationDbContext dbcontext = new ApplicationDbContext())
             {
-                ApplicationUser user = null;
-                foreach(var item in Logs)
+                ApplicationUser appuser = null;
+                foreach (var item in Logs)
                 {
-                    user = dbcontext.Users.SingleOrDefault(n => n.Id.Equals(item.UserId));
+                    appuser = dbcontext.Users.SingleOrDefault(n => n.Id.Equals(item.UserId));
                     LogsListForVM.Add(new ViewLogsViewModel
                     {
                         Id = item.Id,
                         Datetime = item.Datetime,
                         UserId = item.UserId,
-                        Username = user?.UserName,
+                        Username = appuser?.UserName,
                         LocalIP = item.LocalIP,
                         PublicIP = item.PublicIP,
                         Type = item.Type,
@@ -1439,6 +1436,19 @@ namespace ServiceDeskFYP.Controllers
                     });
                 }
             }
+
+            //Filter username
+            if (!string.IsNullOrEmpty(user))
+            {
+                //Get rid of nulls
+                LogsListForVM = LogsListForVM.Where(n => n.Username!=null).ToList();
+
+                //Matching fields
+                LogsListForVM = LogsListForVM.Where(n => n.Username.ToLower().Equals(user.ToLower())).ToList();
+            }
+
+            //Limit
+            LogsListForVM = LogsListForVM.Skip((page - 1) * rowcount).Take(rowcount).ToList();
 
             //Create model
             var model = new ViewLogsPageViewModel()

@@ -4,6 +4,7 @@
     ViewBag.Title = "Logs";
     int.TryParse(Request.QueryString["page"], out int page);
     var type = Request.QueryString["type"] == null ? null : Request.QueryString["type"];
+    var user = Request.QueryString["user"] == null ? null : Request.QueryString["user"];
     if (page < 1)
     {
         page = 1;
@@ -12,12 +13,41 @@
 
 <h2>Logs</h2>
 
-@Html.ActionLink("Return to Tools", "Index")
+@Html.ActionLink("Return to Tools", "Index") |
+<a onclick="toggleType()" style="cursor: pointer">Filter Types</a> |
+<a onclick="toggleUser()" style="cursor: pointer">Filter by User</a> |
+@Html.ActionLink("Clear", "Logs", new { page = string.Empty, type = string.Empty, user = string.Empty })
 
-<form method="get" action="">
-    @Html.DropDownList("type", new SelectList(Model.Types), "Select Filter", null)
-    <input type="submit" value="Select" />
-</form>
+<div id="typeDiv" style="display:none">
+    <form method="get" action="">
+        @Html.DropDownList("type", new SelectList(Model.Types), "Select Filter", null)
+        @if (!string.IsNullOrEmpty(user))
+        {
+            <input type="hidden" name="user" value="@user" />
+        }
+        <input type="submit" value="Select" />
+    </form>
+</div>
+
+<div id="userDiv" style="display:none">
+    <form method="get" action="">
+        <input type="text" name="user" id="user" placeholder="Username..." />
+        @if (!string.IsNullOrEmpty(type))
+        {
+            <input type="hidden" name="type" value="@type" />
+        }
+        <input type="submit" value="Select" />
+    </form>
+</div>
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <h5 style="color:red">@ViewBag.ErrorMessage</h5>
+}
+@if (ViewBag.SuccessMessage != null)
+{
+    <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
+}
 
 <table class="table table-striped table-bordered">
     <thead>
@@ -70,8 +100,40 @@
         }
     </tbody>
 </table>
+
+
 @if (page > 1)
 {
-    @Html.ActionLink("Previous", "Logs", new { page = page - 1, type = type }) <text>|</text>
+    @Html.ActionLink("Previous", "Logs", new { page = page - 1, type = type, user = user }) <text>|</text>
 }
-@Html.ActionLink("Next", "Logs", new { page = page + 1, type = type })
+@Html.ActionLink("Next", "Logs", new { page = page + 1, type = type, user = user })
+
+
+
+<script>
+    function toggleType() {
+        var typeDiv = document.getElementById("typeDiv");
+        var userDiv = document.getElementById("userDiv");
+
+        if (typeDiv.style.display === "none") {
+            userDiv.style.display = "none";
+            typeDiv.style.display = "block";
+        }
+        else {
+            typeDiv.style.display = "none";
+        }
+    }
+
+    function toggleUser() {
+        var userDiv = document.getElementById("userDiv");
+        var typeDiv = document.getElementById("typeDiv");
+
+        if (userDiv.style.display === "none") {
+            typeDiv.style.display = "none";
+            userDiv.style.display = "block";
+        }
+        else {
+            userDiv.style.display = "none";
+        }
+    }
+</script>
