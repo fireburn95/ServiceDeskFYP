@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Web;
 
 namespace ServiceDeskFYP.Models
 {
@@ -304,7 +305,7 @@ namespace ServiceDeskFYP.Models
         public string Comments { get; set; }
 
         [DataType(DataType.Upload)]
-        public string Attachment { get; set; }
+        public HttpPostedFileBase Attachment { get; set; }
     }
 
     public class CreateActionPageViewModel

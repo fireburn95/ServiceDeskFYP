@@ -410,6 +410,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\actionfiles\" />
     <Folder Include="Scripts\" />
   </ItemGroup>
   <ItemGroup>

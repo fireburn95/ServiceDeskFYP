@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Validation;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -661,7 +662,7 @@ namespace ServiceDeskFYP.Controllers
             //Fill Types
             string[] categories = System.IO.File.ReadAllLines(Server.MapPath(@"~/Content/ActionTypes.txt"));
             model.ActionTypes = categories.Where(n => !string.IsNullOrEmpty(n)).ToArray().AsEnumerable();
-
+            
             //If model passes validation
             if (ModelState.IsValid)
             {
@@ -696,6 +697,23 @@ namespace ServiceDeskFYP.Controllers
                     return RedirectToAction("call/" + Reference);
                 }
 
+                //Check if there is an attachment
+                string path = null;
+                if ((model.CreateAction.Attachment != null) && (model.CreateAction.Attachment.ContentLength > 0))
+                {
+                    //Get the file
+                    HttpPostedFileBase file = model.CreateAction.Attachment;
+
+                    //Get the filename
+                    var filename = Path.GetFileName(file.FileName);
+
+                    //Get the full path
+                    path = Path.Combine(Server.MapPath("~/Content/actionfiles"), filename);
+
+                    //Save the file in that path
+                    file.SaveAs(path);
+                }
+
                 //Create the Action
                 var loggedInUser = User.Identity.GetUserId();
                 var Action = new Models.Action()
@@ -707,7 +725,7 @@ namespace ServiceDeskFYP.Controllers
                     Type = model.CreateAction.Type,
                     TypeDetails = null,
                     Comments = model.CreateAction.Comments,
-                    Attachment = model.CreateAction.Attachment //TODO Attachment
+                    Attachment = path ?? null, 
                 };
 
                 //Add to DB
