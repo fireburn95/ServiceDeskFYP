@@ -33,53 +33,55 @@ else
         </form>
     }
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.GroupMembers.First().UserName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.GroupMembers.First().Owner)
-        </th>
-        @if (Model.IsLoggedInUserOwner)
-        {
-            <th></th>
-        }
-
-    </tr>
-
-    @foreach (var item in Model.GroupMembers)
-    {
+<div class="table-responsive">
+    <table class="table">
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserName)
-            </td>
-            <td>
-                @if (item.Owner == true)
-                {
-                    <text>Owner</text>
-                }
-                else
-                {
-                    <text>Member</text>
-                }
-            </td>
+            <th>
+                @Html.DisplayNameFor(model => model.GroupMembers.First().UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GroupMembers.First().Owner)
+            </th>
             @if (Model.IsLoggedInUserOwner)
             {
-                <td>
-                    @Html.ActionLink("Remove", "RemoveMemberFromGroup", new { UserId = item.User_Id, groupid = item.Group_Id }) |
-                    @if (item.Owner)
-                    {
-                        @Html.ActionLink("Unset as Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, GroupId = item.Group_Id })
-                    }
-                    else
-                    {
-                        @Html.ActionLink("Set Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, groupId = item.Group_Id })
-                    }
-                </td>
+                <th></th>
             }
 
         </tr>
-    }
 
-</table>
+        @foreach (var item in Model.GroupMembers)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @if (item.Owner == true)
+                    {
+                        <text>Owner</text>
+                    }
+                    else
+                    {
+                        <text>Member</text>
+                    }
+                </td>
+                @if (Model.IsLoggedInUserOwner)
+                {
+                    <td>
+                        @Html.ActionLink("Remove", "RemoveMemberFromGroup", new { UserId = item.User_Id, groupid = item.Group_Id }) |
+                        @if (item.Owner)
+                        {
+                            @Html.ActionLink("Unset as Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, GroupId = item.Group_Id })
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Set Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, groupId = item.Group_Id })
+                        }
+                    </td>
+                }
+
+            </tr>
+        }
+
+    </table>
+</div>

@@ -130,66 +130,68 @@
 
 <br />
 
-<table class="table table-bordered table-hover">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Reference)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).SlaLevel)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Category)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Created)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Required_By)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Summary)
-            </th>
-            <th>
-                Name
-            </th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var item in Model.VCVMList)
-        {
-            <tr class="@if (item.Urgent && (!item.Closed)) { <text>danger</text> }" onclick="window.location='/desk/call/@item.Reference';">
-                <td>
-                    @Html.DisplayFor(modelItem => item.Reference)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SlaLevel)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Category)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Created)
-                </td>
-                <td>
-                    @if (item.Required_By != null)
-                    {
-                        @Convert.ToDateTime(item.Required_By).ToShortDateString()
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Summary)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.Lastname)
-                </td>
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Reference)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).SlaLevel)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Category)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Created)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Required_By)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.VCVMList.ElementAt(0).Summary)
+                </th>
+                <th>
+                    Name
+                </th>
             </tr>
-        }
-    </tbody>
+        </thead>
 
-</table>
+        <tbody>
+            @foreach (var item in Model.VCVMList)
+            {
+                <tr class="@if (item.Urgent && (!item.Closed)) { <text>danger</text> }" onclick="window.location='/desk/call/@item.Reference';">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Reference)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SlaLevel)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Category)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Created)
+                    </td>
+                    <td>
+                        @if (item.Required_By != null)
+                        {
+                            @Convert.ToDateTime(item.Required_By).ToShortDateString()
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Summary)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.Lastname)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
 
 @if (!Model.VCVMList.Any())
 {

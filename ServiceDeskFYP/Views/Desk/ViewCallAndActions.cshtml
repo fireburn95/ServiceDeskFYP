@@ -231,52 +231,52 @@
 </div>
 
 
-
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).ActionedByUserName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).Created)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).Type)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).TypeDetails)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).Comments)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).Attachment)
-        </th>
-    </tr>
-
-    @foreach (var item in Model.ActionsList)
-    {
+<div class="table-responsive">
+    <table class="table">
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ActionedByUserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Created)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TypeDetails)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Comments)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Attachment)
-            </td>
+            <th>
+                @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).ActionedByUserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).Created)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).Type)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).TypeDetails)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).Comments)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActionsList.ElementAt(0).Attachment)
+            </th>
         </tr>
-    }
 
-</table>
+        @foreach (var item in Model.ActionsList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ActionedByUserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Created)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TypeDetails)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Comments)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Attachment)
+                </td>
+            </tr>
+        }
 
+    </table>
+</div>

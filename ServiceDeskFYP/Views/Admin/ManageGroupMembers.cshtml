@@ -22,50 +22,53 @@
 {
     <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
 }
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.UserName)
-        </th>
-        <th>
-            Type
-        </th>
-        <th></th>
-    </tr>
-    @if (Model != null)
-    {
 
-
-        foreach (var item in Model)
+<div class="table-responsive">
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                Type
+            </th>
+            <th></th>
+        </tr>
+        @if (Model != null)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UserName)
-                </td>
-                <td>
-                    @if (item.Owner == true)
-                    {
-                        <text>Owner</text>
-                    }
-                    else
-                    {
-                        <text>Member</text>
-                    }
-                </td>
-                <td>
-                    @Html.ActionLink("Remove", "RemoveMemberFromGroup", new { UserId = item.User_Id, GroupId = item.Group_Id }) |
-                    @if (item.Owner)
-                    {
-                        @Html.ActionLink("Unset as Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, GroupId = item.Group_Id })
-                    }
-                    else
-                    {
-                        @Html.ActionLink("Set Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, GroupId = item.Group_Id })
-                    }
-                </td>
-            </tr>
+
+
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserName)
+                    </td>
+                    <td>
+                        @if (item.Owner == true)
+                        {
+                            <text>Owner</text>
+                        }
+                        else
+                        {
+                            <text>Member</text>
+                        }
+                    </td>
+                    <td>
+                        @Html.ActionLink("Remove", "RemoveMemberFromGroup", new { UserId = item.User_Id, GroupId = item.Group_Id }) |
+                        @if (item.Owner)
+                        {
+                            @Html.ActionLink("Unset as Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, GroupId = item.Group_Id })
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Set Owner", "SetUnsetGroupOwner", new { UserId = item.User_Id, GroupId = item.Group_Id })
+                        }
+                    </td>
+                </tr>
+            }
+
         }
 
-    }
-
-</table>
+    </table>
+</div>

@@ -21,33 +21,34 @@
 }
 else
 {
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>
-                    @*@Html.DisplayNameFor(model => model.UserName)*@
-                    Username
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Email)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.FirstName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.LastName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Extension)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Department)
-                </th>
-            </tr>
-        </thead>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>
+                        @*@Html.DisplayNameFor(model => model.UserName)*@
+                        Username
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Email)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FirstName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.LastName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Extension)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Department)
+                    </th>
+                </tr>
+            </thead>
 
-        <tbody>
-            @foreach (var item in Model)
+            <tbody>
+                @foreach (var item in Model)
             {
                 <tr onclick="window.location='/manager_centre/sub/@item.UserName';">
                     <td>
@@ -69,8 +70,9 @@ else
                         @Html.DisplayFor(modelItem => item.Department)
                     </td>
                 </tr>
-            }
-        </tbody>
+        }
+            </tbody>
 
-    </table>
+        </table>
+    </div>
 }
