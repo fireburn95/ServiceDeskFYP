@@ -7,7 +7,7 @@
 <h2>Call Details</h2>
 
 <div>
-    
+
     <hr />
 
     <div>
@@ -273,7 +273,10 @@
                     @Html.DisplayFor(modelItem => item.Comments)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Attachment)
+                    @if (item.Attachment != null)
+                    {
+                        @Html.ActionLink("Download", "DownloadFile", new { path = item.Attachment })
+                    }
                 </td>
             </tr>
         }

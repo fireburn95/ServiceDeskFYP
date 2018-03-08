@@ -598,6 +598,13 @@ namespace ServiceDeskFYP.Controllers
 
         }
 
+        public FileResult DownloadFile(string path)
+        {
+            byte[] fileBytes = System.IO.File.ReadAllBytes(path);
+            string fileName = Path.GetFileName(path);
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+        }
+
         /*****************
          * Action a Call
          * ***************/
