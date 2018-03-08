@@ -294,6 +294,11 @@ namespace ServiceDeskFYP.Models
     }
 
     //Used in admin/logs
+    public class ViewLogsPageViewModel
+    {
+        public IEnumerable<ViewLogsViewModel> LogsList { get; set; }
+        public IEnumerable<string> Types { get; set; }
+    }
     public class ViewLogsViewModel
     {
         [Key]

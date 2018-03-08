@@ -1389,7 +1389,7 @@ namespace ServiceDeskFYP.Controllers
          * ***********************/
 
         //View Logs GET
-        public ActionResult Logs(int page = 1)
+        public ActionResult Logs(int page = 1, string type = null)
         {
             //Handle messages
             HandleMessages();
@@ -1403,21 +1403,30 @@ namespace ServiceDeskFYP.Controllers
                 page = 1;
             }
 
-            //Get all the logs and limit
-            var Logs = _context.Log.OrderByDescending(n => n.Datetime).Skip((page - 1) * rowcount).Take(rowcount).AsEnumerable();
+            //Get all the logs
+            var Logs = _context.Log.OrderByDescending(n => n.Datetime).AsEnumerable();
 
             //Get a list of the types
             var Types = Logs.Select(n => n.Type).Distinct();
 
-            //Set to view model
-            var model = new List<ViewLogsViewModel>();
+            //Filter type
+            if (!string.IsNullOrEmpty(type))
+            {
+                Logs = Logs.Where(n => n.Type.Equals(type)).AsEnumerable();
+            }
+
+            //Limit
+            Logs = Logs.Skip((page - 1) * rowcount).Take(rowcount).AsEnumerable();
+
+            //List of logs
+            var LogsListForVM = new List<ViewLogsViewModel>();
             using(ApplicationDbContext dbcontext = new ApplicationDbContext())
             {
                 ApplicationUser user = null;
                 foreach(var item in Logs)
                 {
                     user = dbcontext.Users.SingleOrDefault(n => n.Id.Equals(item.UserId));
-                    model.Add(new ViewLogsViewModel
+                    LogsListForVM.Add(new ViewLogsViewModel
                     {
                         Id = item.Id,
                         Datetime = item.Datetime,
@@ -1430,6 +1439,13 @@ namespace ServiceDeskFYP.Controllers
                     });
                 }
             }
+
+            //Create model
+            var model = new ViewLogsPageViewModel()
+            {
+                LogsList = LogsListForVM,
+                Types = Types
+            };
 
             //Return view
             return View(model);
