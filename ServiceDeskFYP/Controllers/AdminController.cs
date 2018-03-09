@@ -154,7 +154,8 @@ namespace ServiceDeskFYP.Controllers
                     PhoneNumber = model.PhoneNumber,
                     Extension = model.Extension,
                     Department = model.Department,
-                    CreatedTimestamp = DateTime.Now
+                    CreatedTimestamp = DateTime.Now,
+                    EmailConfirmed = true,
                 };
 
                 //Create User in DB
