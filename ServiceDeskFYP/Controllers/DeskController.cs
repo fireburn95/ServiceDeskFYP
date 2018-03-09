@@ -583,7 +583,7 @@ namespace ServiceDeskFYP.Controllers
                     Type = item.Type,
                     TypeDetails = item.TypeDetails,
                     Comments = item.Comments,
-                    Attachment = item.Attachment
+                    Attachment = item.Attachment!=null?true:false //bool so as to not pass file
                 });
             }
 
@@ -598,11 +598,47 @@ namespace ServiceDeskFYP.Controllers
 
         }
 
-        public FileResult DownloadFile(string path)
+        //Download file
+        public ActionResult DownloadFileFromAction(int actionid, string Reference)
         {
-            byte[] fileBytes = System.IO.File.ReadAllBytes(path);
-            string fileName = Path.GetFileName(path);
-            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+            Models.Action Action = null;
+            using (ApplicationDbContext dbcontext = new ApplicationDbContext())
+            {
+                //Get action
+                Action = dbcontext.Action.SingleOrDefault(n => n.Id == actionid);
+            }
+
+            //Check action exists
+            if (Action == null)
+            {
+                TempData["ErrorMessage"] = "Error: File not found";
+                return RedirectToAction("ViewCall", new { Reference });
+            }
+
+            //Get path
+            var path = Action.Attachment;
+
+            //Check path doesnt exist
+            if (string.IsNullOrEmpty(path))
+            {
+                TempData["ErrorMessage"] = "Error: File not found";
+                return RedirectToAction("ViewCall", new { Reference });
+            }
+
+            //Download
+            try
+            {
+                byte[] fileBytes = System.IO.File.ReadAllBytes(path);
+                string fileName = Path.GetFileName(path);
+                return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+            }
+            catch (Exception e)
+            {
+                TempData["ErrorMessage"] = "Error: File not found";
+                return RedirectToAction("ViewCall", new { Reference });
+            }
+
+
         }
 
         /*****************
@@ -669,11 +705,10 @@ namespace ServiceDeskFYP.Controllers
             //Fill Types
             string[] categories = System.IO.File.ReadAllLines(Server.MapPath(@"~/Content/ActionTypes.txt"));
             model.ActionTypes = categories.Where(n => !string.IsNullOrEmpty(n)).ToArray().AsEnumerable();
-            
+
             //If model passes validation
             if (ModelState.IsValid)
             {
-                //Check Reference exists
                 //Check Reference exists
                 if (!CheckReferenceExists(Reference))
                 {
@@ -705,20 +740,43 @@ namespace ServiceDeskFYP.Controllers
                 }
 
                 //Check if there is an attachment
-                string path = null;
+                string newPath = null;
                 if ((model.CreateAction.Attachment != null) && (model.CreateAction.Attachment.ContentLength > 0))
                 {
                     //Get the file
                     HttpPostedFileBase file = model.CreateAction.Attachment;
 
-                    //Get the filename
-                    var filename = Path.GetFileName(file.FileName);
+                    //Get the filename without extension
+                    var filename = Path.GetFileNameWithoutExtension(file.FileName);
 
-                    //Get the full path
-                    path = Path.Combine(Server.MapPath("~/Content/actionfiles"), filename);
+                    //Get the filename with extension
+                    var filenameandextension = Path.GetFileName(file.FileName);
+
+                    //Get the full path without extension
+                    var path = Path.Combine(Server.MapPath("~/Content/actionfiles"), filename);
+
+                    //Get the full path with extension
+                    var pathwithextension = Path.Combine(Server.MapPath("~/Content/actionfiles"), filenameandextension);
+
+                    //Get directory of file
+                    var directory = Path.GetDirectoryName(path);
+
+                    //Checking if file exists, if so append new number
+                    int count = 1;
+                    string tempfilename = null;
+                    string extension = Path.GetExtension(pathwithextension);
+                    newPath = pathwithextension;
+                    if (System.IO.File.Exists(newPath))
+                    {
+                        while (System.IO.File.Exists(newPath))
+                        {
+                            tempfilename = string.Format("{0}({1})", filename, count++);
+                            newPath = Path.Combine(directory, tempfilename + extension);
+                        }
+                    }
 
                     //Save the file in that path
-                    file.SaveAs(path);
+                    file.SaveAs(newPath);
                 }
 
                 //Create the Action
@@ -732,7 +790,7 @@ namespace ServiceDeskFYP.Controllers
                     Type = model.CreateAction.Type,
                     TypeDetails = null,
                     Comments = model.CreateAction.Comments,
-                    Attachment = path ?? null, 
+                    Attachment = newPath ?? null,
                 };
 
                 //Add to DB

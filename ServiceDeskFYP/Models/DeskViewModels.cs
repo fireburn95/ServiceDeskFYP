@@ -276,8 +276,7 @@ namespace ServiceDeskFYP.Models
         [DataType(DataType.MultilineText)]
         public string Comments { get; set; }
 
-        [DataType(DataType.Upload)]
-        public string Attachment { get; set; }
+        public bool Attachment { get; set; }
     }
 
     public class ViewCallPageViewModel

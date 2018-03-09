@@ -273,9 +273,9 @@
                     @Html.DisplayFor(modelItem => item.Comments)
                 </td>
                 <td>
-                    @if (item.Attachment != null)
+                    @if (item.Attachment == true)
                     {
-                        @Html.ActionLink("Download", "DownloadFile", new { path = item.Attachment })
+                        @Html.ActionLink("Download", "DownloadFileFromAction", new { actionid = item.Id, Reference = Model.CallDetails.Reference })
                     }
                 </td>
             </tr>
