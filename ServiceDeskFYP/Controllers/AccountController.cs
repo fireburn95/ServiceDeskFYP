@@ -25,7 +25,7 @@ namespace ServiceDeskFYP.Controllers
             _context = new ApplicationDbContext();
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -37,9 +37,9 @@ namespace ServiceDeskFYP.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -60,6 +60,8 @@ namespace ServiceDeskFYP.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+            HandleMessages();
+
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
@@ -84,6 +86,13 @@ namespace ServiceDeskFYP.Controllers
             {
                 ViewBag.DisabledMessage = "Sorry, your access to this website has been disabled";
                 return View(model);
+            }
+
+            //Check email confirmed
+            if (!await UserManager.IsEmailConfirmedAsync(UserModel.Id))
+            {
+                TempData["ErrorMessage"] = "Sorry, you have not confirmed your email address";
+                return RedirectToAction("Login");
             }
 
             // This doesn't count login failures towards account lockout
@@ -135,7 +144,7 @@ namespace ServiceDeskFYP.Controllers
             // If a user enters incorrect codes for a specified amount of time then the user account 
             // will be locked out for a specified amount of time. 
             // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
+            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -183,18 +192,21 @@ namespace ServiceDeskFYP.Controllers
                     //Log
                     Helpers.LogEvent("Account Registered", "User has succesfully registered his/her account", UserCreated.Id);
 
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+                    //Signs the user in
+                    //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
                     //Assign User to Role 'Client'
                     await UserManager.AddToRoleAsync(user.Id, "Client");
 
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Index", "Home");
+                    TempData["SuccessMessage"] = "Thank you for registering - Please confirm your email address";
+
+                    return RedirectToAction("Login");
                 }
                 AddErrors(result);
             }

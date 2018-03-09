@@ -1183,7 +1183,7 @@ namespace ServiceDeskFYP.Controllers
             var Knowledge = _context.Knowledge.SingleOrDefault(n => n.Id == knowledgeid);
 
             //Check it exists
-            if(Knowledge == null)
+            if (Knowledge == null)
             {
                 return new HttpNotFoundResult();
             }

@@ -618,7 +618,7 @@ namespace ServiceDeskFYP.Controllers
             //Get path
             var path = Action.Attachment;
 
-            //Check path doesnt exist
+            //Check path string has something in it
             if (string.IsNullOrEmpty(path))
             {
                 TempData["ErrorMessage"] = "Error: File not found";
