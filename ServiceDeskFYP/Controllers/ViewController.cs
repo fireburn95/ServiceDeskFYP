@@ -47,6 +47,7 @@ namespace ServiceDeskFYP.Controllers
             Call Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
             var resourceuser = _context.Users.SingleOrDefault(n => n.Id.Equals(Call.ResourceUserId));
             var resourcegroup = _context.Group.SingleOrDefault(n => n.Id == Call.ResourceGroupId);
+            var foruser = _context.Users.SingleOrDefault(n => n.Id.Equals(Call.ForUserId));
 
             //Check if hidden
             if (Call.Hidden)
@@ -72,6 +73,7 @@ namespace ServiceDeskFYP.Controllers
                 Summary = Call.Summary,
                 Description = Call.Description,
                 ForUserId = Call.ForUserId,
+                ForUserName = foruser?.UserName,
                 Closed = Call.Closed,
                 Hidden = Call.Hidden,
                 LockedToUserId = Call.LockedToUserId,

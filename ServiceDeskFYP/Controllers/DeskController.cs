@@ -512,6 +512,7 @@ namespace ServiceDeskFYP.Controllers
             Call Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
             var resourceuser = _context.Users.SingleOrDefault(n => n.Id.Equals(Call.ResourceUserId));
             var resourcegroup = _context.Group.SingleOrDefault(n => n.Id == Call.ResourceGroupId);
+            var foruser = _context.Users.SingleOrDefault(n => n.Id.Equals(Call.ForUserId));
 
             //Make Call Details model
             CallDetailsForACallViewModel CallDetails = new CallDetailsForACallViewModel
@@ -530,6 +531,7 @@ namespace ServiceDeskFYP.Controllers
                 Summary = Call.Summary,
                 Description = Call.Description,
                 ForUserId = Call.ForUserId,
+                ForUserName = foruser?.UserName,
                 Closed = Call.Closed,
                 Hidden = Call.Hidden,
                 LockedToUserId = Call.LockedToUserId,
@@ -816,21 +818,6 @@ namespace ServiceDeskFYP.Controllers
                     if (!string.IsNullOrEmpty(Call.Email))
                     {
                         SendEmail(Call.Email, "Your Call " + Reference + " has been updated", message);
-                    }
-
-                    //If 'for user id is set'
-                    else if (Call.ForUserId != null)
-                    {
-                        //Get user
-                        var callforuser = _context.Users.SingleOrDefault(n => n.Id.Equals(Call.ForUserId));
-
-                        //Check if user exists
-                        if (callforuser != null)
-                        {
-                            SendEmail(callforuser.Email, "Your Call " + Reference + " has been updated", message);
-                        }
-
-                        //If doesnt exist then just don't send email
                     }
 
                     //Otherwise there is no one to send an email to so ignore
@@ -1592,6 +1579,150 @@ namespace ServiceDeskFYP.Controllers
             }
 
         }
+
+        /*****************
+         * Set 'For Client'
+         * ***************/
+
+        [HttpGet]
+        [Route("desk/call/{Reference}/client")]
+        public ActionResult AssociateClientGET(string Reference)
+        {
+            //Handle messages
+            HandleMessages();
+
+            //Check Reference exists
+            if (!CheckReferenceExists(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Authorise access/permissions
+            if (!ModifyCallAuthorisation(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, you do not have the permissions to action this call, please contact the resource";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Check if call closed
+            if (IsCallClosed(Reference))
+            {
+                TempData["ErrorMessage"] = "This call is closed";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Check if call locked
+            if (IsCallLockedToSomeoneElse(Reference))
+            {
+                var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
+                var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
+                TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Get the call
+            var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+            //Create the model
+            AssociateClientPageViewModel model = new AssociateClientPageViewModel();
+            model.CallSummary = Call.Summary;
+
+            //Return view
+            return View("Call_AssociateClient", model);
+        }
+
+        [HttpPost]
+        [Route("desk/call/{Reference}/client")]
+        public ActionResult AssociateClientPOST(string Reference, AssociateClientPageViewModel model)
+        {
+            //If model passes validation
+            if (ModelState.IsValid)
+            {
+                //Check Reference exists
+                if (!CheckReferenceExists(Reference))
+                {
+                    TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                    return RedirectToAction("Index");
+                }
+
+                //Authorise access/permissions
+                if (!ModifyCallAuthorisation(Reference))
+                {
+                    TempData["ErrorMessage"] = "Sorry, you do not have the permissions to action this call, please contact the resource";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check if call closed
+                if (IsCallClosed(Reference))
+                {
+                    TempData["ErrorMessage"] = "This call is closed";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check if call locked
+                if (IsCallLockedToSomeoneElse(Reference))
+                {
+                    var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
+                    var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
+                    TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check the entered user exists
+                var EnteredUser = _context.Users.SingleOrDefault(n => n.UserName.ToLower().Equals(model.AssociateClient.Username.ToLower()));
+                if (EnteredUser == null)
+                {
+                    ViewBag.ErrorMessage = "Sorry, username doesn't exists";
+                    return View("Call_AssociateClient", model);
+                }
+
+                //Check user is a client
+                if (!userManager.IsInRole(EnteredUser.Id, "Client"))
+                {
+                    ViewBag.ErrorMessage = "Sorry, that user is not a client";
+                    return View("Call_AssociateClient", model);
+                }
+
+                //Check if update details set
+                Call Call;
+                if (model.AssociateClient.UpdateCallDetails == true)
+                {
+                    //Get the call
+                    Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+                    //Update the call
+                    Call.ForUserId = EnteredUser.Id;
+                    Call.FirstName = EnteredUser.FirstName;
+                    Call.Lastname = EnteredUser.LastName;
+                    Call.Email = EnteredUser.Email;
+                    Call.PhoneNumber = EnteredUser.PhoneNumber;
+                    Call.Extension = EnteredUser.Extension;
+                    Call.OrganisationAlias = EnteredUser.OrganisationAlias;
+                    Call.Organisation = EnteredUser.Organisation;
+                    Call.Department = EnteredUser.Department;
+                }
+                //Otherwise if not set
+                else
+                {
+                    //Get the call
+                    Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+                    //Update the call
+                    Call.ForUserId = EnteredUser.Id;
+                }
+
+                //Save changes
+                _context.SaveChanges();
+
+                //Return to page
+                TempData["SuccessMessage"] = EnteredUser.UserName + " now associated to call";
+                return RedirectToAction("ViewCall", new { Reference });
+            }
+
+            return View("Call_AssociateClient", model);
+        }
+
 
         /*******************
          *     HELPERS

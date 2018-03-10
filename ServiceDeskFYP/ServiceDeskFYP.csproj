@@ -422,6 +422,7 @@
     <Content Include="Views\Admin\EditEmployee.cshtml" />
     <Content Include="Views\Admin\Logs.cshtml" />
     <Content Include="Views\View\ViewCallAndActions.cshtml" />
+    <Content Include="Views\Desk\Call_AssociateClient.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201801081319301_InitialCreate.resx">

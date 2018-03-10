@@ -196,6 +196,9 @@ namespace ServiceDeskFYP.Models
         [StringLength(128)]
         public string ForUserId { get; set; }
 
+        [Display(Name = "Associated Client")]
+        public string ForUserName { get; set; }
+
         [Required]
         [Display(Name = "Closed?")]
         public bool Closed { get; set; }
@@ -455,6 +458,24 @@ namespace ServiceDeskFYP.Models
         public NotifyViewModel Notify { get; set; }
         public IEnumerable<ApplicationUser> UserList { get; set; }
         public IEnumerable<Group> GroupList { get; set; }
+    }
+
+    /*
+     * The following are used for creating an Action in desk/call/{reference}/client
+     */
+
+    public class AssociateClientViewModel
+    {
+        public string Username { get; set; }
+
+        [Display(Name = "Update Call Contact Information")]
+        public bool UpdateCallDetails { get; set; }
+    }
+
+    public class AssociateClientPageViewModel
+    {
+        public string CallSummary { get; set; }
+        public AssociateClientViewModel AssociateClient { get; set; }
     }
 
 }

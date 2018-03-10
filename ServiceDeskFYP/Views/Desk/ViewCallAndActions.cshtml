@@ -190,7 +190,18 @@
                 </div>
                 <div id="collapse2" class="panel-collapse collapse">
                     <div class="panel-body">
+                        @Html.ActionLink("Associate Client", "AssociateClientGET")
                         <dl class="dl-horizontal">
+                            @if (Model.CallDetails.ForUserName != null)
+                            {
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.CallDetails.ForUserName)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.CallDetails.ForUserName)
+                                </dd>
+                            }
                             <dt>
                                 @Html.DisplayNameFor(model => model.CallDetails.FirstName)
                             </dt>

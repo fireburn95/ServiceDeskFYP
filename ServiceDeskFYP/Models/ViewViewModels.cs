@@ -63,6 +63,9 @@ namespace ServiceDeskFYP.Models
         [StringLength(128)]
         public string ForUserId { get; set; }
 
+        [Display(Name = "Associated Client")]
+        public string ForUserName { get; set; }
+
         [Required]
         [Display(Name = "Closed?")]
         public bool Closed { get; set; }
