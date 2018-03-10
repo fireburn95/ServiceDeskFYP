@@ -586,7 +586,7 @@ namespace ServiceDeskFYP.Controllers
                     Type = item.Type,
                     TypeDetails = item.TypeDetails,
                     Comments = item.Comments,
-                    Attachment = item.Attachment!=null?true:false //bool so as to not pass file
+                    Attachment = item.Attachment != null ? true : false //bool so as to not pass file
                 });
             }
 
@@ -799,6 +799,42 @@ namespace ServiceDeskFYP.Controllers
                 //Add to DB
                 _context.Action.Add(Action);
                 _context.SaveChanges();
+
+                //Get the call
+                var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+                //If 'Send email' is true
+                if (model.CreateAction.SendEmail == true)
+                {
+                    //Send email
+                    string UrlOfCall = HttpContext.Request.Url.GetLeftPart(UriPartial.Authority) + "/view/call/" + Reference;
+                    string message =
+                    "Your call has been updated<br /><br />" +
+                    "<a href='" + UrlOfCall + "'>Please click here to view the details</a>";
+
+                    //If 'email' column in Call is set
+                    if (!string.IsNullOrEmpty(Call.Email))
+                    {
+                        SendEmail(Call.Email, "Your Call " + Reference + " has been updated", message);
+                    }
+
+                    //If 'for user id is set'
+                    else if (Call.ForUserId != null)
+                    {
+                        //Get user
+                        var callforuser = _context.Users.SingleOrDefault(n => n.Id.Equals(Call.ForUserId));
+
+                        //Check if user exists
+                        if (callforuser != null)
+                        {
+                            SendEmail(callforuser.Email, "Your Call " + Reference + " has been updated", message);
+                        }
+
+                        //If doesnt exist then just don't send email
+                    }
+
+                    //Otherwise there is no one to send an email to so ignore
+                }
 
                 //Redirect back to call
                 TempData["SuccessMessage"] = "Your Action has been saved";
@@ -1684,12 +1720,6 @@ namespace ServiceDeskFYP.Controllers
             smtpClient.EnableSsl = true;
             smtpClient.Send(msg);
 
-            //Send email
-            /*string UrlOfCall = HttpContext.Request.Url.GetLeftPart(UriPartial.Authority) + "/view/call/" + Reference;
-            string message = "Your call has been updated<br /><br />" +
-                             "<a href='" + UrlOfCall + "'>Please click here to view the details</a>";
-            SendEmail("fireburn195@gmail.com", "Your Call " + Reference + " has been updated", message);
-            */
-    }
+        }
     }
 }

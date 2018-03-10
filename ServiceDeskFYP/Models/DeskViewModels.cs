@@ -305,6 +305,9 @@ namespace ServiceDeskFYP.Models
 
         [DataType(DataType.Upload)]
         public HttpPostedFileBase Attachment { get; set; }
+
+        [Display(Name = "Send Email Update To Client")]
+        public bool SendEmail { get; set; }
     }
 
     public class CreateActionPageViewModel
