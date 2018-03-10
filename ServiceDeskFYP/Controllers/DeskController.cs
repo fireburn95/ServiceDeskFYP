@@ -14,7 +14,6 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 
-//TODO Lock Calls
 //DEBUG LINE System.Diagnostics.Debug.WriteLine("HELLO");
 namespace ServiceDeskFYP.Controllers
 {
@@ -1525,8 +1524,50 @@ namespace ServiceDeskFYP.Controllers
         }
 
         /*****************
-         * Clear Lock
+         * Lock
          * ***************/
+
+        public ActionResult LockCall(string Reference)
+        {
+            //Check reference exists
+            if (!CheckReferenceExists(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Authorise access/permissions
+            if (!ModifyCallAuthorisation(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, you do not have the permissions to close this call, please contact the resource";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Check if call closed
+            if (IsCallClosed(Reference))
+            {
+                TempData["ErrorMessage"] = "This call is closed";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Get the call
+            var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+            //Check if it is already locked
+            if (Call.LockedToUserId != null)
+            {
+                TempData["ErrorMessage"] = "This call is already locked";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Lock it and save
+            Call.LockedToUserId = User.Identity.GetUserId();
+            _context.SaveChanges();
+
+            //Return to call
+            TempData["SuccessMessage"] = "Call Locked";
+            return RedirectToAction("ViewCall", new { Reference });
+        }
 
         [HttpGet]
         public ActionResult ClearLock(string Reference)
@@ -1549,19 +1590,23 @@ namespace ServiceDeskFYP.Controllers
                 var LoggedInUser = User.Identity.GetUserId();
 
                 //If it's the logged in user
-                if (Call.LockedToUserId.Equals(LoggedInUser))
-                    permissions = true;
+                if (Call.LockedToUserId.Equals(LoggedInUser)) permissions = true;
+
                 //Else if current user is admin
-                else if (User.IsInRole(LoggedInUser))
-                    permissions = true;
+                else if (User.IsInRole("admin")) permissions = true;
+
                 //Else if it's a group call, and it's the group owner
                 else if
                 (
+                    //Group call
                     Call.ResourceGroupId != null &&
+                    //Logged in user is in group
                     _context.GroupMember.Where(n => n.User_Id.Equals(LoggedInUser) && n.Group_Id == Call.ResourceGroupId).Any() &&
+                    //Logged in user is owner of group
                     _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInUser) && n.Group_Id == Call.ResourceGroupId).Owner == true
                 )
                     permissions = true;
+
             }
 
             //If they have permissions to clear lock, then clear
@@ -1621,6 +1666,14 @@ namespace ServiceDeskFYP.Controllers
                 return RedirectToAction("call/" + Reference);
             }
 
+            //Check if call already associated
+            var CheckCall = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+            if (CheckCall.ForUserId != null)
+            {
+                TempData["ErrorMessage"] = "This call is already associated to a client";
+                return RedirectToAction("call/" + Reference);
+            }
+
             //Get the call
             var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
 
@@ -1666,6 +1719,14 @@ namespace ServiceDeskFYP.Controllers
                     var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
                     var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
                     TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check if call already associated
+                var CheckCall = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+                if (CheckCall.ForUserId != null)
+                {
+                    TempData["ErrorMessage"] = "This call is already associated to a client";
                     return RedirectToAction("call/" + Reference);
                 }
 
