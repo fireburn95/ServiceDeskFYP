@@ -10,6 +10,8 @@ namespace ServiceDeskFYP.Controllers
     {
         public ActionResult Index()
         {
+            HandleMessages();
+
             if (Request.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Desk", null);
@@ -29,6 +31,27 @@ namespace ServiceDeskFYP.Controllers
             ViewBag.Message = "Your contact page.";
 
             return View();
+        }
+
+
+        /*******************
+         *     HELPERS
+         ******************/
+
+        //Error and success messages
+        public void HandleMessages()
+        {
+            //Check for an error message from another action
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+            }
+
+            //Check for a message from another action
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            }
         }
     }
 }

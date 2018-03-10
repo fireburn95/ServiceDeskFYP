@@ -54,7 +54,7 @@
     <div class="row">
         <div class="col-md-4 col-sm-4 col-xs-12">
             <h2>Have a Reference?</h2>
-            <form method="get" action="#">
+            <form method="post" action="view/GetCallPOST">
                 <input type="text" placeholder="Reference..." name="reference" class="form-control" />
                 <input type="submit" value="enter" class="btn btn-default" />
             </form>
@@ -76,6 +76,22 @@
         </div>
     </div>
 </div>
+
+
+
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <script type="text/javascript">
+        function writeErrors() {
+            alert('@ViewBag.ErrorMessage');
+        }
+
+        window.onload = writeErrors;
+    </script>
+}
+
+
 
 
 
