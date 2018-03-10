@@ -1581,7 +1581,7 @@ namespace ServiceDeskFYP.Controllers
         }
 
         /*****************
-         * Set 'For Client'
+         * Associate Client to call
          * ***************/
 
         [HttpGet]
@@ -1723,6 +1723,48 @@ namespace ServiceDeskFYP.Controllers
             return View("Call_AssociateClient", model);
         }
 
+        [HttpGet]
+        public ActionResult ClearAssociation(string Reference)
+        {
+            //Check Reference exists
+            if (!CheckReferenceExists(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Authorise access/permissions
+            if (!ModifyCallAuthorisation(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, you do not have the permissions to action this call, please contact the resource";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Check if call closed
+            if (IsCallClosed(Reference))
+            {
+                TempData["ErrorMessage"] = "This call is closed";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Check if call locked
+            if (IsCallLockedToSomeoneElse(Reference))
+            {
+                var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
+                var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
+                TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Get the call and clear it
+            var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+            Call.ForUserId = null;
+            _context.SaveChanges();
+
+            //Return to page
+            TempData["SuccessMessage"] = "Client Association cleared";
+            return RedirectToAction("ViewCall", new { Reference });
+        }
 
         /*******************
          *     HELPERS

@@ -190,7 +190,15 @@
                 </div>
                 <div id="collapse2" class="panel-collapse collapse">
                     <div class="panel-body">
-                        @Html.ActionLink("Associate Client", "AssociateClientGET")
+                        @if (Model.CallDetails.ForUserId == null)
+                        {
+                            @Html.ActionLink("Associate Client", "AssociateClientGET")
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Clear Association", "ClearAssociation", new { Reference = Model.CallDetails.Reference })
+                        }
+
                         <dl class="dl-horizontal">
                             @if (Model.CallDetails.ForUserName != null)
                             {
