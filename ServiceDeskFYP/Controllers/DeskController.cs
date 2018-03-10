@@ -3,10 +3,13 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using ServiceDeskFYP.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Validation;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
+using System.Net.Mime;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -1664,5 +1667,29 @@ namespace ServiceDeskFYP.Controllers
         {
             return _context.Group.AsEnumerable();
         }
+
+        //Send Message
+        void SendEmail(string ToEmail, string Subject, string HtmlMessage)
+        {
+            MailMessage msg = new MailMessage();
+            msg.From = new MailAddress(ConfigurationManager.AppSettings["SendFromEmail"].ToString());
+            msg.To.Add(new MailAddress(ToEmail));
+            msg.Subject = Subject;
+            msg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(HtmlMessage, null, MediaTypeNames.Text.Html));
+            msg.IsBodyHtml = true;
+
+            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", Convert.ToInt32(587));
+            System.Net.NetworkCredential credentials = new System.Net.NetworkCredential(ConfigurationManager.AppSettings["SendFromEmail"].ToString(), ConfigurationManager.AppSettings["SendFromEmailPassword"].ToString());
+            smtpClient.Credentials = credentials;
+            smtpClient.EnableSsl = true;
+            smtpClient.Send(msg);
+
+            //Send email
+            /*string UrlOfCall = HttpContext.Request.Url.GetLeftPart(UriPartial.Authority) + "/view/call/" + Reference;
+            string message = "Your call has been updated<br /><br />" +
+                             "<a href='" + UrlOfCall + "'>Please click here to view the details</a>";
+            SendEmail("fireburn195@gmail.com", "Your Call " + Reference + " has been updated", message);
+            */
+    }
     }
 }
