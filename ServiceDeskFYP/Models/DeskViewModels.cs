@@ -486,6 +486,7 @@ namespace ServiceDeskFYP.Models
     public class ReportPageViewModel
     {
         public string ActionedByJsonData { get; set; }
+        public CallReportStatisticsViewModel Statistics { get; set; }
     }
 
     [DataContract]
@@ -504,6 +505,13 @@ namespace ServiceDeskFYP.Models
         //Explicitly setting the name to be used while serializing to JSON.
         [DataMember(Name = "y")]
         public Nullable<double> Y = null;
+    }
+
+    public class CallReportStatisticsViewModel
+    {
+        public TimeSpan? OpenToCloseTime { get; set; }
+        public bool? ClosedWithinSLA { get; set; }
+        //public int SlaResetCount { get; set; }
     }
 
 }

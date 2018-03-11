@@ -1845,17 +1845,39 @@ namespace ServiceDeskFYP.Controllers
 
             //Get the call and actions
             var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
-            var Action = _context.Action.Where(n => n.CallReference.Equals(Reference));
+            var Actions = _context.Action.Where(n => n.CallReference.Equals(Reference));
+
+            /********************
+             * Time between Open to Close
+             * ******************/
+            TimeSpan? OpenToCloseTime;
+
+            //If Call is closed
+            if (Call.Closed)
+            {
+                var CallCreatedTime = Call.Created;
+                var ClosedTime = Actions.AsEnumerable().OrderBy(n => n.Created).Last().Created;
+                OpenToCloseTime = ClosedTime.Subtract(CallCreatedTime);
+            }
+            //Else Call is open so not applicable
+            else
+            {
+                OpenToCloseTime = null;
+            }
+
+            /********************
+             * Actioned By Graph
+             * ******************/
 
             //Get Distinct category 'actioned by' from Action
-            var DistinctActionedBy = Action.Select(n => n.ActionedByUserId).Distinct();
+            var DistinctActionedBy = Actions.Select(n => n.ActionedByUserId).Distinct();
 
             //Create the list
             var ActionedByList = new List<ActionedByGraphDataPointViewModel>();
 
+            //For each user count the number of actions in the call
             using (ApplicationDbContext _context2 = new ApplicationDbContext())
             {
-                //For each user count the number of actions in the call
                 foreach (var userid in DistinctActionedBy)
                 {
                     ActionedByList.Add(new ActionedByGraphDataPointViewModel(
@@ -1865,14 +1887,21 @@ namespace ServiceDeskFYP.Controllers
                 }
             }
 
-
             //Json convert serialise object
             string ActionedByJsonData = JsonConvert.SerializeObject(ActionedByList);
+
+            /********************
+             * Model
+             * ******************/
 
             //Create Model
             var model = new ReportPageViewModel()
             {
                 ActionedByJsonData = ActionedByJsonData,
+                Statistics = new CallReportStatisticsViewModel
+                {
+                    OpenToCloseTime = OpenToCloseTime,
+                }
             };
 
             //Return to View

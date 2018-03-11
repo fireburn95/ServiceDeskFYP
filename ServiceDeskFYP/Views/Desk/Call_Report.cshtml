@@ -11,7 +11,7 @@
         var chart = new CanvasJS.Chart("actionedbychartContainer", {
 	        animationEnabled: true,
 	        theme: "light2", // "light1", "dark1", "dark2"
-	        exportEnabled: true,
+	        exportEnabled: false,
 	        title: {
 		        text: "Actioned by"
 	        },
@@ -31,6 +31,16 @@
 
 
 
+@if (Model.Statistics.OpenToCloseTime != null)
+{
+    <text>@Model.Statistics.OpenToCloseTime</text><br />
+    <text>@Model.Statistics.OpenToCloseTime.Value.Days days</text>
+    <text>@Model.Statistics.OpenToCloseTime.Value.Hours hours</text>
+    <text>@Model.Statistics.OpenToCloseTime.Value.Minutes mins</text>
+    <text>@Model.Statistics.OpenToCloseTime.Value.Seconds secs</text>
+
+
+}
 
 
 
@@ -41,9 +51,12 @@
 
 
 
-
-
+<!--Start of Actioned by graph-->
 <div id="actionedbychartContainer" style="height: 370px; width: 100%;"></div>
+<!--End of Actioned by graph-->
+
+
+
 @section scripts{
     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
