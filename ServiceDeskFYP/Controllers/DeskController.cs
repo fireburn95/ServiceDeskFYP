@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Newtonsoft.Json;
 using ServiceDeskFYP.Models;
 using System;
 using System.Collections.Generic;
@@ -1825,6 +1826,57 @@ namespace ServiceDeskFYP.Controllers
             //Return to page
             TempData["SuccessMessage"] = "Client Association cleared";
             return RedirectToAction("ViewCall", new { Reference });
+        }
+
+        /*****************
+         * Call Statistics
+         * ***************/
+
+        [HttpGet]
+        [Route("desk/call/{Reference}/report")]
+        public ActionResult ViewCallReport(string Reference)
+        {
+            //Check Reference exists
+            if (!CheckReferenceExists(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Get the call and actions
+            var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+            var Action = _context.Action.Where(n => n.CallReference.Equals(Reference));
+
+            //Get Distinct category 'actioned by' from Action
+            var DistinctActionedBy = Action.Select(n => n.ActionedByUserId).Distinct();
+
+            //Create the list
+            var ActionedByList = new List<ActionedByGraphDataPointViewModel>();
+
+            using (ApplicationDbContext _context2 = new ApplicationDbContext())
+            {
+                //For each user count the number of actions in the call
+                foreach (var userid in DistinctActionedBy)
+                {
+                    ActionedByList.Add(new ActionedByGraphDataPointViewModel(
+                        _context2.Users.SingleOrDefault(n => n.Id.Equals(userid)).UserName,
+                        _context2.Action.Where(n => n.ActionedByUserId.Equals(userid) && n.CallReference.Equals(Reference)).Count()
+                        ));
+                }
+            }
+
+
+            //Json convert serialise object
+            string ActionedByJsonData = JsonConvert.SerializeObject(ActionedByList);
+
+            //Create Model
+            var model = new ReportPageViewModel()
+            {
+                ActionedByJsonData = ActionedByJsonData,
+            };
+
+            //Return to View
+            return View("Call_Report", model);
         }
 
         /*******************

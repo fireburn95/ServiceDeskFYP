@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Web;
+using System.Runtime.Serialization;
 
 namespace ServiceDeskFYP.Models
 {
@@ -461,7 +462,7 @@ namespace ServiceDeskFYP.Models
     }
 
     /*
-     * The following are used for creating an Action in desk/call/{reference}/client
+     * The following are used for associating a client in desk/call/{reference}/client
      */
 
     public class AssociateClientViewModel
@@ -476,6 +477,33 @@ namespace ServiceDeskFYP.Models
     {
         public string CallSummary { get; set; }
         public AssociateClientViewModel AssociateClient { get; set; }
+    }
+
+    /*
+     * The following are used for viewing a call report in desk/call/{reference}/report
+     */
+
+    public class ReportPageViewModel
+    {
+        public string ActionedByJsonData { get; set; }
+    }
+
+    [DataContract]
+    public class ActionedByGraphDataPointViewModel
+    {
+        public ActionedByGraphDataPointViewModel(string label, double y)
+        {
+            this.Label = label;
+            this.Y = y;
+        }
+
+        //Explicitly setting the name to be used while serializing to JSON.
+        [DataMember(Name = "label")]
+        public string Label = "";
+
+        //Explicitly setting the name to be used while serializing to JSON.
+        [DataMember(Name = "y")]
+        public Nullable<double> Y = null;
     }
 
 }
