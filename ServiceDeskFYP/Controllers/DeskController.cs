@@ -1866,6 +1866,43 @@ namespace ServiceDeskFYP.Controllers
             }
 
             /********************
+             * Closed within SLA?
+             * ******************/
+            bool? ClosedWithinSLA = null;
+
+            //Get SLA Expiry
+            DateTime? SlaExpiry = GetSLAExpiryDateTime(Reference);
+
+            //If Call closed
+            if (Call.Closed)
+            {
+                //If null then there was no dated SLA
+                if (SlaExpiry != null)
+                {
+                    //Get the last action
+                    var ClosedTime = Actions.AsEnumerable().OrderBy(n => n.Created).Last().Created;
+
+                    //If closed before SLA Expired
+                    if (ClosedTime < SlaExpiry)
+                        ClosedWithinSLA = true;
+                    //Else it closed after SLA expired
+                    else
+                        ClosedWithinSLA = false;
+                }
+                //Else no SLA Set
+                else
+                {
+                    ClosedWithinSLA = null;
+                }
+            }
+            //Else Call not Closed
+            else
+            {
+                ClosedWithinSLA = null;
+            }
+
+
+            /********************
              * Actioned By Graph
              * ******************/
 
@@ -1901,6 +1938,7 @@ namespace ServiceDeskFYP.Controllers
                 Statistics = new CallReportStatisticsViewModel
                 {
                     OpenToCloseTime = OpenToCloseTime,
+                    ClosedWithinSLA = ClosedWithinSLA,
                 }
             };
 
@@ -2035,6 +2073,38 @@ namespace ServiceDeskFYP.Controllers
             smtpClient.EnableSsl = true;
             smtpClient.Send(msg);
 
+        }
+
+        public DateTime? GetSLAExpiryDateTime(string Reference)
+        {
+            //Get the call
+            ApplicationDbContext dbcontext = new ApplicationDbContext();
+            var Call = dbcontext.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+            //Get the number of minutes
+            double mins = 0;
+            bool hasSla = false;
+            if (Call.SlaLevel.Equals("Low"))
+            {
+                mins = _context.SLAPolicy.SingleOrDefault(n => n.Id == Call.SlaId).LowMins;
+                hasSla = true;
+            }
+            else if (Call.SlaLevel.Equals("Medium"))
+            {
+                mins = _context.SLAPolicy.SingleOrDefault(n => n.Id == Call.SlaId).MedMins;
+                hasSla = true;
+            }
+            else if (Call.SlaLevel.Equals("High"))
+            {
+                mins = _context.SLAPolicy.SingleOrDefault(n => n.Id == Call.SlaId).HighMins;
+                hasSla = true;
+            }
+
+            //If there is an SLA Policy of low-high, set SLA Expiry time for view model
+            if (hasSla)
+                return Call.SLAResetTime.Value.AddMinutes(mins);
+            else
+                return null;
         }
     }
 }

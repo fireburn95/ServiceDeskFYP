@@ -4,6 +4,42 @@
     ViewBag.Title = "Call Report";
 }
 
+<h2>View Call Report</h2>
+<hr />
+
+
+
+@if (Model.Statistics.OpenToCloseTime != null)
+{
+    <text>@Model.Statistics.OpenToCloseTime</text><br />
+    <text>@Model.Statistics.OpenToCloseTime.Value.Days days</text>
+    <text>@Model.Statistics.OpenToCloseTime.Value.Hours hours</text>
+    <text>@Model.Statistics.OpenToCloseTime.Value.Minutes mins</text>
+    <text>@Model.Statistics.OpenToCloseTime.Value.Seconds secs</text>
+
+
+}
+<br /><br />
+
+@if (Model.Statistics.ClosedWithinSLA != null)
+{
+    <text>Closed within SLA? @Model.Statistics.ClosedWithinSLA</text>
+}
+
+
+
+
+
+
+
+
+
+
+<!--Start of Actioned by graph-->
+<div id="actionedbychartContainer" style="height: 370px; width: 100%;"></div>
+<!--End of Actioned by graph-->
+
+
 @section scriptshead{
     <script>
         window.onload = function () {
@@ -25,37 +61,6 @@
         }
     </script>
 }
-
-<h2>View Call Report</h2>
-
-
-
-
-@if (Model.Statistics.OpenToCloseTime != null)
-{
-    <text>@Model.Statistics.OpenToCloseTime</text><br />
-    <text>@Model.Statistics.OpenToCloseTime.Value.Days days</text>
-    <text>@Model.Statistics.OpenToCloseTime.Value.Hours hours</text>
-    <text>@Model.Statistics.OpenToCloseTime.Value.Minutes mins</text>
-    <text>@Model.Statistics.OpenToCloseTime.Value.Seconds secs</text>
-
-
-}
-
-
-
-
-
-
-
-
-
-
-<!--Start of Actioned by graph-->
-<div id="actionedbychartContainer" style="height: 370px; width: 100%;"></div>
-<!--End of Actioned by graph-->
-
-
 
 @section scripts{
     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
