@@ -1901,6 +1901,30 @@ namespace ServiceDeskFYP.Controllers
                 ClosedWithinSLA = null;
             }
 
+            /********************
+             * No Of times SLA Reset
+             * ******************/
+
+            //Count Number of times SLA Reset
+            var SlaResetCount = Actions.Where(n => n.Type.Equals("SLA Reset")).Count();
+
+            /********************
+             * Timespan Call opened for
+             * ******************/
+            TimeSpan? CallOpenedForTime;
+
+            //If call open
+            if (!Call.Closed)
+            {
+                var CallCreated = Call.Created;
+                var TimeNow = DateTime.Now;
+                CallOpenedForTime = TimeNow.Subtract(CallCreated);
+            }
+            //else call closed
+            else
+            {
+                CallOpenedForTime = null;
+            }
 
             /********************
              * Actioned By Graph
@@ -1939,6 +1963,8 @@ namespace ServiceDeskFYP.Controllers
                 {
                     OpenToCloseTime = OpenToCloseTime,
                     ClosedWithinSLA = ClosedWithinSLA,
+                    SlaResetCount = SlaResetCount,
+                    CallOpenedForTime = CallOpenedForTime
                 }
             };
 

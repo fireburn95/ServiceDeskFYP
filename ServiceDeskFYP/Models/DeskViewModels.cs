@@ -511,7 +511,8 @@ namespace ServiceDeskFYP.Models
     {
         public TimeSpan? OpenToCloseTime { get; set; }
         public bool? ClosedWithinSLA { get; set; }
-        //public int SlaResetCount { get; set; }
+        public int SlaResetCount { get; set; }
+        public TimeSpan? CallOpenedForTime { get; set; }
     }
 
 }

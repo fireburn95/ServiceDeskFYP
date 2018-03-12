@@ -2,29 +2,64 @@
 
 @{
     ViewBag.Title = "Call Report";
+
+    string OpenToCloseTime = "N/A";
+    if (Model.Statistics.OpenToCloseTime != null)
+    {
+        OpenToCloseTime = Model.Statistics.OpenToCloseTime.Value.Days + " days "
+            + Model.Statistics.OpenToCloseTime.Value.Hours + " hours "
+            + Model.Statistics.OpenToCloseTime.Value.Minutes + " mins "
+            + Model.Statistics.OpenToCloseTime.Value.Seconds + " secs";
+    }
+
+    string ClosedWithinSLA = "N/A";
+    if (Model.Statistics.ClosedWithinSLA != null)
+    {
+        if (Model.Statistics.ClosedWithinSLA == true) { ClosedWithinSLA = "Yes"; } else { ClosedWithinSLA = "No"; }
+    }
+
+    string CallOpenedForTime = "N/A";
+    if (Model.Statistics.CallOpenedForTime != null)
+    {
+        CallOpenedForTime = Model.Statistics.CallOpenedForTime.Value.Days + " days "
+            + Model.Statistics.CallOpenedForTime.Value.Hours + " hours "
+            + Model.Statistics.CallOpenedForTime.Value.Minutes + " mins "
+            + Model.Statistics.CallOpenedForTime.Value.Seconds + " secs";
+    }
 }
 
 <h2>View Call Report</h2>
 <hr />
 
+<p>
+    @Html.ActionLink("Return to Call", "ViewCall")
+</p>
 
 
-@if (Model.Statistics.OpenToCloseTime != null)
-{
-    <text>@Model.Statistics.OpenToCloseTime</text><br />
-    <text>@Model.Statistics.OpenToCloseTime.Value.Days days</text>
-    <text>@Model.Statistics.OpenToCloseTime.Value.Hours hours</text>
-    <text>@Model.Statistics.OpenToCloseTime.Value.Minutes mins</text>
-    <text>@Model.Statistics.OpenToCloseTime.Value.Seconds secs</text>
+<div class="container">
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th>Time to Resolve</th>
+            <td>@OpenToCloseTime</td>
+        </tr>
+        <tr>
+            <th>Closed within SLA?</th>
+            <td>@ClosedWithinSLA</td>
+        </tr>
+        <tr>
+            <th>Number of times SLA Reset</th>
+            <td>@Model.Statistics.SlaResetCount</td>
+        </tr>
+        <tr>
+            <th>Time Call Open</th>
+            <td>@CallOpenedForTime</td>
+        </tr>
+    </table>
+</div>
 
 
-}
 <br /><br />
 
-@if (Model.Statistics.ClosedWithinSLA != null)
-{
-    <text>Closed within SLA? @Model.Statistics.ClosedWithinSLA</text>
-}
 
 
 
