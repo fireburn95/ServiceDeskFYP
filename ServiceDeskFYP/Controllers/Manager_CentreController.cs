@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Newtonsoft.Json;
 using ServiceDeskFYP.Models;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace ServiceDeskFYP.Controllers
          * Index - View Subordinates list
          *********************************/
 
-        // GET: Manager_Centre view employees
+        //GET: Manager_Centre view employees
         public ActionResult Index()
         {
             //Handle messages
@@ -60,6 +61,25 @@ namespace ServiceDeskFYP.Controllers
             return View(SubordinatesList.AsEnumerable());
         }
 
+        ////View Manager Report of subordinates
+        //[Route("manager_centre/report")]
+        //public ActionResult ViewManagerReport(int? pastdays = null)
+        //{
+        //    //Handle Messages
+        //    HandleMessages();
+
+        //    //Get logged in user id
+        //    var LoggedInId = User.Identity.GetUserId();
+
+        //    //Get Subordinates
+        //    var ManagerEmployee = _context.ManagerEmployee.Where(n => n.ManagerUserId.Equals(LoggedInId));
+        //    var Subordinates
+
+        //    /*******************
+        //     * 
+        //     *******************/
+        //}
+
         /*********************************
          * View Employee and options
          *********************************/
@@ -84,7 +104,7 @@ namespace ServiceDeskFYP.Controllers
             var Subordinate = _context.Users.SingleOrDefault(n => n.UserName.Equals(sub_username));
 
             //Check if exists
-            if(Subordinate == null)
+            if (Subordinate == null)
             {
                 TempData["ErrorMessage"] = "Sorry, the user you attempted to access doesn't exist";
                 return RedirectToAction("Index");
@@ -135,12 +155,12 @@ namespace ServiceDeskFYP.Controllers
             if (!closed)
             {
                 //Get the open calls of the subordinate
-                Calls = _context.Call.Where(n => (n.ResourceUserId.Equals(Subordinate.Id)) && (n.Closed==false)).AsEnumerable();
+                Calls = _context.Call.Where(n => (n.ResourceUserId.Equals(Subordinate.Id)) && (n.Closed == false)).AsEnumerable();
             }
             else
             {
                 //Get the closed calls of the subordinate
-                Calls = _context.Call.Where(n => (n.ResourceUserId.Equals(Subordinate.Id)) && (n.Closed==true)).AsEnumerable();
+                Calls = _context.Call.Where(n => (n.ResourceUserId.Equals(Subordinate.Id)) && (n.Closed == true)).AsEnumerable();
             }
 
             //Pass Calls to model
@@ -247,6 +267,167 @@ namespace ServiceDeskFYP.Controllers
             return View("SendAlertToSub", model);
         }
 
+        [HttpGet]
+        [Route("manager_centre/sub/{sub_username}/report")]
+        public ActionResult ViewSubordinateReport(string sub_username, int lastxdays = 7)
+        {
+            //Handle Messages
+            HandleMessages();
+
+            //Get logged in user id
+            var LoggedInId = User.Identity.GetUserId();
+
+            //Get Subordinate
+            var Subordinate = _context.Users.SingleOrDefault(n => n.UserName.Equals(sub_username));
+
+            //Check if exists
+            if (Subordinate == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, the user you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Check if actually a subordinate
+            var ManagerEmployee = _context.ManagerEmployee.SingleOrDefault(n => n.ManagerUserId.Equals(LoggedInId) && n.SubUserId.Equals(Subordinate.Id));
+            if (ManagerEmployee == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, you are not authorised to access this user";
+                return RedirectToAction("Index");
+            }
+
+            //Check if last x days is less than 1
+            if (lastxdays < 1)
+            {
+                lastxdays = 7;
+            }
+
+            //Todays day minus param date
+            var CompareDate = DateTime.Now.AddDays(-lastxdays);
+
+            /*********************
+             * Opened Calls
+             * ******************/
+
+            var OpenCallsPastXDays = _context.Action
+                .Where(n => n.ActionedByUserId.Equals(Subordinate.Id) && n.Type.Equals("Opened Call"))
+                .Where(n => n.Created > CompareDate)
+                .Count();
+
+            /*********************
+             * Closed Calls
+             * ******************/
+
+            var ClosedCallsPastXDays = _context.Action
+                .Where(n => n.ActionedByUserId.Equals(Subordinate.Id) && n.Type.Equals("Call Closed"))
+                .Where(n => n.Created > CompareDate)
+                .GroupBy(n => n.CallReference)
+                .Count();
+
+            /*********************
+             * Total Actions
+             * ******************/
+
+            var TotalActionsPastXDays = _context.Action
+                .Where(n => n.ActionedByUserId.Equals(Subordinate.Id))
+                .Where(n => n.Created > CompareDate)
+                .Count();
+
+            /*********************
+             * Calls Opened and Closed before and after SLA
+             * ******************/
+            var CallsClosedBeforeSla = 0;
+            var CallsClosedAfterSla = 0;
+
+            //Get all Closed calls created by user
+            var UsersClosedCalls = _context.Call.Where(n => n.Closed && n.ResourceUserId != null && n.ResourceUserId.Equals(Subordinate.Id));
+
+            using (ApplicationDbContext dbcontext = new ApplicationDbContext())
+            {
+                //For each call
+                foreach (var call in UsersClosedCalls)
+                {
+                    //Get the actions from the past x days
+                    var actions = dbcontext.Action.Where(n => n.CallReference.Equals(call.Reference) && n.ActionedByUserId.Equals(Subordinate.Id) && n.Created > CompareDate && n.Type.Equals("Call Closed"))
+                                  .OrderBy(n => n.Created);
+
+                    //If no action then skip this call
+                    if (actions == null || !actions.Any())
+                    {
+                        continue;
+                    }
+
+                    //Get the last action date
+                    var LastActionDate = actions.AsEnumerable().Last().Created;
+
+                    //Get SLA Expiry date
+                    DateTime? SlaExpiry = GetSLAExpiryDateTime(call.Reference);
+
+                    //If date is before SLA, increment count
+                    if (SlaExpiry == null) continue;
+                    if (LastActionDate < SlaExpiry)
+                        CallsClosedBeforeSla++;
+                    else
+                        CallsClosedAfterSla++;
+                }
+            }
+
+            /*********************
+             * Actions for last x days
+             * ******************/
+
+            //Get all of users Actions
+            var Actions = _context.Action.Where(n => n.ActionedByUserId.Equals(Subordinate.Id));
+
+            //Get last x days
+            List<DateTime> LastXDates =
+                Enumerable.Range(0, lastxdays)
+                .Select(n => DateTime.Now.Date.AddDays(-n))
+                .Reverse()
+                .ToList();
+
+            //Get the number of days per count
+            List<ManagerUserActionsReportDataPointsViewModel> actionsDatapoints = new List<ManagerUserActionsReportDataPointsViewModel>();
+            foreach (var fulldate in LastXDates)
+            {
+                var date = fulldate.Date;
+
+                actionsDatapoints.Add(new ManagerUserActionsReportDataPointsViewModel(
+                    date.ToString("dd-MM-yy"),
+                    Actions.Where(n => n.Created.Year == fulldate.Year &&
+                                  n.Created.Month == fulldate.Month &&
+                                  n.Created.Day == fulldate.Day).Count()
+                ));
+
+            }
+
+            //Encode to JSON
+            string actionsjsondatapoints = JsonConvert.SerializeObject(actionsDatapoints);
+
+
+            /*********************
+             * MODEL
+             * ******************/
+
+            //Make model
+            var model = new ManagerUserReportPageViewModel()
+            {
+                ActionJsonDatapoints = actionsjsondatapoints,
+                Statistics = new ManagerUserStatisticsViewModel
+                {
+                    OpenCalls = OpenCallsPastXDays,
+                    ClosedCalls = ClosedCallsPastXDays,
+                    Actions = TotalActionsPastXDays,
+                    ClosedBeforeSla = CallsClosedBeforeSla,
+                    ClosedAfterSla = CallsClosedAfterSla
+                },
+
+            };
+
+            //Pass to view
+            return View("ViewSubordinateReport", model);
+
+        }
+
 
         /*********************************
          * Helpers
@@ -265,6 +446,38 @@ namespace ServiceDeskFYP.Controllers
             {
                 ViewBag.SuccessMessage = TempData["SuccessMessage"];
             }
+        }
+
+        public DateTime? GetSLAExpiryDateTime(string Reference)
+        {
+            //Get the call
+            ApplicationDbContext dbcontext = new ApplicationDbContext();
+            var Call = dbcontext.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+            //Get the number of minutes
+            double mins = 0;
+            bool hasSla = false;
+            if (Call.SlaLevel.Equals("Low"))
+            {
+                mins = dbcontext.SLAPolicy.SingleOrDefault(n => n.Id == Call.SlaId).LowMins;
+                hasSla = true;
+            }
+            else if (Call.SlaLevel.Equals("Medium"))
+            {
+                mins = dbcontext.SLAPolicy.SingleOrDefault(n => n.Id == Call.SlaId).MedMins;
+                hasSla = true;
+            }
+            else if (Call.SlaLevel.Equals("High"))
+            {
+                mins = dbcontext.SLAPolicy.SingleOrDefault(n => n.Id == Call.SlaId).HighMins;
+                hasSla = true;
+            }
+
+            //If there is an SLA Policy of low-high, set SLA Expiry time for view model
+            if (hasSla)
+                return Call.SLAResetTime.Value.AddMinutes(mins);
+            else
+                return null;
         }
 
 

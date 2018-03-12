@@ -82,8 +82,7 @@
 </div>
 <p>
     @Html.ActionLink("View Calls", "ViewSubordinateCalls", new { sub_username = Model.UserName }) |
-    @*@Html.ActionLink("User Report", "Index") |*@
-    User Report |
+    @Html.ActionLink("View Report","ViewSubordinateReport") |
     @Html.ActionLink("Send Alert", "SendAlertToSubGET") |
     @Html.ActionLink("Back to List", "Index")
 </p>

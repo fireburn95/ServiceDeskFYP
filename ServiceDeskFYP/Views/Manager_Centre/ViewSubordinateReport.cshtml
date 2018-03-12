@@ -1,0 +1,96 @@
+﻿@model ServiceDeskFYP.Models.ManagerUserReportPageViewModel
+
+@{
+    ViewBag.Title = "View Report";
+}
+
+<h2>Subordinate Report</h2>
+<hr />
+
+<form method="get" action="">
+    @Html.ActionLink("Return to Subordinate", "ViewSubordinate") |
+    <select name="lastxdays">
+        <option value="7">Past 7 days</option>
+        <option value="30">Past 30 days</option>
+        <option value="365">Past 365 days</option>
+    </select>
+    <input type="submit" value="Select" />
+</form>
+
+<br />
+
+<div class="container">
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th>Opened Calls</th>
+            <td>@Model.Statistics.OpenCalls</td>
+        </tr>
+        <tr>
+            <th>Closed Calls</th>
+            <td>@Model.Statistics.ClosedCalls</td>
+        </tr>
+        <tr>
+            <th>Total Actions</th>
+            <td>@Model.Statistics.Actions</td>
+        </tr>
+        <tr>
+            <th>Opened &amp; Closed before SLA</th>
+            <td>@Model.Statistics.ClosedBeforeSla</td>
+        </tr>
+        <tr>
+            <th>Opened &amp; Closed after SLA</th>
+            <td>@Model.Statistics.ClosedAfterSla</td>
+        </tr>
+    </table>
+</div>
+
+<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@section scriptshead{
+    <script>
+window.onload = function () {
+
+var chart = new CanvasJS.Chart("chartContainer", {
+	animationEnabled: true,
+	title: {
+		text: "Total Actions"
+	},
+	axisY: {
+		includeZero: false
+	},
+	toolTip: {
+		shared: true
+	},
+	data: [{
+		type: "line",
+		name: "Actions",
+		showInLegend: true,
+		dataPoints: @Html.Raw(Model.ActionJsonDatapoints)
+	}]
+});
+chart.render();
+
+}
+    </script>
+}
+
+@section scripts{
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+}
