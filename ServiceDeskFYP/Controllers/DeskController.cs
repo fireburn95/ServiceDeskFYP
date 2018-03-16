@@ -572,6 +572,29 @@ namespace ServiceDeskFYP.Controllers
             else
                 CallDetails.SlaExpiry = null;
 
+            //Check if client details have changed
+            bool CallDetailsMatch = true;
+            if (Call.ForUserId != null)
+            {
+                //Get the client
+                var ForClient = _context.Users.SingleOrDefault(n => n.Id.Equals(Call.ForUserId));
+
+                //If any fields dont match
+                if (
+                    Call.FirstName != ForClient.FirstName ||
+                    Call.Lastname != ForClient.LastName ||
+                      Call.Email!=ForClient.Email ||
+                      Call.PhoneNumber!=ForClient.PhoneNumber ||
+                      Call.Extension!=ForClient.Extension ||
+                      Call.OrganisationAlias != ForClient.OrganisationAlias ||
+                      Call.Organisation != ForClient.Organisation ||
+                      Call.Department != ForClient.Department
+                   )
+                {
+                    CallDetailsMatch = false;
+                }
+            }
+
             //Get the Actions
             var Actions = _context.Action.Where(n => n.CallReference.Equals(Reference));
             ApplicationDbContext _context2 = new ApplicationDbContext();
@@ -596,7 +619,8 @@ namespace ServiceDeskFYP.Controllers
             ViewCallPageViewModel model = new ViewCallPageViewModel()
             {
                 ActionsList = ActionList.OrderByDescending(n => n.Created).AsEnumerable(),
-                CallDetails = CallDetails
+                CallDetails = CallDetails,
+                CallDetailsMatch = CallDetailsMatch
             };
 
             return View("ViewCallAndActions", model);

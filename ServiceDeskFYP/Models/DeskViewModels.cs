@@ -288,6 +288,7 @@ namespace ServiceDeskFYP.Models
         public CallDetailsForACallViewModel CallDetails { get; set; }
         public IEnumerable<ActionDetailsForACallViewModel> ActionsList { get; set; }
         public Action ActionForCreate { get; set; }
+        public bool CallDetailsMatch { get; set; }
     }
 
     /*

@@ -199,7 +199,11 @@
                         }
                         else
                         {
-                            @Html.ActionLink("Clear Association", "ClearAssociation", new { Reference = Model.CallDetails.Reference })
+                            @Html.ActionLink("Clear Association", "ClearAssociation", new { Reference = Model.CallDetails.Reference })<br />
+                            if (!Model.CallDetailsMatch)
+                            {
+                                <span style="color:red">The client may have updated some details - You may wish to re-associate this</span>
+                            }
                         }
 
                         <dl class="dl-horizontal">
