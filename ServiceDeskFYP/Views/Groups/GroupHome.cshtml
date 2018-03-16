@@ -17,21 +17,22 @@
 <br />
 
 <h4>Group-Member Tools</h4>
-<ul>
-    @if (!Model.Owner)
-    {
-        <li>@Html.ActionLink("View Members", "ManageAndViewMembers", new { groupid = Model.Group_Id })</li>
-    }
-    <li>@Html.ActionLink("Knowledge Base", "ViewKnowledges", new { groupid = Model.Group_Id })</li>
-    <li>@Html.ActionLink("View Alerts", "Index", "Alerts", new { resource = Model.Group_Id }, null)</li>
-    <li>@Html.ActionLink("View Calls", "Index", "Desk", new { resource = Model.Group_Id }, null)</li>
-</ul>
-@if (Model.Owner)
-{
-    <hr />
-    <h4>Group-Owner Tools</h4>
+<div class="container">
     <ul>
-        <li>@Html.ActionLink("Manage Members", "ManageAndViewMembers", new { groupid = Model.Group_Id })</li>
-        <li>View Group Report</li>
+        @if (!Model.Owner)
+        {
+            <li>@Html.ActionLink("View Members", "ManageAndViewMembers", new { groupid = Model.Group_Id })</li>
+        }
+        <li>@Html.ActionLink("Knowledge Base", "ViewKnowledges", new { groupid = Model.Group_Id })</li>
+        <li>@Html.ActionLink("View Alerts", "Index", "Alerts", new { resource = Model.Group_Id }, null)</li>
+        <li>@Html.ActionLink("View Calls", "Index", "Desk", new { resource = Model.Group_Id }, null)</li>
     </ul>
-}
+    @if (Model.Owner)
+    {
+        <hr />
+        <h4>Group-Owner Tools</h4>
+        <ul>
+            <li>@Html.ActionLink("Manage Members", "ManageAndViewMembers", new { groupid = Model.Group_Id })</li>
+        </ul>
+    }
+</div>

@@ -22,7 +22,6 @@
             @Html.ActionLink("Close Call", "CloseOpenCall", new { Reference = Model.CallDetails.Reference })
         } |
         @Html.ActionLink("Edit", "EditCallGET") |
-        <text>PDF</text> |
         @if (Model.CallDetails.LockedToUserId != null)
         {
             @Html.ActionLink("Clear Lock", "ClearLock", new { Reference = Model.CallDetails.Reference })<text> | </text>
@@ -32,7 +31,6 @@
             @Html.ActionLink("Lock", "LockCall", new { Reference = Model.CallDetails.Reference })<text> | </text>
         }
         @Html.ActionLink("Assign Resource", "AssignResourceGET") |
-        <text>Bookmark</text> |
         @Html.ActionLink("View Report", "ViewCallReport") |
         @Html.ActionLink("Reset SLA", "ResetSlaGET")
     </div>
