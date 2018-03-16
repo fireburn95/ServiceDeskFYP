@@ -415,6 +415,127 @@ namespace ServiceDeskFYP.Controllers
         }
 
         /*****************
+        * Edit Group Description
+        * ***************/
+        //Edit Group GET
+        [HttpGet]
+        [Route("groups/{groupid}/edit")]
+        public ActionResult EditGroupGET(string groupid)
+        {
+            //Handle messages
+            HandleMessages();
+
+            //Check group id is not null
+            if (String.IsNullOrEmpty(groupid))
+            {
+                TempData["ErrorMessage"] = "Error, no group has been specified";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id is a number then cast to int
+            if (!int.TryParse(groupid, out int GroupIdInt))
+            {
+                TempData["ErrorMessage"] = "Error: Group ID incorrect";
+                return RedirectToAction("Index");
+            }
+
+            //Check group id exists
+            var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
+            if (Group == null)
+            {
+                TempData["ErrorMessage"] = "Error: Group does not exist";
+                return RedirectToAction("Index");
+            }
+
+            //Check logged in user is a member of group
+            var LoggedInId = User.Identity.GetUserId();
+            var GroupMember = _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInId) && n.Group_Id == Group.Id);
+            if (GroupMember == null)
+            {
+                TempData["ErrorMessage"] = "Sorry, you are not a member of the group '" + Group.Name + "'";
+                return RedirectToAction("Index");
+            }
+
+            //Check if owner
+            if (!GroupMember.Owner)
+            {
+                TempData["ErrorMessage"] = "Error: Only an owner can remove knowledges from this group";
+                return RedirectToAction("ViewKnowledges", new { groupid });
+            }
+
+            //Create View Model
+            var model = new EditGroupPageViewModel
+            {
+                EditGroup = new EditGroupViewModel
+                {
+                    Id = Group.Id,
+                    Name = Group.Name,
+                    Description = Group.Description
+                }
+            };
+
+            //Pass to model
+            return View("EditGroup", model);
+        }
+
+        //Edit Group POST
+        [HttpPost]
+        [Route("groups/{groupid}/edit")]
+        public ActionResult EditGroupPOST(string groupid, EditGroupPageViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                //Check group id is not null
+                if (String.IsNullOrEmpty(groupid))
+                {
+                    TempData["ErrorMessage"] = "Error, no group has been specified";
+                    return RedirectToAction("Index");
+                }
+
+                //Check group id is a number then cast to int
+                if (!int.TryParse(groupid, out int GroupIdInt))
+                {
+                    TempData["ErrorMessage"] = "Error: Group ID incorrect";
+                    return RedirectToAction("Index");
+                }
+
+                //Check group id exists
+                var Group = _context.Group.SingleOrDefault(n => n.Id == GroupIdInt);
+                if (Group == null)
+                {
+                    TempData["ErrorMessage"] = "Error: Group does not exist";
+                    return RedirectToAction("Index");
+                }
+
+                //Check logged in user is a member of group
+                var LoggedInId = User.Identity.GetUserId();
+                var GroupMember = _context.GroupMember.SingleOrDefault(n => n.User_Id.Equals(LoggedInId) && n.Group_Id == Group.Id);
+                if (GroupMember == null)
+                {
+                    TempData["ErrorMessage"] = "Sorry, you are not a member of the group '" + Group.Name + "'";
+                    return RedirectToAction("Index");
+                }
+
+                //Check if owner
+                if (!GroupMember.Owner)
+                {
+                    TempData["ErrorMessage"] = "Error: Only an owner can remove knowledges from this group";
+                    return RedirectToAction("ViewKnowledges", new { groupid });
+                }
+
+                //Update Group
+                Group.Description = model.EditGroup.Description;
+                _context.SaveChanges();
+
+                //Return to Index
+                TempData["SuccessMessage"] = "Group Updated";
+                return RedirectToAction("GroupHome", new { groupid });
+            }
+            //Failed so return view
+            return View("EditGroup", model);
+        }
+
+        /*****************
         * Knowledge Base
         * ***************/
 

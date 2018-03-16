@@ -156,6 +156,7 @@ namespace ServiceDeskFYP.Controllers
                     Department = model.Department,
                     CreatedTimestamp = DateTime.Now,
                     EmailConfirmed = true,
+                    LockoutEnabled = true,
                 };
 
                 //Create User in DB

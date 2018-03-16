@@ -144,6 +144,28 @@ namespace ServiceDeskFYP.Models
         public string Message { get; set; }
     }
 
+    /*
+     * Used in editing groups
+     */
+     public class EditGroupPageViewModel
+    {
+        public EditGroupViewModel EditGroup { get; set; }
+    }
+
+    public class EditGroupViewModel
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [StringLength(25)]
+        public string Name { get; set; }
+
+        [Required]
+        [StringLength(255, MinimumLength = 10)]
+        [DataType(DataType.MultilineText)]
+        public string Description { get; set; }
+    }
+
 }
 
 
