@@ -5,6 +5,8 @@
 }
 
 <h2>Subordinates</h2>
+<hr />
+@Html.ActionLink("View Report", "ViewManagerReport")
 
 @if (ViewBag.SuccessMessage != null)
 {
@@ -49,28 +51,28 @@ else
 
             <tbody>
                 @foreach (var item in Model)
-            {
-                <tr onclick="window.location='/manager_centre/sub/@item.UserName';">
-                    <td>
-                        @Html.DisplayFor(modelItem => item.UserName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Email)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.FirstName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.LastName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Extension)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Department)
-                    </td>
-                </tr>
-        }
+                {
+                    <tr onclick="window.location='/manager_centre/sub/@item.UserName';">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UserName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FirstName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LastName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Extension)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Department)
+                        </td>
+                    </tr>
+                }
             </tbody>
 
         </table>

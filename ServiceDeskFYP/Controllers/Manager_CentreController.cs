@@ -61,24 +61,174 @@ namespace ServiceDeskFYP.Controllers
             return View(SubordinatesList.AsEnumerable());
         }
 
-        ////View Manager Report of subordinates
-        //[Route("manager_centre/report")]
-        //public ActionResult ViewManagerReport(int? pastdays = null)
-        //{
-        //    //Handle Messages
-        //    HandleMessages();
+        //View Manager Report of subordinates
+        [Route("manager_centre/report")]
+        public ActionResult ViewManagerReport(int lastxdays = 7)
+        {
+            //Handle messages
+            HandleMessages();
 
-        //    //Get logged in user id
-        //    var LoggedInId = User.Identity.GetUserId();
+            //Get logged in Users ID
+            var LoggedInID = User.Identity.GetUserId();
 
-        //    //Get Subordinates
-        //    var ManagerEmployee = _context.ManagerEmployee.Where(n => n.ManagerUserId.Equals(LoggedInId));
-        //    var Subordinates
+            //Get subordinates Id
+            var SubordinatesId = _context.ManagerEmployee.Where(n => n.ManagerUserId.Equals(LoggedInID)).Select(n => n.SubUserId);
 
-        //    /*******************
-        //     * 
-        //     *******************/
-        //}
+            //Make List of Users
+            List<ApplicationUser> SubordinatesList = new List<ApplicationUser>();
+
+            //Get subordinate users
+            using (ApplicationDbContext _context2 = new ApplicationDbContext())
+            {
+                foreach (var id in SubordinatesId)
+                {
+                    SubordinatesList.Add(_context2.Users.SingleOrDefault(n => n.Id.Equals(id)));
+                }
+            }
+
+            //Check if last x days is less than 1
+            if (lastxdays < 1)
+            {
+                lastxdays = 7;
+            }
+
+            //Todays day minus param date
+            var CompareDate = DateTime.Now.AddDays(-lastxdays);
+
+            //Create List of Stats
+            var ReportStats = new List<ManagerReportCompareTableViewModel>();
+
+            /*******************
+             * User Populate
+             *******************/
+            foreach (var user in SubordinatesList)
+            {
+                ReportStats.Add(new ManagerReportCompareTableViewModel
+                {
+                    UserId = user.Id,
+                    Username = user.UserName
+                });
+            }
+
+            /*******************
+            * Open Calls
+            *******************/
+
+            foreach (var item in ReportStats)
+            {
+                item.OpenCalls =
+                    _context.Action
+                .Where(n => n.ActionedByUserId.Equals(item.UserId) && n.Type.Equals("Opened Call"))
+                .Where(n => n.Created > CompareDate)
+                .Count();
+            }
+
+            /*******************
+            * Closed Calls
+            *******************/
+
+            foreach (var item in ReportStats)
+            {
+                item.ClosedCalls =
+                    _context.Action
+                .Where(n => n.ActionedByUserId.Equals(item.UserId) && n.Type.Equals("Call Closed"))
+                .Where(n => n.Created > CompareDate)
+                .GroupBy(n => n.CallReference)
+                .Count();
+            }
+
+            /*******************
+            * Actions
+            *******************/
+
+            foreach (var item in ReportStats)
+            {
+                item.Actions = _context.Action
+                .Where(n => n.ActionedByUserId.Equals(item.UserId))
+                .Where(n => n.Created > CompareDate)
+                .Count();
+            }
+
+            /*********************
+             * Calls Opened and Closed before and after SLA
+             * ******************/
+             foreach(var item in ReportStats)
+            {
+                var CallsClosedAfterSla = 0;
+                var CallsClosedBeforeSla = 0;
+
+                //Get all Closed calls created by user
+                var UsersClosedCalls = _context.Call.Where(n => n.Closed && n.ResourceUserId != null && n.ResourceUserId.Equals(item.UserId));
+
+                using (ApplicationDbContext dbcontext = new ApplicationDbContext())
+                {
+                    //For each call
+                    foreach (var call in UsersClosedCalls)
+                    {
+                        //Get the actions from the past x days
+                        var actions = dbcontext.Action.Where(n => n.CallReference.Equals(call.Reference) && n.ActionedByUserId.Equals(item.UserId) && n.Created > CompareDate && n.Type.Equals("Call Closed"))
+                                      .OrderBy(n => n.Created);
+
+                        //If no action then skip this call
+                        if (actions == null || !actions.Any())
+                        {
+                            continue;
+                        }
+
+                        //Get the last action date
+                        var LastActionDate = actions.AsEnumerable().Last().Created;
+
+                        //Get SLA Expiry date
+                        DateTime? SlaExpiry = GetSLAExpiryDateTime(call.Reference);
+
+                        //If date is before SLA, increment count
+                        if (SlaExpiry == null) continue;
+                        if (LastActionDate < SlaExpiry)
+                            CallsClosedBeforeSla++;
+                        else
+                            CallsClosedAfterSla++;
+                    }
+
+                    item.ClosedBeforeSla = CallsClosedBeforeSla;
+                    item.ClosedAfterSla = CallsClosedAfterSla;
+                }
+            }
+            
+
+            /*******************
+             * PIE Chart of Actions
+             *******************/
+            //Datapoints list
+            List<ManagerReportDataPointsViewModel> datapoints = new List<ManagerReportDataPointsViewModel>();
+
+            //For each subordinate
+            foreach (var user in SubordinatesList)
+            {
+                var ActionsCount =
+                    _context.Action
+                    .Where(n => n.ActionedByUserId.Equals(user.Id))
+                    .Where(n => n.Created > CompareDate)
+                    .Count();
+
+                datapoints.Add(new ManagerReportDataPointsViewModel(user.UserName, ActionsCount));
+            }
+
+            //Convert to json
+            string JsonPieData = JsonConvert.SerializeObject(datapoints);
+
+            /*******************
+             * Model
+             *******************/
+
+            //Create the model
+            var model = new ManagerReportPageViewModel
+            {
+                PieJsonDatapoints = JsonPieData,
+                stats = ReportStats
+            };
+
+            return View("ViewManagerReport", model);
+        }
 
         /*********************************
          * View Employee and options
