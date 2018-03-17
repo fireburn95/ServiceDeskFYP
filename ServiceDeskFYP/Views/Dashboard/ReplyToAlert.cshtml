@@ -1,0 +1,66 @@
+﻿@model ServiceDeskFYP.Models.ReplyAlertViewModel
+
+@{
+    ViewBag.Title = "Reply";
+}
+
+<h2>Reply to Alert</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+        @if ((!String.IsNullOrEmpty(Model.FromUserName)) && (Model.FromGroupName == null))
+        {
+            <text>From: </text>@Model.FromUserName
+        }
+        else
+        {
+            <text>From: </text>@Model.FromUserName<text> via </text>@Model.FromGroupName
+        }
+        <br />
+        @Model.ReplyingToMessage
+        <br /><br />
+
+
+        @if (!String.IsNullOrEmpty(Model.ReplyToUserName) && Model.ReplyToGroupName == null)
+        {
+            <text>Replying to: </text>@Model.ReplyToUserName
+        }
+        else
+        {
+            <text>Replying to: </text>@Model.ReplyToGroupName
+        }
+
+
+
+        @Html.HiddenFor(model => model.ReplyingToMessage)
+        @Html.HiddenFor(model => model.FromUserName)
+        @Html.HiddenFor(model => model.FromGroupName)
+        @Html.HiddenFor(model => model.ReplyToUserName)
+        @Html.HiddenFor(model => model.ReplyToGroupName)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Text, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Text, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Text, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Reply" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Return to Alerts", "Index", new { resource = Model.Resource })
+</div>

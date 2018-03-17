@@ -93,10 +93,75 @@
         <div class="col-sm-12 col-md-12">
             <div class="thumbnail">
                 <div class="caption">
-                    <h3><span class="glyphicon glyphicon-tags" aria-hidden="true"></span> Group Management</h3>
+                    <h3><span class="glyphicon glyphicon-tags" aria-hidden="true"></span> Messages</h3>
+                    @if (Request["dismissed"] != null && Request["dismissed"] == "true")
+                    {
+                        @Html.ActionLink("Non-Dismissed", "Index", new { dismissed = string.Empty })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Dismissed", "Index", new { dismissed = "true" })
+                    }
                     <hr />
-                    <p>You are a member of Model.GroupsCount Groups</p>
-                    <p><a href="/groups" class="btn btn-success" role="button">Go To Group Management</a></p>
+
+                    <div class="container">
+                        @foreach (var item in Model.Alerts)
+                        {
+                            <div class="row">
+                                <div class="col-xs-3 col-sm-2 col-md-1">
+                                    @if (item.FromGroupId != null)
+                                    {
+                                        <img class="mr-3" src="~/Content/group.jpg" height="60" width="60" alt="Sample photo">
+
+                                    }
+                                    else
+                                    {
+                                        <img class="mr-3" src="~/Content/person.jpeg" height="60" width="60" alt="Sample photo">
+
+                                    }
+                                </div>
+                                <div class="col-xs-9 col-sm-10 col-md-11">
+                                    <p>
+                                        @if (item.FromUserId != null && item.FromGroupId != null)
+                                        {
+                                            <h4>@item.FromUserName via @item.FromGroupName <small>@item.Created</small></h4>
+                                        }
+                                        else if (item.FromUserId != null)
+                                        {
+                                            <h4>@item.FromUserName <small>@item.Created</small></h4>
+                                        }
+                                        else if (item.FromGroupId != null)
+                                        {
+                                            <h4>@item.FromGroupName <small>@item.Created</small></h4>
+                                        }
+                                        @item.Text
+                                        <br />
+                                        @if (item.AssociatedCallRef != null)
+                                        {
+                                            @Html.ActionLink("Go to", "ViewCall", "View", new { Reference = item.AssociatedCallRef }, null)
+                                            <text>&nbsp;</text>
+                                        }
+                                        @if (item.FromUserId != null && item.Dismissed == false)
+                                        {
+                                            @Html.ActionLink("Reply", "ReplyToAlertGET", new { alertid = item.Id }, null)
+                                            <text>&nbsp;</text>
+                                        }
+                                        @if (item.Dismissed == false)
+                                        {
+                                            @Html.ActionLink("Dismiss", "DismissUndismissAlert", new { alertid = item.Id }, new { onclick = "return confirm('Please confirm you want to remove alert...');" })
+                                        }
+                                        else
+                                        {
+                                            @Html.ActionLink("Reinstate", "DismissUndismissAlert", new { alertid = item.Id }, null)
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+
+
                 </div>
             </div>
         </div>

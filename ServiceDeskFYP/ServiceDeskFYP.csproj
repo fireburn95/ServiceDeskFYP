@@ -435,6 +435,7 @@
     <Content Include="Views\Manager_Centre\ViewManagerReport.cshtml" />
     <Content Include="Views\Dashboard\EmployeeDashboard.cshtml" />
     <Content Include="Views\Dashboard\ClientDashboard.cshtml" />
+    <Content Include="Views\Dashboard\ReplyToAlert.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201801081319301_InitialCreate.resx">

@@ -102,6 +102,7 @@ namespace ServiceDeskFYP.Models
     public class ClientSendAlertViewModel
     {
         [Display(Name = "Group")]
+        [Required]
         public string GroupName { get; set; }
         [Required]
         [DataType(DataType.MultilineText)]
