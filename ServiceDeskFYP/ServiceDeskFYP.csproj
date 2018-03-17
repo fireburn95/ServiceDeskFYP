@@ -198,6 +198,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AlertsController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DeskController.cs" />
     <Compile Include="Controllers\GroupsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -300,6 +301,7 @@
       <DependentUpon>201803051223170_UpdatedLogTable_AddedIpAndUserFields.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\DashboardViewModels.cs" />
     <Compile Include="Models\ViewViewModels.cs" />
     <Compile Include="Models\AlertsViewModel.cs" />
     <Compile Include="Models\GroupManagementViewModel.cs" />
@@ -431,6 +433,7 @@
     <Content Include="Views\Manager_Centre\ViewSubordinateReport.cshtml" />
     <Content Include="Views\Groups\EditGroup.cshtml" />
     <Content Include="Views\Manager_Centre\ViewManagerReport.cshtml" />
+    <Content Include="Views\Dashboard\EmployeeDashboard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201801081319301_InitialCreate.resx">

@@ -1,0 +1,83 @@
+﻿@model ServiceDeskFYP.Models.EmployeeDashboardPageViewModel
+
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+<h2>Dashboard</h2>
+<hr />
+
+<div class="row">
+    <div class="col-sm-6 col-md-6">
+        <div class="thumbnail alert-success">
+            <div class="caption">
+                <h3><span class="glyphicon glyphicon-tags" aria-hidden="true"></span> Group Management</h3>
+                <hr />
+                <p>You are a member of @Model.GroupsCount Groups</p>
+                <p><a href="/groups" class="btn btn-success" role="button">Go To Group Management</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-6">
+        <div class="thumbnail alert-info">
+            <div class="caption">
+                <h3><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Alerts</h3>
+                <hr />
+                <p>You have @Model.AlertsCount Alerts</p>
+                <p><a href="/alerts" class="btn btn-primary" role="button">Go To Alerts</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<br />
+<table class="table table-bordered table-condensed table-responsive table-striped">
+    <thead>
+        <tr>
+            <th colspan="2"><h4>Your Stats Today<small>  @DateTime.Now.Date.ToString("ddd, dd MMM yyyy ")</small></h4></th>
+        </tr>
+    </thead>
+    <tr>
+        <th>Open Calls</th>
+        <td>@Model.Stats.OpenCalls</td>
+    </tr>
+    <tr>
+        <th>Closed Calls</th>
+        <td>@Model.Stats.ClosedCalls</td>
+    </tr>
+    <tr>
+        <th>Actions</th>
+        <td>@Model.Stats.Actions</td>
+    </tr>
+</table>
+
+
+<div class="row">
+    <div class="col-sm-6 col-md-6">
+        <div class="thumbnail alert-warning">
+            <div class="caption">
+                <h3><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Locked Calls</h3>
+                <hr />
+                @foreach (var item in Model.LockedCalls)
+                {
+                    @Html.ActionLink(item.Reference + " - " + item.Summary, "ViewCall", "Desk", new { Reference = item.Reference }, null)<br />
+                }
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-6">
+        <div class="thumbnail alert-danger">
+            <div class="caption">
+                <h3><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Urgent Calls</h3>
+                <hr />
+                @foreach (var item in Model.UrgentCalls)
+                {
+                    @Html.ActionLink(item.Reference + " - " + item.Summary, "ViewCall", "Desk", new { Reference = item.Reference }, null)<br />
+                }
+            </div>
+        </div>
+    </div>
+</div>

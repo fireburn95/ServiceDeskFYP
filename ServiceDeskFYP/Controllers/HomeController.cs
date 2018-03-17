@@ -14,7 +14,7 @@ namespace ServiceDeskFYP.Controllers
 
             if (Request.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Desk", null);
+                return RedirectToAction("Index", "Dashboard", null);
             }
             return View();
         }
