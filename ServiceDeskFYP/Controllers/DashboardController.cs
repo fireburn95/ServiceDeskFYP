@@ -29,12 +29,30 @@ namespace ServiceDeskFYP.Controllers
         // GET: Dashboard
         public ActionResult Index()
         {
-            return RedirectToAction("EmployeeDashboard");
+            return RedirectToAction("Dashboard");
+
         }
 
-        [Authorize(Roles = "Employee")]
         [Route("dashboard")]
-        public ActionResult EmployeeDashboard()
+        public ActionResult Dashboard()
+        {
+            HandleMessages();
+
+            if (User.IsInRole("Employee"))
+            {
+                return View("EmployeeDashboard", EmployeeDashboard());
+            }
+            else if (User.IsInRole("Client"))
+            {
+                return View("ClientDashboard", ClientDashboard());
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home", null);
+            }
+        }
+
+        public EmployeeDashboardPageViewModel EmployeeDashboard()
         {
             //Get logged in user id
             var LoggedInUserId = User.Identity.GetUserId();
@@ -66,7 +84,7 @@ namespace ServiceDeskFYP.Controllers
              **************************/
 
             //Get calls
-            var L_Calls = _context.Call.Where(n => n.LockedToUserId!=null && n.LockedToUserId.Equals(LoggedInUserId));
+            var L_Calls = _context.Call.Where(n => n.LockedToUserId != null && n.LockedToUserId.Equals(LoggedInUserId));
 
             //To model
             List<EmployeeLockedCallsViewModel> LockedCalls = new List<EmployeeLockedCallsViewModel>();
@@ -99,7 +117,7 @@ namespace ServiceDeskFYP.Controllers
              **************************/
 
             //Get open calls
-            var LoggedInUsersCalls = _context.Call.Where(n => n.Closed==false && n.ResourceUserId!=null && n.ResourceUserId.Equals(LoggedInUserId));
+            var LoggedInUsersCalls = _context.Call.Where(n => n.Closed == false && n.ResourceUserId != null && n.ResourceUserId.Equals(LoggedInUserId));
 
             //List of urgent calls
             List<Call> UrgentCalls = new List<Call>();
@@ -155,7 +173,7 @@ namespace ServiceDeskFYP.Controllers
 
             //To model
             List<EmployeeUrgentCallsViewModel> UrgentCallsModel = new List<EmployeeUrgentCallsViewModel>();
-            foreach(var call in UrgentCalls)
+            foreach (var call in UrgentCalls)
             {
                 UrgentCallsModel.Add(new EmployeeUrgentCallsViewModel
                 {
@@ -184,8 +202,149 @@ namespace ServiceDeskFYP.Controllers
                 }
             };
 
-            //Pass to view
-            return View("EmployeeDashboard", model);
+            //Pass to action
+            return model;
+        }
+
+        public ClientDashboardPageViewModel ClientDashboard()
+        {
+            //Get user id
+            var LoggedInUserId = User.Identity.GetUserId();
+
+            /**************************
+             * My Associated Calls
+             **************************/
+            //Get calls
+            var AssociatedClientCalls = _context.Call.Where(n => n.Closed == false && n.ForUserId != null && n.ForUserId.Equals(LoggedInUserId));
+
+            //To View Model
+            var AssociatedCallsModel = new List<ClientAssociatedCallViewModel>();
+            foreach (var call in AssociatedClientCalls)
+            {
+                AssociatedCallsModel.Add(new ClientAssociatedCallViewModel
+                {
+                    Reference = call.Reference,
+                    Created = call.Created,
+                    Summary = call.Summary
+                });
+            }
+
+            /**************************
+             * List of Groups
+             **************************/
+            var Groups = _context.Group;
+
+            /**************************
+             * My Messages
+             **************************/
+            var Alerts = _context.Alert.Where(n => n.ToUserId != null && n.ToUserId.Equals(LoggedInUserId) && n.DismissedWhen == null);
+
+            /**************************
+             * MODELS
+             **************************/
+
+            var model = new ClientDashboardPageViewModel
+            {
+                AssociatedCalls = AssociatedCallsModel,
+                GroupList = Groups
+            };
+
+            //Return view
+            return model;
+        }
+
+        [HttpPost]
+        [Route("dashboard")]
+        public ActionResult SendMessagePOST(ClientDashboardPageViewModel model)
+        {
+            //Get user id
+            var LoggedInUserId = User.Identity.GetUserId();
+
+            /**************************
+             * My Associated Calls
+             **************************/
+            //Get calls
+            var AssociatedClientCalls = _context.Call.Where(n => n.Closed == false && n.ForUserId != null && n.ForUserId.Equals(LoggedInUserId));
+
+            //To View Model
+            var AssociatedCallsModel = new List<ClientAssociatedCallViewModel>();
+            foreach (var call in AssociatedClientCalls)
+            {
+                AssociatedCallsModel.Add(new ClientAssociatedCallViewModel
+                {
+                    Reference = call.Reference,
+                    Created = call.Created,
+                    Summary = call.Summary
+                });
+            }
+            model.AssociatedCalls = AssociatedCallsModel;
+
+            /**************************
+             * List of Groups
+             **************************/
+            var Groups = _context.Group;
+            model.GroupList = Groups;
+
+            /**************************
+             * My Messages
+             **************************/
+            var Alerts = _context.Alert.Where(n => n.ToUserId != null && n.ToUserId.Equals(LoggedInUserId) && n.DismissedWhen == null);
+
+            /**************************
+             * MODEL
+             **************************/
+            if (ModelState.IsValid)
+            {
+                //Check group exists
+                var ToGroup = _context.Group.SingleOrDefault(n => n.Name.Equals(model.Message.GroupName));
+                if (ToGroup == null)
+                {
+                    ViewBag.ErrorMessage = "An error has occured regarding the selected group - Please contact an admin";
+                    return View("ClientDashboard", model);
+                }
+
+                //Create Alert
+                var Alert = new Alert
+                {
+                    FromUserId = LoggedInUserId,
+                    ToGroupId = ToGroup.Id,
+                    Text = model.Message.Message,
+                    Created = DateTime.Now,
+                };
+
+                //Send Alert
+                _context.Alert.Add(Alert);
+                _context.SaveChanges();
+
+                //Return to Dashboard
+                TempData["SuccessMessage"] = "Message Sent";
+                return RedirectToAction("Index");
+            }
+            return View("ClientDashboard", model);
+        }
+
+
+
+
+        //HELPERS
+        //Error and success messages
+        public void HandleMessages()
+        {
+            //Check for an error message from another action
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+                TempData.Remove("ErrorMessage");
+            }
+
+            //Check for a message from another action
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+                TempData.Remove("SuccessMessage");
+            }
+
+            //Remove Tempdata TODO do for all others
         }
     }
 }
