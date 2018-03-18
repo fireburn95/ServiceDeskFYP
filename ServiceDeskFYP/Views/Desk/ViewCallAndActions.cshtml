@@ -2,6 +2,12 @@
 
 @{
     ViewBag.Title = "View Call";
+
+    System.Web.HtmlString description = null;
+    if (!string.IsNullOrEmpty(Model.CallDetails.Description))
+    {
+        description = new HtmlString(Model.CallDetails.Description.Replace(Environment.NewLine, "<br />"));
+    }
 }
 
 <h2>Call Details</h2>
@@ -58,98 +64,69 @@
                 </div>
 
                 <div id="collapse1" class="panel-collapse collapse in">
-                    <div class="panel-body">
-                        <dl class="dl-horizontal">
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.Reference)
-                            </dt>
 
-                            <dd>
-                                @Html.DisplayFor(model => model.CallDetails.Reference)
-                            </dd>
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.Summary)
-                            </dt>
-
-                            <dd>
-                                @Html.DisplayFor(model => model.CallDetails.Summary)
-                            </dd>
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.Created)
-                            </dt>
-                            <dd>
-                                @Html.DisplayFor(model => model.CallDetails.Created)
-                            </dd>
-                            @if (!String.IsNullOrEmpty(Model.CallDetails.ResourceUserId))
-                            {
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.CallDetails.ResourceUserName)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.CallDetails.ResourceUserName)
-                                </dd>
-                            }
-                            else
-                            {
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.CallDetails.ResourceGroupName)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.CallDetails.ResourceGroupName)
-                                </dd>
-                            }
-                            @if (Model.CallDetails.LockedToUsername != null)
-                            {
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.CallDetails.LockedToUsername)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.CallDetails.LockedToUsername)
-                                </dd>
-                            }
-
-                            <dt>
-                                SLA
-                            </dt>
-
-                            <dd>
+                    <table class="table table-responsive table-bordered table-condensed table-striped">
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.CallDetails.Reference)</th>
+                            <td>@Html.DisplayFor(model => model.CallDetails.Reference)</td>
+                        </tr>
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.CallDetails.Summary)</th>
+                            <td>@Html.DisplayFor(model => model.CallDetails.Summary)</td>
+                        </tr>
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.CallDetails.Created)</th>
+                            <td>@Html.DisplayFor(model => model.CallDetails.Created)</td>
+                        </tr>
+                        @if (!String.IsNullOrEmpty(Model.CallDetails.ResourceUserId))
+                        {
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.CallDetails.ResourceUserName)</th>
+                                <td>@Html.DisplayFor(model => model.CallDetails.ResourceUserName)</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.CallDetails.ResourceGroupName)</th>
+                                <td>@Html.DisplayFor(model => model.CallDetails.ResourceGroupName)</td>
+                            </tr>
+                        }
+                        @if (Model.CallDetails.LockedToUsername != null)
+                        {
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.CallDetails.LockedToUsername)</th>
+                                <td>@Html.DisplayFor(model => model.CallDetails.LockedToUsername)</td>
+                            </tr>
+                        }
+                        <tr>
+                            <th>SLA</th>
+                            <td>
                                 @Html.DisplayFor(model => model.CallDetails.SlaPolicy) - @Html.DisplayFor(model => model.CallDetails.SlaLevel)
                                 @if (Model.CallDetails.SlaExpiry != null)
                                 {
                                     <text>- Expected: @Html.DisplayFor(model => model.CallDetails.SlaExpiry)</text>
                                 }
-                            </dd>
-                            @if (Model.CallDetails.Required_By != null)
-                            {
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.CallDetails.Required_By)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.CallDetails.Required_By)
-                                </dd>
-                            }
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.Category)
-                            </dt>
-                            <dd>
-                                @Html.DisplayFor(model => model.CallDetails.Category)
-                            </dd>
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.Regarding_Ref)
-                            </dt>
-
-                            <dd>
-                                @Html.DisplayFor(model => model.CallDetails.Regarding_Ref)
-                            </dd>
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.Closed)
-                            </dt>
-
-                            <dd>
+                            </td>
+                        </tr>
+                        @if (Model.CallDetails.Required_By != null)
+                        {
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.CallDetails.Required_By)</th>
+                                <td>@Html.DisplayFor(model => model.CallDetails.Required_By)</td>
+                            </tr>
+                        }
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.CallDetails.Category)</th>
+                            <td>@Html.DisplayFor(model => model.CallDetails.Category)</td>
+                        </tr>
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.CallDetails.Regarding_Ref)</th>
+                            <td>@Html.DisplayFor(model => model.CallDetails.Regarding_Ref)</td>
+                        </tr>
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.CallDetails.Closed)</th>
+                            <td>
                                 @if (Model.CallDetails.Closed == true)
                                 {
                                     <text>Yes</text>
@@ -158,13 +135,11 @@
                                 {
                                     <text>No</text>
                                 }
-                            </dd>
-
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.Hidden)
-                            </dt>
-
-                            <dd>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.CallDetails.Hidden)</th>
+                            <td>
                                 @if (Model.CallDetails.Hidden == true)
                                 {
                                     <text>Yes</text>
@@ -173,16 +148,14 @@
                                 {
                                     <text>No</text>
                                 }
-                            </dd>
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.Description)
-                            </dt>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.CallDetails.Description)</th>
+                            <td>@description</td>
+                        </tr>
+                    </table>
 
-                            <dd>
-                                @Html.DisplayFor(model => model.CallDetails.Description)
-                            </dd>
-                        </dl>
-                    </div>
                 </div>
             </div>
             <div class="panel panel-default">
@@ -199,88 +172,57 @@
                         }
                         else
                         {
-                            @Html.ActionLink("Clear Association", "ClearAssociation", new { Reference = Model.CallDetails.Reference })<br />
+                            @Html.ActionLink("Clear Association", "ClearAssociation", new { Reference = Model.CallDetails.Reference })
+                            <br />
                             if (!Model.CallDetailsMatch)
                             {
                                 <span style="color:red">The client may have updated some details - You may wish to re-associate this</span>
                             }
                         }
 
-                        <dl class="dl-horizontal">
+                        <table class="table table-responsive table-bordered table-condensed table-striped">
                             @if (Model.CallDetails.ForUserName != null)
                             {
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.CallDetails.ForUserName)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.CallDetails.ForUserName)
-                                </dd>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.CallDetails.ForUserName)</th>
+                                    <td>@Html.DisplayFor(model => model.CallDetails.ForUserName)</td>
+                                </tr>
                             }
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.FirstName)
-                            </dt>
 
-                            <dd>
-                                @Html.DisplayFor(model => model.CallDetails.FirstName)
-                            </dd>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.CallDetails.FirstName)</th>
+                                <td>@Html.DisplayFor(model => model.CallDetails.FirstName)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.CallDetails.Lastname)</th>
+                                <td>@Html.DisplayFor(model => model.CallDetails.Lastname)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.CallDetails.Email)</th>
+                                <td>@Html.DisplayFor(model => model.CallDetails.Email)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.CallDetails.PhoneNumber)</th>
+                                <td>@Html.DisplayFor(model => model.CallDetails.PhoneNumber)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.CallDetails.Extension)</th>
+                                <td>@Html.DisplayFor(model => model.CallDetails.Extension)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.CallDetails.OrganisationAlias)</th>
+                                <td>@Html.DisplayFor(model => model.CallDetails.OrganisationAlias)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.CallDetails.Organisation)</th>
+                                <td>@Html.DisplayFor(model => model.CallDetails.Organisation)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.CallDetails.Department)</th>
+                                <td>@Html.DisplayFor(model => model.CallDetails.Department)</td>
+                            </tr>
 
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.Lastname)
-                            </dt>
-
-                            <dd>
-                                @Html.DisplayFor(model => model.CallDetails.Lastname)
-                            </dd>
-
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.Email)
-                            </dt>
-
-                            <dd>
-                                @Html.DisplayFor(model => model.CallDetails.Email)
-                            </dd>
-
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.PhoneNumber)
-                            </dt>
-
-                            <dd>
-                                @Html.DisplayFor(model => model.CallDetails.PhoneNumber)
-                            </dd>
-
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.Extension)
-                            </dt>
-
-                            <dd>
-                                @Html.DisplayFor(model => model.CallDetails.Extension)
-                            </dd>
-
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.OrganisationAlias)
-                            </dt>
-
-                            <dd>
-                                @Html.DisplayFor(model => model.CallDetails.OrganisationAlias)
-                            </dd>
-
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.Organisation)
-                            </dt>
-
-                            <dd>
-                                @Html.DisplayFor(model => model.CallDetails.Organisation)
-                            </dd>
-
-                            <dt>
-                                @Html.DisplayNameFor(model => model.CallDetails.Department)
-                            </dt>
-
-                            <dd>
-                                @Html.DisplayFor(model => model.CallDetails.Department)
-                            </dd>
-                        </dl>
+                        </table>
                     </div>
                 </div>
             </div>
