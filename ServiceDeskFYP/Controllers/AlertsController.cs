@@ -244,17 +244,18 @@ namespace ServiceDeskFYP.Controllers
                 var requireddatescount = _context.Call.Where(n => (n.ResourceUserId.Equals(LoggedInUserID)) && (n.Closed == false) && (n.Required_By < DateTime.Now)).Count();
 
                 //Get dismissed alerts
+                var _context2 = new ApplicationDbContext();
                 IQueryable<Alert> Alerts;
                 bool isDismissed;
                 if (!String.IsNullOrEmpty(dismissed) && dismissed.Equals("true"))
                 {
-                    Alerts = _context.Alert.Where(n => (n.ToGroupId == GroupId) && (n.DismissedWhen != null));
+                    Alerts = _context2.Alert.Where(n => (n.ToGroupId == GroupId) && (n.DismissedWhen != null));
                     isDismissed = true;
                 }
                 //Get Non dismissed alerts
                 else
                 {
-                    Alerts = _context.Alert.Where(n => (n.ToGroupId == GroupId) && (n.DismissedWhen == null));
+                    Alerts = _context2.Alert.Where(n => (n.ToGroupId == GroupId) && (n.DismissedWhen == null));
                     isDismissed = false;
                 }
 
@@ -270,12 +271,17 @@ namespace ServiceDeskFYP.Controllers
                         FromGroup = dbcontext.Group.SingleOrDefault(n => n.Id == item.FromGroupId);
                         ToGroup = dbcontext.Group.SingleOrDefault(n => n.Id == item.ToGroupId);
                         DismissedByUser = dbcontext.Users.SingleOrDefault(n => n.Id.Equals(item.DismissedByUserId));
-
+                        bool FromClient = false;
+                        if (item.FromUserId != null && userManager.IsInRole(item.FromUserId, "Client"))
+                        {
+                            FromClient = true;
+                        }
                         AlertsVM.Add(new ViewAlertsTemplateViewModel()
                         {
                             Id = item.Id,
                             FromUserId = item.FromUserId,
                             FromUserName = FromUser?.UserName,
+                            FromClient = FromClient,
                             FromGroupId = item.FromGroupId,
                             FromGroupName = FromGroup?.Name,
                             ToUserId = null,

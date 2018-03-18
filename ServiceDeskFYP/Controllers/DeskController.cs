@@ -433,6 +433,226 @@ namespace ServiceDeskFYP.Controllers
             return View("CreateCall", model);
         }
 
+        [Route("desk/create/client/{clientid}/alert/{alertid}")]
+        public ActionResult CreateCallFromClientAlertGET(string clientid, string alertid)
+        {
+            //Handle messages
+            HandleMessages();
+
+            //Set up select boxes
+            SetUpCreateCall();
+
+            //Check Alert is not null
+            if (string.IsNullOrEmpty(alertid))
+            {
+                TempData["ErrorMessage"] = "An error has occured";
+                return RedirectToAction("Index", "dashboard", null);
+            }
+
+            //Check Alert is an int
+            if (!int.TryParse(alertid, out int AlertIdInt))
+            {
+                TempData["ErrorMessage"] = "Error: Alert ID is incorrect";
+                return RedirectToAction("Index", "dashboard", null);
+            }
+
+            //Check Alert exists
+            var Alert = _context.Alert.SingleOrDefault(n => n.Id == AlertIdInt);
+            if (Alert == null)
+            {
+                TempData["ErrorMessage"] = "Error: The alert doesn't exist";
+                return RedirectToAction("Index", "dashboard", null);
+            }
+
+            //Check if alert dismissed
+            if (Alert.DismissedWhen != null)
+            {
+                TempData["ErrorMessage"] = "Error: The alert has been dismissed";
+                return RedirectToAction("Index", "dashboard", null);
+            }
+
+            //Check user exist
+            var Client = _context.Users.SingleOrDefault(n => n.Id.Equals(clientid));
+            if (Client == null)
+            {
+                TempData["ErrorMessage"] = "Error: The client does not exist";
+                return RedirectToAction("Index", "dashboard", null);
+            }
+
+            //Check user is client
+            if (!userManager.IsInRole(Client.Id, "Client"))
+            {
+                TempData["ErrorMessage"] = "Error: The user is not a client";
+                return RedirectToAction("Index", "dashboard", null);
+            }
+
+            //Create View Model
+            var model = new CreateCallViewModel
+            {
+                Description = Alert.Text,
+                Department = Client.Department,
+                Email = Client.Email,
+                Extension = Client.Extension,
+                FirstName = Client.FirstName,
+                Lastname = Client.LastName,
+                Organisation = Client.Organisation,
+                OrganisationAlias = Client.Organisation,
+                PhoneNumber = Client.PhoneNumber,
+            };
+
+            //Display the form
+            return View("CreateCallFromClientAlert", model);
+        }
+
+        //POST Create Call
+        [HttpPost]
+        [Route("desk/create/client/{clientid}/alert/{alertid}")]
+        public ActionResult CreateCallFromClientAlertGET(CreateCallViewModel model, string clientid, string alertid)
+        {
+            //Set up View incase of error
+            SetUpCreateCall();
+            ViewBag.Reference = model.Reference;
+
+            //If model is valid
+            if (ModelState.IsValid)
+            {
+
+                //Check Alert is not null
+                if (string.IsNullOrEmpty(alertid))
+                {
+                    TempData["ErrorMessage"] = "An error has occured";
+                    return RedirectToAction("Index", "dashboard", null);
+                }
+
+                //Check Alert is an int
+                if (!int.TryParse(alertid, out int AlertIdInt))
+                {
+                    TempData["ErrorMessage"] = "Error: Alert ID is incorrect";
+                    return RedirectToAction("Index", "dashboard", null);
+                }
+
+                //Check Alert exists
+                var Alert = _context.Alert.SingleOrDefault(n => n.Id == AlertIdInt);
+                if (Alert == null)
+                {
+                    TempData["ErrorMessage"] = "Error: The alert doesn't exist";
+                    return RedirectToAction("Index", "dashboard", null);
+                }
+
+                //Check if alert dismissed
+                if (Alert.DismissedWhen != null)
+                {
+                    TempData["ErrorMessage"] = "Error: The alert has been dismissed";
+                    return RedirectToAction("Index", "dashboard", null);
+                }
+
+                //Check user exist
+                var Client = _context.Users.SingleOrDefault(n => n.Id.Equals(clientid));
+                if (Client == null)
+                {
+                    TempData["ErrorMessage"] = "Error: The client does not exist";
+                    return RedirectToAction("Index", "dashboard", null);
+                }
+
+                //Check user is client
+                if (!userManager.IsInRole(Client.Id, "Client"))
+                {
+                    TempData["ErrorMessage"] = "Error: The user is not a client";
+                    return RedirectToAction("Index", "dashboard", null);
+                }
+
+                //Check for duplicate reference
+                var Call = _context.Call.SingleOrDefault(n => n.Reference == model.Reference);
+                if (Call != null)
+                {
+                    ViewBag.ErrorMessage = "Sorry, that reference code already exists";
+                    return View("CreateCallFromClientAlert", model);
+                }
+
+                //Check Required By is not in the past
+                if (model.Required_By < DateTime.Now)
+                {
+                    ViewBag.ErrorMessage = "Sorry, 'Required By' cannot be set in the past";
+                    return View("CreateCallFromClientAlert", model);
+                }
+
+                //Find SLA ID
+                ApplicationDbContext _context2 = new ApplicationDbContext();
+                var SLAIdPOST = _context.SLAPolicy.SingleOrDefault(n => n.Name == model.SlaName).Id;
+
+                //Check SLA Level is set
+                bool slaSet = false;
+                if (model.SlaLevel.Equals("Low") || model.SlaLevel.Equals("Medium") || model.SlaLevel.Equals("High"))
+                    slaSet = true;
+
+                //View Model to Call Mode
+                var DateTimeNow = DateTime.Now;
+                Call NewCall = new Call
+                {
+                    Reference = model.Reference,
+                    //ResourceUserId = User.Identity.GetUserId(),
+                    ResourceGroupId = Alert.ToGroupId,
+                    SlaId = SLAIdPOST,
+                    SlaLevel = model.SlaLevel,
+                    Category = model.Category,
+                    Created = DateTimeNow,
+                    Required_By = model.Required_By,
+                    Summary = model.Summary,
+                    Description = model.Description,
+                    Hidden = model.Hidden,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    Lastname = model.Lastname,
+                    PhoneNumber = model.PhoneNumber,
+                    Extension = model.Extension,
+                    OrganisationAlias = model.OrganisationAlias,
+                    Organisation = model.Organisation,
+                    Department = model.Department,
+                    Regarding_Ref = model.Regarding_Ref,
+                    ForUserId = clientid
+                };
+
+                //Set SLAResetTime if necessary
+                if (slaSet)
+                    NewCall.SLAResetTime = DateTimeNow;
+
+                //Create an action for the call
+                var Action = new Models.Action
+                {
+                    CallReference = model.Reference,
+                    ActionedByUserId = User.Identity.GetUserId(),
+                    Created = DateTime.Now,
+                    Type = "Opened Call"
+                };
+
+                var Action2 = new Models.Action
+                {
+                    CallReference = model.Reference,
+                    ActionedByUserId = User.Identity.GetUserId(),
+                    Created = DateTime.Now,
+                    Type = "Assigned",
+                    TypeDetails = _context.Group.SingleOrDefault(n => n.Id == Alert.ToGroupId).Name,
+                    
+                };
+
+                //Add to DB
+                ApplicationDbContext _context3 = new ApplicationDbContext();
+                _context3.Call.Add(NewCall);
+                _context3.SaveChanges();
+                _context3.Action.Add(Action);
+                _context3.Action.Add(Action2);
+                _context3.SaveChanges();
+
+                //Return to Own Calls page or the actual Call TODO
+                return RedirectToAction("index", new { resource = Alert.ToGroupId });
+
+
+            }
+            //Failed validation
+            return View("CreateCallFromClientAlert", model);
+        }
+
+
         //Sets ViewBags for pre-populated form data
         public void SetUpCreateCall()
         {

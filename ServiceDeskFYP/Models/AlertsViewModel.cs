@@ -38,6 +38,8 @@ namespace ServiceDeskFYP.Models
 
         public string FromUserName { get; set; }
 
+        public bool FromClient { get; set; }
+
         public int? FromGroupId { get; set; }
 
         public string FromGroupName { get; set; }

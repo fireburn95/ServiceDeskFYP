@@ -125,6 +125,11 @@ else
                         @Html.ActionLink("Go to", "FindKnowledgeURL", "Groups", new { knowledgeid = item.AssociatedKnowledgeId }, null)
                         <text>&nbsp;</text>
                     }
+                    @if(item.FromUserId != null && item.FromClient)
+                    {
+                        @Html.ActionLink("Create Call", "CreateCallFromClientAlertGET", "Desk", new { clientid = item.FromUserId, alertid = item.Id }, null)
+                    }
+
                     @if (item.FromUserId != null && item.Dismissed == false)
                     {
                         @Html.ActionLink("Reply", "ReplyToAlertGET", new { alertid = item.Id }, null)
