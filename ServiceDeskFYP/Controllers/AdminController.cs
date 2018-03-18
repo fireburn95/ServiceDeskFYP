@@ -1443,7 +1443,7 @@ namespace ServiceDeskFYP.Controllers
             if (!string.IsNullOrEmpty(user))
             {
                 //Get rid of nulls
-                LogsListForVM = LogsListForVM.Where(n => n.Username!=null).ToList();
+                LogsListForVM = LogsListForVM.Where(n => n.Username != null).ToList();
 
                 //Matching fields
                 LogsListForVM = LogsListForVM.Where(n => n.Username.ToLower().Equals(user.ToLower())).ToList();
@@ -1461,6 +1461,123 @@ namespace ServiceDeskFYP.Controllers
 
             //Return view
             return View(model);
+        }
+
+        /**************************
+         *     Manage Calls        *
+         * ***********************/
+
+        public ActionResult Calls(string username = null, string groupname = null, string closed = null)
+        {
+            //Handle messages
+            HandleMessages();
+
+            //Create the empty View Model TODO
+            List<ViewCallsAdminViewModel> model = new List<ViewCallsAdminViewModel>();
+
+            IEnumerable<Call> Calls = null;
+
+            //If both set
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(groupname))
+            {
+                ViewBag.ErrorMessage = "Error: both username and groupname set";
+                return View(model);
+            }
+            //If both empty
+            else if (string.IsNullOrEmpty(username) && string.IsNullOrEmpty(groupname))
+            {
+                return View(model);
+            }
+            //If username set
+            else if (!string.IsNullOrEmpty(username))
+            {
+                //Check if user exists
+                var User = _context.Users.SingleOrDefault(n => n.UserName.ToLower().Equals(username.ToLower()));
+                if (User == null)
+                {
+                    ViewBag.ErrorMessage = "User doesn't exist";
+                    return View(model);
+                }
+
+                //Check if user client
+                if (userManager.IsInRole(User.Id, "client"))
+                {
+                    ViewBag.ErrorMessage = "User is a client";
+                    return View(model);
+                }
+
+                //Get all Calls
+                Calls = _context.Call;
+
+                //Handle closed and open
+                if (!string.IsNullOrEmpty(closed) && closed.Equals("true"))
+                {
+                    Calls = Calls.Where(n => n.Closed);
+                }
+                else
+                {
+                    Calls = Calls.Where(n => n.Closed == false);
+                }
+
+                //Filter by user
+                Calls = Calls.Where(n => n.ResourceUserId != null && n.ResourceUserId.Equals(User.Id));
+            }
+            //If groupname set
+            else if (!string.IsNullOrEmpty(groupname))
+            {
+                //Check if group exists
+                var Group = _context.Group.SingleOrDefault(n => n.Name.ToLower().Equals(groupname.ToLower()));
+                if (Group == null)
+                {
+                    ViewBag.ErrorMessage = "Group doesn't exist";
+                    return View(model);
+                }
+
+                //Get all Calls
+                Calls = _context.Call;
+
+                //Handle closed and open
+                if (!string.IsNullOrEmpty(closed) && closed.Equals("true"))
+                {
+                    Calls = Calls.Where(n => n.Closed);
+                }
+                else
+                {
+                    Calls = Calls.Where(n => n.Closed == false);
+                }
+
+                //Filter by group
+                Calls = Calls.Where(n => n.ResourceGroupId != null && n.ResourceGroupId == Group.Id);
+            }
+
+            //To viewmodel
+            using (ApplicationDbContext dbcontext = new ApplicationDbContext())
+            {
+                foreach (var call in Calls)
+                {
+                    model.Add(new ViewCallsAdminViewModel
+                    {
+                        Reference = call.Reference,
+                        Created = call.Created,
+                        SlaLevel = call.SlaLevel,
+                        Summary = call.Summary,
+                        Category = call.Category,
+                        ResourceUserId = call.ResourceUserId,
+                        ResourceGroupId = call.ResourceGroupId,
+                        ResourceUserName = call.ResourceUserId == null ? null : dbcontext.Users.SingleOrDefault(n => n.Id.Equals(call.ResourceUserId)).UserName,
+                        ResourceGroupName = call.ResourceGroupId == null ? null : dbcontext.Group.SingleOrDefault(n => n.Id == call.ResourceGroupId).Name,
+                        
+                        
+                    });
+                }
+            }
+
+
+            //Return view
+            return View(model);
+
+
+
         }
 
 

@@ -102,7 +102,7 @@ namespace ServiceDeskFYP.Controllers
              * Count Alerts
              **************************/
             var AlertsCount = _context.Alert
-                .Where(n => n.ToUserId.Equals(LoggedInUserId) && n.DismissedWhen == null)
+                .Where(n => n.ToUserId != null && n.ToUserId.Equals(LoggedInUserId) && n.DismissedWhen == null)
                 .Count();
 
             /**************************

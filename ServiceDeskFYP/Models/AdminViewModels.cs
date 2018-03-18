@@ -321,6 +321,67 @@ namespace ServiceDeskFYP.Models
 
         public string Username { get; set; }
     }
+
+    //Used in admin/calls
+    public class ViewCallsAdminViewModel
+    {
+        [Key]
+        public string Reference { get; set; }
+
+        public string ResourceUserId { get; set; }
+
+        public string ResourceUserName { get; set; }
+
+        public int? ResourceGroupId { get; set; }
+
+        public string ResourceGroupName { get; set; }
+
+        public int SlaId { get; set; }
+
+        [Display(Name = "Level")]
+        public string SlaLevel { get; set; }
+
+        [StringLength(30)]
+        public string Category { get; set; }
+
+        [Display(Name = "Opened")]
+        public DateTime Created { get; set; }
+
+        [Display(Name = "Required By")]
+        public DateTime? Required_By { get; set; }
+
+        public DateTime? SLAResetTime { get; set; }
+
+        public string Summary { get; set; }
+
+        public string Description { get; set; }
+
+        public string ForUserId { get; set; }
+
+        public bool Closed { get; set; }
+
+        public bool Hidden { get; set; }
+
+        public string LockedToUserId { get; set; }
+
+        public string Email { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string Lastname { get; set; }
+
+        public string PhoneNumber { get; set; }
+
+        public string Extension { get; set; }
+
+        public string OrganisationAlias { get; set; }
+
+        public string Organisation { get; set; }
+
+        public string Department { get; set; }
+
+        public string Regarding_Ref { get; set; }
+    }
 }
 
 

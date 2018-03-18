@@ -507,7 +507,7 @@ namespace ServiceDeskFYP.Controllers
         //POST Create Call
         [HttpPost]
         [Route("desk/create/client/{clientid}/alert/{alertid}")]
-        public ActionResult CreateCallFromClientAlertGET(CreateCallViewModel model, string clientid, string alertid)
+        public ActionResult CreateCallFromClientAlertPOST(CreateCallViewModel model, string clientid, string alertid)
         {
             //Set up View incase of error
             SetUpCreateCall();
@@ -629,7 +629,7 @@ namespace ServiceDeskFYP.Controllers
                 {
                     CallReference = model.Reference,
                     ActionedByUserId = User.Identity.GetUserId(),
-                    Created = DateTime.Now,
+                    Created = DateTime.Now.AddSeconds(2),
                     Type = "Assigned",
                     TypeDetails = _context.Group.SingleOrDefault(n => n.Id == Alert.ToGroupId).Name,
                     

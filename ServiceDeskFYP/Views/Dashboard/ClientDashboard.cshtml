@@ -25,7 +25,8 @@
                     <hr />
                     @foreach (var item in Model.AssociatedCalls)
                     {
-                        @Html.ActionLink(item.Reference + " - " + item.Summary, "ViewCall", "View", new { Reference = item.Reference }, null);
+                        @Html.ActionLink(item.Reference + " - " + item.Created.ToString("dd/MM/yyyy") + " - " + item.Summary, "ViewCall", "View", new { Reference = item.Reference }, null);
+                        <br />
                     }
                 </div>
             </div>

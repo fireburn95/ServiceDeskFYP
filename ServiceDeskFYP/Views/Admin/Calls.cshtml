@@ -1,0 +1,94 @@
+﻿@model IEnumerable<ServiceDeskFYP.Models.ViewCallsAdminViewModel>
+
+@{
+    ViewBag.Title = "Calls";
+}
+
+<h2>Calls</h2>
+
+@Html.ActionLink("Return To Call", "Index") |
+@if (Request["closed"] != null && Request["closed"].Equals("true"))
+{
+    @Html.ActionLink("Open Calls", "Calls", new { closed = string.Empty, username = string.IsNullOrEmpty(Request["username"]) ? string.Empty : Request["username"], groupname = string.IsNullOrEmpty(Request["groupname"]) ? string.Empty : Request["groupname"] })
+}
+else
+{
+    @Html.ActionLink("Closed Calls", "Calls", new { closed = "true", username = string.IsNullOrEmpty(Request["username"]) ? string.Empty : Request["username"], groupname = string.IsNullOrEmpty(Request["groupname"]) ? string.Empty : Request["groupname"] })
+}
+
+<form method="get" action="">
+    <input type="text" name="groupname" placeholder="Group Name..." />
+    <input type="submit" value="Filter" />
+</form><br />
+<form method="get" action="">
+    <input type="text" name="username" placeholder="Username..." />
+    <input type="submit" value="Filter" />
+</form>
+<br />
+@if (ViewBag.ErrorMessage != null)
+{
+    <h5 style="color:red">@ViewBag.ErrorMessage</h5>
+}
+@if (ViewBag.SuccessMessage != null)
+{
+    <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
+}
+
+<table class="table table-bordered table-condensed table-hover table-responsive">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Reference)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th>
+                Resource
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SlaLevel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Created)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Summary)
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr onclick="window.location='/desk/call/@item.Reference';">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Reference)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category)
+                </td>
+                <td>
+                    @if (item.ResourceUserId != null)
+                    {
+                        @Html.DisplayFor(modelItem => item.ResourceUserName)
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.ResourceGroupName)
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SlaLevel)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Created)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Summary)
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
