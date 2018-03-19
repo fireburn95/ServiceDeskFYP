@@ -200,6 +200,7 @@
     <Compile Include="Controllers\AlertsController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DeskController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\GroupsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -420,6 +421,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Content\actionfiles\" />
     <Folder Include="Scripts\" />
+    <Folder Include="Views\Error\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -438,6 +440,9 @@
     <Content Include="Views\Dashboard\ReplyToAlert.cshtml" />
     <Content Include="Views\Desk\CreateCallFromClientAlert.cshtml" />
     <Content Include="Views\Admin\Calls.cshtml" />
+    <Content Include="Views\Shared\DefaultError.cshtml" />
+    <Content Include="Views\Shared\NotFound.cshtml" />
+    <Content Include="Views\Shared\Error400.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201801081319301_InitialCreate.resx">
