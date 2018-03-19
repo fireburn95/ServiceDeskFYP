@@ -301,6 +301,10 @@
     <Compile Include="Migrations\201803051223170_UpdatedLogTable_AddedIpAndUserFields.Designer.cs">
       <DependentUpon>201803051223170_UpdatedLogTable_AddedIpAndUserFields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201803191917115_AddedVariousTestDataForTables.cs" />
+    <Compile Include="Migrations\201803191917115_AddedVariousTestDataForTables.Designer.cs">
+      <DependentUpon>201803191917115_AddedVariousTestDataForTables.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DashboardViewModels.cs" />
     <Compile Include="Models\ViewViewModels.cs" />
@@ -513,6 +517,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803051223170_UpdatedLogTable_AddedIpAndUserFields.resx">
       <DependentUpon>201803051223170_UpdatedLogTable_AddedIpAndUserFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803191917115_AddedVariousTestDataForTables.resx">
+      <DependentUpon>201803191917115_AddedVariousTestDataForTables.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

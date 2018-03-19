@@ -239,17 +239,14 @@ namespace ServiceDeskFYP.Controllers
              **************************/
             //Get dismissed alerts
             IQueryable<Alert> Alerts;
-            bool isDismissed;
             if (!String.IsNullOrEmpty(dismissed) && dismissed.Equals("true"))
             {
                 Alerts = _context.Alert.Where(n => (n.ToUserId.Equals(LoggedInUserId)) && (n.DismissedWhen != null) && (n.ToGroupId == null));
-                isDismissed = true;
             }
             //Get Non dismissed alerts
             else
             {
                 Alerts = _context.Alert.Where(n => (n.ToUserId.Equals(LoggedInUserId)) && (n.DismissedWhen == null) && (n.ToGroupId == null));
-                isDismissed = false;
             }
 
             //Convert Alerts into View Model Alerts

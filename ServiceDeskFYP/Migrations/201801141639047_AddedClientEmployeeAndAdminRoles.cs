@@ -14,6 +14,7 @@ namespace ServiceDeskFYP.Migrations
         
         public override void Down()
         {
+            Sql("DELETE FROM[dbo].[AspNetRoles]");
         }
     }
 }
