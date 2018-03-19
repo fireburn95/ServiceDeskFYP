@@ -7,10 +7,6 @@
 <h2>View Subordinate's Calls</h2>
 
 <p>
-    @Html.ActionLink("View Report","ViewManagerReport")
-</p>
-
-<p>
     @if (string.IsNullOrEmpty(Request["closed"]))
     {
         @Html.ActionLink("Closed Calls", "ViewSubordinateCalls", new { closed = true });

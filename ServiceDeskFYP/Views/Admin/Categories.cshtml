@@ -8,10 +8,6 @@
 
 @Html.ActionLink("Back to Tools", "Index")
 
-<hr />
-<h3>Call Categories</h3>
-<h5>Add a new category on each line</h5>
-
 @if (ViewBag.ErrorMessage != null)
 {
     <h5 style="color:red">@ViewBag.ErrorMessage</h5>
@@ -20,30 +16,42 @@
 {
     <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
 }
+<hr />
 
 <form method="post" action="">
-    <textarea name="categories" class="form-control">
+    <div class="row">
+        <div class="col-md-6 col-sm-6 col-xs-6">
+            <h3>Call Categories</h3>
+            <h5>Add a new category on each line</h5>
+
+            <textarea name="categories" class="form-control">
 @if (Model != null)
 {
 foreach(var item in Model[0])
 {
 <text>@item</text>
 }}</textarea>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-6">
 
-    <br />
 
-    <h3>Action Types</h3>
-    <h5>Add a new action type on each line</h5>
+            <h3>Action Types</h3>
+            <h5>Add a new action type on each line</h5>
 
-    <textarea name="actiontypes" class="form-control">
+            <textarea name="actiontypes" class="form-control">
 @if (Model != null)
 {
 foreach(var item in Model[1])
 {
 <text>@item</text>
 }}</textarea>
-    <br />
+
+            <br />
 
 
-    <input type="submit" value="Save" name="submit" />
+
+        </div>
+
+    </div>
+    <input type="submit" value="Save" name="submit" class="btn btn-primary" />
 </form>

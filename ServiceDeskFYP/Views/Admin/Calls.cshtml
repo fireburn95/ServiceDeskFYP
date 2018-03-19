@@ -34,61 +34,63 @@ else
     <h5 style="color:blue">@ViewBag.SuccessMessage</h5>
 }
 
-<table class="table table-bordered table-condensed table-hover table-responsive">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Reference)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th>
-                Resource
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SlaLevel)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Created)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Summary)
-            </th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr onclick="window.location='/desk/call/@item.Reference';">
-                <td>
-                    @Html.DisplayFor(modelItem => item.Reference)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Category)
-                </td>
-                <td>
-                    @if (item.ResourceUserId != null)
-                    {
-                        @Html.DisplayFor(modelItem => item.ResourceUserName)
-                    }
-                    else
-                    {
-                        @Html.DisplayFor(modelItem => item.ResourceGroupName)
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SlaLevel)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Created)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Summary)
-                </td>
+<div class="table-responsive">
+    <table class="table table-bordered table-condensed table-hover">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Reference)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Category)
+                </th>
+                <th>
+                    Resource
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SlaLevel)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Created)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Summary)
+                </th>
             </tr>
-        }
-    </tbody>
+        </thead>
 
-</table>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr onclick="window.location='/desk/call/@item.Reference';">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Reference)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Category)
+                    </td>
+                    <td>
+                        @if (item.ResourceUserId != null)
+                        {
+                            @Html.DisplayFor(modelItem => item.ResourceUserName)
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(modelItem => item.ResourceGroupName)
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SlaLevel)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Created)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Summary)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>

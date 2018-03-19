@@ -16,24 +16,107 @@
 }
 <br />
 
-<h4>Group-Member Tools</h4>
-<div class="container">
-    <ul>
-        @if (!Model.Owner)
-        {
-            <li>@Html.ActionLink("View Members", "ManageAndViewMembers", new { groupid = Model.Group_Id })</li>
-        }
-        <li>@Html.ActionLink("Knowledge Base", "ViewKnowledges", new { groupid = Model.Group_Id })</li>
-        <li>@Html.ActionLink("View Alerts", "Index", "Alerts", new { resource = Model.Group_Id }, null)</li>
-        <li>@Html.ActionLink("View Calls", "Index", "Desk", new { resource = Model.Group_Id }, null)</li>
-    </ul>
-    @if (Model.Owner)
-    {
-        <hr />
-        <h4>Group-Owner Tools</h4>
-        <ul>
-            <li>@Html.ActionLink("Manage Members", "ManageAndViewMembers", new { groupid = Model.Group_Id })</li>
-            <li>@Html.ActionLink("Edit Group","EditGroupGET")</li>
-        </ul>
-    }
-</div>
+@if (!Model.Owner)
+{
+    <h4>Group-Member Tools</h4>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3 col-md-3">
+                <div class="thumbnail alert-warning">
+                    <div class="caption">
+                        <h3>View Members</h3>
+                        <hr />
+                        <a href='@Url.Action("ManageAndViewMembers", "Groups", new { groupid = Model.Group_Id })' class="btn btn-primary" role="button">Go</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3 col-md-3">
+                <div class="thumbnail alert-success">
+                    <div class="caption">
+                        <h3>Knowledge Base</h3>
+                        <hr />
+                        <a href='@Url.Action("ViewKnowledges", "Groups", new { groupid = Model.Group_Id })' class="btn btn-primary" role="button">Go</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3 col-md-3">
+                <div class="thumbnail alert-info">
+                    <div class="caption">
+                        <h3>Alert Centre</h3>
+                        <hr />
+                        <a href='@Url.Action("Index", "Alerts", new { resource = Model.Group_Id })' class="btn btn-primary" role="button">Go</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3 col-md-3">
+                <div class="thumbnail alert-danger">
+                    <div class="caption">
+                        <h3>View All Calls</h3>
+                        <hr />
+                        <a href='@Url.Action("Index", "Desk", new { resource = Model.Group_Id })' class="btn btn-primary" role="button">Go</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <h4>Group-Member Tools</h4>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3 col-md-3">
+                <div class="thumbnail alert-success">
+                    <div class="caption">
+                        <h3>Knowledge Base</h3>
+                        <hr />
+                        <a href='@Url.Action("ViewKnowledges", "Groups", new { groupid = Model.Group_Id })' class="btn btn-primary" role="button">Go</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3 col-md-3">
+                <div class="thumbnail alert-warning">
+                    <div class="caption">
+                        <h3>Alert Centre</h3>
+                        <hr />
+                        <a href='@Url.Action("Index", "Alerts", new { resource = Model.Group_Id })' class="btn btn-primary" role="button">Go</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3 col-md-3">
+                <div class="thumbnail alert-danger">
+                    <div class="caption">
+                        <h3>View All Calls</h3>
+                        <hr />
+                        <a href='@Url.Action("Index", "Desk", new { resource = Model.Group_Id })' class="btn btn-primary" role="button">Go</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br /><hr />
+    <h4>Group-Owner Tools</h4>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3 col-md-3">
+                <div class="thumbnail alert-success">
+                    <div class="caption">
+                        <h3>Manage Members</h3>
+                        <hr />
+                        <a href='@Url.Action("ManageAndViewMembers", "Groups", new { groupid = Model.Group_Id })' class="btn btn-primary" role="button">Go</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3 col-md-3">
+                <div class="thumbnail alert-info">
+                    <div class="caption">
+                        <h3>Edit Groups</h3>
+                        <hr />
+                        <a href='@Url.Action("EditGroupGET", "Groups")' class="btn btn-primary" role="button">Go</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

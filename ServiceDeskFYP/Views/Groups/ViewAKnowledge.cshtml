@@ -2,6 +2,13 @@
 
 @{
     ViewBag.Title = "Knowledge";
+
+
+    System.Web.HtmlString description = null;
+    if (!string.IsNullOrEmpty(Model.Description))
+    {
+        description = new HtmlString(Model.Description.Replace(Environment.NewLine, "<br />"));
+    }
 }
 
 <h2>Knowledge</h2>
@@ -19,49 +26,60 @@
     }
 
 
-    <dl class="dl-horizontal">
 
-        <dt>
-            @Html.DisplayNameFor(model => model.GroupName)
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.GroupName)
-        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Summary)
-        </dt>
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default panel-success">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                        Details
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-condensed">
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.GroupName)</th>
+                                <td>@Html.DisplayFor(model => model.GroupName)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.Summary)</th>
+                                <td>@Html.DisplayFor(model => model.Summary)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.Updated)</th>
+                                <td>@Html.DisplayFor(model => model.Updated)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.LastUpdatedByUserName)</th>
+                                <td>@Html.DisplayFor(model => model.LastUpdatedByUserName)</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default panel-success">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+                        Description
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse2" class="panel-collapse collapse">
+                <div class="panel-body">
+                    @description
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <dd>
-            @Html.DisplayFor(model => model.Summary)
-        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Updated)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Updated)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.LastUpdatedByUserName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.LastUpdatedByUserName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-
-    </dl>
 </div>
 <p>
     @Html.ActionLink("Update", "UpdateKnowledgeGET") |
