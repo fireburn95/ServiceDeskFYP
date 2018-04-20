@@ -35,6 +35,7 @@ namespace ServiceDeskFYP.Models
         public string Comments { get; set; }
 
         [DataType(DataType.Upload)]
+        [StringLength(1000)]
         public string Attachment { get; set; }
 
         [ForeignKey("CallReference")]

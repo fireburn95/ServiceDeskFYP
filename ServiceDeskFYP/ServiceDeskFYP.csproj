@@ -305,6 +305,10 @@
     <Compile Include="Migrations\201803191917115_AddedVariousTestDataForTables.Designer.cs">
       <DependentUpon>201803191917115_AddedVariousTestDataForTables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201804091948419_UpdatedActionTable_AttachmentSize.cs" />
+    <Compile Include="Migrations\201804091948419_UpdatedActionTable_AttachmentSize.Designer.cs">
+      <DependentUpon>201804091948419_UpdatedActionTable_AttachmentSize.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DashboardViewModels.cs" />
     <Compile Include="Models\ViewViewModels.cs" />
@@ -346,7 +350,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ClassDiagram2.cd" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -520,6 +526,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803191917115_AddedVariousTestDataForTables.resx">
       <DependentUpon>201803191917115_AddedVariousTestDataForTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804091948419_UpdatedActionTable_AttachmentSize.resx">
+      <DependentUpon>201804091948419_UpdatedActionTable_AttachmentSize.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

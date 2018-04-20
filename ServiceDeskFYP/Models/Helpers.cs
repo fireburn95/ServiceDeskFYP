@@ -41,12 +41,10 @@ namespace ServiceDeskFYP.Models
                 dbContext.Log.Add(NewLog);
                 dbContext.SaveChanges();
             }
-
         }
 
         public static void LogEvent(string Type, string Detail, string UserId)
         {
-            
             using (ApplicationDbContext dbContext = new ApplicationDbContext())
             {
                 //Create the log
@@ -64,9 +62,8 @@ namespace ServiceDeskFYP.Models
                 dbContext.Log.Add(NewLog);
                 dbContext.SaveChanges();
             }
-
         }
-
+ 
         public static string LocalIPAddress()
         {
             string ipaddress = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
