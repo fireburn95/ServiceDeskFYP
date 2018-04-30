@@ -429,7 +429,7 @@ namespace ServiceDeskFYP.Models
 
         [Required(ErrorMessage = "Please specify the purpose for the changes made")]
         [DataType(DataType.MultilineText)]
-        [Display(Name ="Reason for changes? (for Action)")]
+        [Display(Name = "Reason for changes? (for Action)")]
         public string EditComments { get; set; }
     }
 
@@ -514,6 +514,23 @@ namespace ServiceDeskFYP.Models
         public bool? ClosedWithinSLA { get; set; }
         public int SlaResetCount { get; set; }
         public TimeSpan? CallOpenedForTime { get; set; }
+    }
+
+    /*
+     * The following are used for associating a client in desk/call/{reference}/close
+     */
+
+    public class CloseCallViewModel
+    {
+        [DataType(DataType.MultilineText)]
+        [Display(Name = "Resolution")]
+        public string Message { get; set; }
+    }
+
+    public class CloseCallPageViewModel
+    {
+        public string CallSummary { get; set; }
+        public CloseCallViewModel Close { get; set; }
     }
 
 }

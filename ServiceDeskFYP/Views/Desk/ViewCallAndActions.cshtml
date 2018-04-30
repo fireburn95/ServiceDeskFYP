@@ -21,11 +21,11 @@
         @Html.ActionLink("Notify", "NotifyGET") |
         @if (Model.CallDetails.Closed)
         {
-            @Html.ActionLink("Re-Open Call", "CloseOpenCall", new { Reference = Model.CallDetails.Reference })
+            @Html.ActionLink("Re-Open Call", "OpenCall", new { Reference = Model.CallDetails.Reference })
         }
         else
         {
-            @Html.ActionLink("Close Call", "CloseOpenCall", new { Reference = Model.CallDetails.Reference })
+            @Html.ActionLink("Close Call", "CloseCallGET", new { Reference = Model.CallDetails.Reference })
         } |
         @Html.ActionLink("Edit", "EditCallGET") |
         @if (Model.CallDetails.LockedToUserId != null)

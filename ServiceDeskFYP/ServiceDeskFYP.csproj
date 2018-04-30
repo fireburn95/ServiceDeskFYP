@@ -453,6 +453,7 @@
     <Content Include="Views\Shared\DefaultError.cshtml" />
     <Content Include="Views\Shared\NotFound.cshtml" />
     <Content Include="Views\Shared\Error400.cshtml" />
+    <Content Include="Views\Desk\Call_Close.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201801081319301_InitialCreate.resx">

@@ -632,7 +632,7 @@ namespace ServiceDeskFYP.Controllers
                     Created = DateTime.Now.AddSeconds(2),
                     Type = "Assigned",
                     TypeDetails = _context.Group.SingleOrDefault(n => n.Id == Alert.ToGroupId).Name,
-                    
+
                 };
 
                 //Add to DB
@@ -803,9 +803,9 @@ namespace ServiceDeskFYP.Controllers
                 if (
                     Call.FirstName != ForClient.FirstName ||
                     Call.Lastname != ForClient.LastName ||
-                      Call.Email!=ForClient.Email ||
-                      Call.PhoneNumber!=ForClient.PhoneNumber ||
-                      Call.Extension!=ForClient.Extension ||
+                      Call.Email != ForClient.Email ||
+                      Call.PhoneNumber != ForClient.PhoneNumber ||
+                      Call.Extension != ForClient.Extension ||
                       Call.OrganisationAlias != ForClient.OrganisationAlias ||
                       Call.Organisation != ForClient.Organisation ||
                       Call.Department != ForClient.Department
@@ -1536,9 +1536,9 @@ namespace ServiceDeskFYP.Controllers
          * Close/Open a Call
          * ***************/
 
-        //GET page for re-setting an SLA
+        //Action for Opening a call
         [HttpGet]
-        public ActionResult CloseOpenCall(string Reference)
+        public ActionResult OpenCall(string Reference)
         {
             //Check reference exists
             if (!CheckReferenceExists(Reference))
@@ -1567,10 +1567,7 @@ namespace ServiceDeskFYP.Controllers
             var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
 
             //Update closed field and save
-            if (Call.Closed == true)
-                Call.Closed = false;
-            else
-                Call.Closed = true;
+            Call.Closed = false;
             _context.SaveChanges();
 
             //Create Action and save
@@ -1578,7 +1575,7 @@ namespace ServiceDeskFYP.Controllers
             {
                 CallReference = Reference,
                 Created = DateTime.Now,
-                Type = Call.Closed ? "Call Closed" : "Call Re-Opened",
+                Type = "Call Re-Opened",
                 TypeDetails = null,
                 Comments = null,
                 Attachment = null,
@@ -1588,10 +1585,112 @@ namespace ServiceDeskFYP.Controllers
             _context.SaveChanges();
 
             //Success Message
-            TempData["SuccessMessage"] = Call.Closed ? "Call closed" : "Call-Reopened";
+            TempData["SuccessMessage"] = "Call-Reopened";
 
             //Return to call
             return RedirectToAction("call/" + Reference);
+        }
+
+        //GET page for closing call
+        [HttpGet]
+        [Route("desk/call/{Reference}/close")]
+        public ActionResult CloseCallGET(string Reference)
+        {
+            //Check reference exists
+            if (!CheckReferenceExists(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                return RedirectToAction("Index");
+            }
+
+            //Authorise access/permissions
+            if (!ModifyCallAuthorisation(Reference))
+            {
+                TempData["ErrorMessage"] = "Sorry, you do not have the permissions to close this call, please contact the resource";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Check if call locked
+            if (IsCallLockedToSomeoneElse(Reference))
+            {
+                var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
+                var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
+                TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
+                return RedirectToAction("call/" + Reference);
+            }
+
+            //Get the call
+            var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+            //Create the model
+            CloseCallPageViewModel model = new CloseCallPageViewModel()
+            {
+                CallSummary = Call.Summary,
+            };
+
+            //Return to call
+            return View("Call_Close", model);
+        }
+
+
+        //POST page for closing call
+        [HttpPost]
+        [Route("desk/call/{Reference}/close")]
+        public ActionResult CloseCall(string Reference, CloseCallPageViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                //Check reference exists
+                if (!CheckReferenceExists(Reference))
+                {
+                    TempData["ErrorMessage"] = "Sorry, the call you attempted to access doesn't exist";
+                    return RedirectToAction("Index");
+                }
+
+                //Authorise access/permissions
+                if (!ModifyCallAuthorisation(Reference))
+                {
+                    TempData["ErrorMessage"] = "Sorry, you do not have the permissions to close this call, please contact the resource";
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Check if call locked
+                if (IsCallLockedToSomeoneElse(Reference))
+                {
+                    var LockedId = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference)).LockedToUserId;
+                    var LockedUsername = _context.Users.SingleOrDefault(n => n.Id.Equals(LockedId)).UserName;
+                    TempData["ErrorMessage"] = "This call is locked to " + LockedUsername;
+                    return RedirectToAction("call/" + Reference);
+                }
+
+                //Get the call
+                var Call = _context.Call.SingleOrDefault(n => n.Reference.Equals(Reference));
+
+                //Close the call
+                Call.Closed = true;
+                _context.SaveChanges();
+
+                //Create Action and save
+                var ActionMade = new Models.Action
+                {
+                    CallReference = Reference,
+                    Created = DateTime.Now,
+                    Type = "Call Closed",
+                    TypeDetails = null,
+                    Comments = model.Close.Message,
+                    Attachment = null,
+                    ActionedByUserId = User.Identity.GetUserId()
+                };
+                _context.Action.Add(ActionMade);
+                _context.SaveChanges();
+
+                //Close Call
+                TempData["SuccessMessage"] = "Call Closed";
+                return RedirectToAction("call/" + Reference);
+            }
+
+            return View("Call_Close", model);
+
         }
 
         /*****************
