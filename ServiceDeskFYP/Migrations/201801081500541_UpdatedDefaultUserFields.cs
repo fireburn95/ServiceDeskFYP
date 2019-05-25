@@ -8,6 +8,7 @@ namespace ServiceDeskFYP.Migrations
         public override void Up()
         {
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
+            DropIndex("dbo.AspNetUsers", "EmailIndex");
             AlterColumn("dbo.AspNetUsers", "UserName", c => c.String(nullable: false, maxLength: 20));
             AlterColumn("dbo.AspNetUsers", "Email", c => c.String(nullable: false, maxLength: 256));
             AlterColumn("dbo.AspNetUsers", "PhoneNumber", c => c.String(maxLength: 40));
